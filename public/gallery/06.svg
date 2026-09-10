@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice">
+  <rect width="1400" height="900" fill="#FF7A45"/>
+  <circle cx="120" cy="120" r="200" fill="none" stroke="#0B4DA2" stroke-width="32"/>
+  <circle cx="200" cy="620" r="70" fill="#0B4DA2"/>
+  <circle cx="390" cy="600" r="70" fill="#073A7A"/>
+  <circle cx="580" cy="630" r="70" fill="#ffffff" opacity="0.85"/>
+  <circle cx="770" cy="590" r="70" fill="#0B4DA2"/>
+  <circle cx="960" cy="620" r="70" fill="#073A7A"/>
+  <circle cx="1150" cy="600" r="70" fill="#ffffff" opacity="0.85"/>
+  <text x="80" y="200" fill="#ffffff" font-size="48" font-family="Arial, sans-serif" font-weight="700">Expo Floor</text>
+</svg>

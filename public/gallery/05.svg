@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1500" preserveAspectRatio="xMidYMid slice">
+  <rect width="1200" height="1500" fill="#0B4DA2"/>
+  <rect x="90" y="220" width="1020" height="1080" rx="36" fill="#F5F7FB"/>
+  <rect x="160" y="320" width="420" height="280" rx="24" fill="#FF5A1F"/>
+  <rect x="620" y="320" width="420" height="280" rx="24" fill="#073A7A"/>
+  <rect x="160" y="640" width="880" height="180" rx="24" fill="#0B4DA2" opacity="0.15"/>
+  <rect x="160" y="860" width="880" height="180" rx="24" fill="#FF5A1F" opacity="0.18"/>
+  <text x="90" y="140" fill="#ffffff" font-size="46" font-family="Arial, sans-serif" font-weight="700">Workshops</text>
+</svg>

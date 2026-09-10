@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1100" preserveAspectRatio="xMidYMid slice">
+  <rect width="900" height="1100" fill="#0B4DA2"/>
+  <ellipse cx="450" cy="780" rx="280" ry="80" fill="#073A7A"/>
+  <rect x="250" y="360" width="400" height="420" rx="200" fill="#FF5A1F"/>
+  <circle cx="450" cy="300" r="90" fill="#FFD166"/>
+  <text x="60" y="120" fill="#ffffff" font-size="42" font-family="Arial, sans-serif" font-weight="700">Talent Fiesta</text>
+</svg>

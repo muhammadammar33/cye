@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice">
+  <rect width="1000" height="1000" fill="#073A7A"/>
+  <circle cx="500" cy="430" r="160" fill="#FF5A1F"/>
+  <polygon points="500,250 545,380 685,380 570,460 615,590 500,510 385,590 430,460 315,380 455,380" fill="#FFD166"/>
+  <rect x="180" y="720" width="640" height="28" rx="14" fill="#ffffff" opacity="0.7"/>
+  <text x="80" y="120" fill="#ffffff" font-size="42" font-family="Arial, sans-serif" font-weight="700">Awards Night</text>
+</svg>

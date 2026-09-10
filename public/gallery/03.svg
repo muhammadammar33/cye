@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
+  <rect width="1200" height="800" fill="#F5F7FB"/>
+  <rect x="0" y="0" width="1200" height="180" fill="#0B4DA2"/>
+  <circle cx="1100" cy="0" r="180" fill="none" stroke="#FF5A1F" stroke-width="28"/>
+  <rect x="80" y="240" width="320" height="420" rx="24" fill="#0B4DA2"/>
+  <rect x="440" y="280" width="320" height="380" rx="24" fill="#FF5A1F"/>
+  <rect x="800" y="260" width="320" height="400" rx="24" fill="#073A7A"/>
+  <text x="80" y="110" fill="#ffffff" font-size="40" font-family="Arial, sans-serif" font-weight="700">Project Exhibition</text>
+</svg>

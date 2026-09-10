@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" role="img" aria-label="Capital Youth Expo">
+  <rect width="64" height="64" rx="16" fill="#0B4DA2"/>
+  <path d="M56 8c-13.5 0-26 4.2-34.6 11.2" stroke="#FF5A1F" stroke-width="6" stroke-linecap="round"/>
+  <path d="M56 8c-16.8 0-32.2 5.6-42.4 14.8" stroke="#FF7A45" stroke-width="4" stroke-linecap="round" opacity="0.85"/>
+  <path d="M56 8c-20 0-38.2 7-49.6 18.2" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" opacity="0.35"/>
+  <text x="12" y="48" fill="#FFFFFF" font-family="Arial Black, Arial, sans-serif" font-size="20" font-weight="800">CY</text>
+  <text x="38" y="48" fill="#FF5A1F" font-family="Arial Black, Arial, sans-serif" font-size="20" font-weight="800">E</text>
+</svg>
