@@ -27,7 +27,7 @@ export default function OpenGraphImage() {
           Capital Youth Expo 2026
         </div>
         <div style={{ fontSize: 28, marginTop: 22, color: "rgba(255,255,255,0.88)" }}>
-          21 October 2026 · Pak-China Friendship Center, Islamabad
+          18 November 2026 · Pak-China Friendship Center, Islamabad
         </div>
       </div>
     ),
