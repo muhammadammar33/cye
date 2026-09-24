@@ -12,7 +12,7 @@ export function Logo({
   priority?: boolean;
 }) {
   return (
-    <Link href="#top" className={cn("flex items-center gap-2.5", className)} aria-label="Capital Youth Expo 2026 home">
+    <Link href="/" className={cn("flex items-center gap-2.5", className)} aria-label="Capital Youth Expo 2026 home">
       <Image
         src="/logo.svg"
         alt=""

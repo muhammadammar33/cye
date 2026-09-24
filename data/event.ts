@@ -103,3 +103,63 @@ export const STALLS = [
     "Prime location", "One social media post",
     "Logo on brochures distributed all over Islamabad" ] },
 ];
+
+export const EMAILS = {
+  sponsors: "sponsors@capitalyouthexpo.com",
+  ambassadors: "ambassadors@capitalyouthexpo.com",
+  volunteers: "volunteers@capitalyouthexpo.com",
+  competitions: "competitions@capitalyouthexpo.com",
+};
+
+export const NAV_LINKS = [
+  { href: "/#about", label: "About" },
+  { href: "/#verticals", label: "Verticals" },
+  { href: "/competitions", label: "Competitions" },
+  { href: "/ambassadors", label: "Ambassadors" },
+  { href: "/volunteers", label: "Volunteers" },
+  { href: "/#sponsorship", label: "Sponsorship" },
+  { href: "/#contact", label: "Contact" },
+];
+
+export const COMPETITIONS = [
+  { name: "Hackathon", vertical: "TechNexus", audience: "University",
+    desc: "Build, ship, and pitch a working prototype in a high-energy coding sprint." },
+  { name: "Project Exhibition", vertical: "TechNexus", audience: "University",
+    desc: "Showcase engineering and emerging-tech projects to judges, guests, and recruiters." },
+  { name: "Debate Championship", vertical: "Spectrum", audience: "University",
+    desc: "Compete in structured debate on culture, policy, and the ideas shaping Pakistan." },
+  { name: "Design Showcase", vertical: "Spectrum", audience: "University",
+    desc: "Present visual, product, and conceptual work to leading creative voices." },
+  { name: "Startup Pitch", vertical: "VentureX", audience: "University",
+    desc: "Pitch your venture to founders and investors in a timed, high-stakes round." },
+  { name: "Business Case Challenge", vertical: "VentureX", audience: "University",
+    desc: "Solve a live business brief and defend your strategy before a jury." },
+  { name: "Research Exhibition", vertical: "BioNova", audience: "University",
+    desc: "Exhibit biology, agriculture, and medical research from Pakistan's campuses." },
+  { name: "School Talent Showdown", vertical: "Talent Fiesta", audience: "Schools",
+    desc: "School-level contests, performances, and recognition that feed the CYE pipeline." },
+];
+
+export const AMBASSADOR_PERKS = [
+  "Official CYE Campus Ambassador certificate",
+  "Letter of recommendation from CYE leadership",
+  "Priority access to sessions and guest meet-ups",
+  "Leadership experience running campus outreach",
+  "Exclusive ambassador recognition and merch",
+];
+
+export const AMBASSADOR_DUTIES = [
+  "Represent CYE 2026 at your institution",
+  "Drive student, faculty, and stall registrations",
+  "Coordinate campus activations and publicity",
+  "Amplify the expo across student networks",
+];
+
+export const VOLUNTEER_ROLES = [
+  { name: "Operations", desc: "Floor management, logistics, and run-of-show on expo day." },
+  { name: "Outreach", desc: "Institution coordination and on-ground mobilization." },
+  { name: "Hospitality", desc: "Guest reception, protocol, and help desks." },
+  { name: "Media & Content", desc: "Coverage, photography coordination, and social posts." },
+  { name: "Registration Desk", desc: "Check-in, badges, and attendee support." },
+  { name: "Stage Management", desc: "Sessions, competitions, and speaker flow." },
+];

@@ -1,15 +1,6 @@
-import { EVENT } from "@/data/event";
+import { EVENT, NAV_LINKS } from "@/data/event";
 import { Container } from "@/components/ui/Container";
 import { Logo } from "@/components/ui/Logo";
-
-const LINKS = [
-  { href: "#about", label: "About" },
-  { href: "#verticals", label: "Verticals" },
-  { href: "#achievements", label: "Achievements" },
-  { href: "#guests", label: "Guests" },
-  { href: "#sponsorship", label: "Sponsorship" },
-  { href: "#contact", label: "Contact" },
-];
 
 const SOCIALS = [
   {
@@ -67,7 +58,7 @@ export function Footer() {
         <div>
           <p className="font-heading text-sm font-bold uppercase tracking-wider text-cye-blue">Explore</p>
           <ul className="mt-4 space-y-2">
-            {LINKS.map((link) => (
+            {NAV_LINKS.map((link) => (
               <li key={link.href}>
                 <a href={link.href} className="text-sm text-cye-ink/70 hover:text-cye-orange">
                   {link.label}

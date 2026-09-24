@@ -1,6 +1,7 @@
 "use client";
 
 import { CalendarDays, MapPin } from "lucide-react";
+import Link from "next/link";
 import { useMemo, useSyncExternalStore } from "react";
 import { EVENT } from "@/data/event";
 import { ArcDecoration } from "@/components/ui/ArcDecoration";
@@ -91,13 +92,24 @@ export function Hero() {
             Organized by {EVENT.organizers.join(" in collaboration with ")}
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Button href="#contact" className="w-full sm:w-auto">
+            <Button href="/#contact" className="w-full sm:w-auto">
               Become a Sponsor
             </Button>
-            <Button href="#about" variant="secondary" className="w-full sm:w-auto">
+            <Button href="/#about" variant="secondary" className="w-full sm:w-auto">
               Explore the Expo
             </Button>
           </div>
+          <p className="mt-5 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm font-semibold">
+            <Link href="/competitions" className="text-cye-blue hover:text-cye-orange">
+              Competitions
+            </Link>
+            <Link href="/ambassadors" className="text-cye-blue hover:text-cye-orange">
+              Campus Ambassador
+            </Link>
+            <Link href="/volunteers" className="text-cye-blue hover:text-cye-orange">
+              Volunteer
+            </Link>
+          </p>
           <div className="mt-10 grid grid-cols-4 gap-2 sm:mx-auto sm:max-w-lg sm:gap-3" aria-label="Countdown to Capital Youth Expo 2026">
             {[
               { label: "Days", value: countdown.days },

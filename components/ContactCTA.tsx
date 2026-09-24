@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { CalendarDays, MapPin, Send } from "lucide-react";
-import { EVENT, SPONSORSHIP, STALLS } from "@/data/event";
+import { EMAILS, EVENT, SPONSORSHIP, STALLS } from "@/data/event";
 import { Container } from "@/components/ui/Container";
 import { FadeIn } from "@/components/ui/FadeIn";
 
@@ -12,7 +12,7 @@ const TIERS = [
   "Not sure yet",
 ];
 
-const CONTACT_EMAIL = "sponsors@capitalyouthexpo.com";
+const CONTACT_EMAIL = EMAILS.sponsors;
 
 export function ContactCTA() {
   const [status, setStatus] = useState<"idle" | "sent">("idle");
