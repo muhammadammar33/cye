@@ -18,7 +18,7 @@ const inter = Inter({
 
 const baloo = Baloo_2({
   subsets: ["latin"],
-  weight: ["600", "700", "800"],
+  weight: "800",
   variable: "--font-baloo",
   display: "swap",
 });
