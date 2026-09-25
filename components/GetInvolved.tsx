@@ -23,6 +23,24 @@ const PATHS = [
     desc: "Join operations, hospitality, media, and stage teams before and on expo day.",
     cta: "Volunteer form",
   },
+  {
+    href: "/projects",
+    title: "Project Exhibition",
+    desc: "Showcase your project to judges, industry leaders, and visitors — and compete for the prize pool.",
+    cta: "Submit a project",
+  },
+  {
+    href: "/startups",
+    title: "Startup Arena",
+    desc: "Pitch your startup for investor networking, mentorship, and exhibition space.",
+    cta: "Pitch your startup",
+  },
+  {
+    href: "/visitors",
+    title: "Visitor Pass",
+    desc: "Register to explore all five verticals, sessions, workshops, and the job fair.",
+    cta: "Get your pass",
+  },
 ];
 
 export function GetInvolved() {
@@ -32,8 +50,8 @@ export function GetInvolved() {
         <FadeIn>
           <SectionHeading
             eyebrow="Get involved"
-            title="Register to Compete or Join the Team"
-            description="Campus ambassadors, volunteers, and competition teams each have their own registration page."
+            title="Compete, Showcase, or Join the Team"
+            description="Competition teams, project and startup founders, visitors, campus ambassadors, and volunteers each have their own registration page."
           />
         </FadeIn>
         <div className="mt-12 grid gap-5 md:grid-cols-3">

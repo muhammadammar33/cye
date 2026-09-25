@@ -1,5 +1,7 @@
-import { VOLUNTEER_ROLES, EMAILS } from "@/data/event";
+import { VOLUNTEER_ROLES, EMAILS, REGISTRATION_OPEN } from "@/data/event";
+import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Card } from "@/components/ui/Card";
+import { ClosedNotice } from "@/components/ui/ClosedNotice";
 import { Container } from "@/components/ui/Container";
 import { FadeIn } from "@/components/ui/FadeIn";
 import { InterestForm } from "@/components/ui/InterestForm";
@@ -10,6 +12,7 @@ export function VolunteerForm() {
     <section className="bg-wash-mist pt-32 pb-20 sm:pt-36 sm:pb-24">
       <Container>
         <FadeIn>
+          <Breadcrumbs current="Volunteer" />
           <SectionHeading
             eyebrow="Join the team"
             title="Volunteer Form"
@@ -32,33 +35,37 @@ export function VolunteerForm() {
             Pre-event outreach starts weeks before 18 November. Expo-day roles are assigned after a short briefing.
           </p>
           <div className="mt-6">
-            <InterestForm
-              to={EMAILS.volunteers}
-              subjectPrefix="CYE 2026 volunteer application"
-              submitLabel="Submit volunteer form"
-              fields={[
-                { name: "name", label: "Full name", required: true, autoComplete: "name" },
-                { name: "email", label: "Email", type: "email", required: true, autoComplete: "email" },
-                { name: "phone", label: "Phone", type: "tel", required: true, autoComplete: "tel" },
-                { name: "institution", label: "Institution / organization", required: true, autoComplete: "organization" },
-                {
-                  name: "role",
-                  label: "Preferred role",
-                  type: "select",
-                  required: true,
-                  options: VOLUNTEER_ROLES.map((role) => role.name),
-                  placeholder: "Select a role",
-                },
-                {
-                  name: "availability",
-                  label: "Availability",
-                  type: "select",
-                  required: true,
-                  options: ["Expo day only", "Pre-event outreach only", "Both pre-event and expo day"],
-                },
-                { name: "message", label: "Relevant experience", type: "textarea", required: true },
-              ]}
-            />
+            {REGISTRATION_OPEN.volunteers ? (
+              <InterestForm
+                to={EMAILS.volunteers}
+                subjectPrefix="CYE 2026 volunteer application"
+                submitLabel="Submit volunteer form"
+                fields={[
+                  { name: "name", label: "Full name", required: true, autoComplete: "name" },
+                  { name: "email", label: "Email", type: "email", required: true, autoComplete: "email" },
+                  { name: "phone", label: "Phone", type: "tel", required: true, autoComplete: "tel" },
+                  { name: "institution", label: "Institution / organization", required: true, autoComplete: "organization" },
+                  {
+                    name: "role",
+                    label: "Preferred role",
+                    type: "select",
+                    required: true,
+                    options: VOLUNTEER_ROLES.map((role) => role.name),
+                    placeholder: "Select a role",
+                  },
+                  {
+                    name: "availability",
+                    label: "Availability",
+                    type: "select",
+                    required: true,
+                    options: ["Expo day only", "Pre-event outreach only", "Both pre-event and expo day"],
+                  },
+                  { name: "message", label: "Relevant experience", type: "textarea", required: true },
+                ]}
+              />
+            ) : (
+              <ClosedNotice what="Volunteer registration" email={EMAILS.volunteers} />
+            )}
           </div>
         </FadeIn>
       </Container>

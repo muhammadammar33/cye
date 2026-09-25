@@ -9,5 +9,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: "https://capitalyouthexpo.com/competitions", lastModified, changeFrequency: "weekly", priority: 0.8 },
     { url: "https://capitalyouthexpo.com/ambassadors", lastModified, changeFrequency: "weekly", priority: 0.8 },
     { url: "https://capitalyouthexpo.com/volunteers", lastModified, changeFrequency: "weekly", priority: 0.8 },
+    { url: "https://capitalyouthexpo.com/projects", lastModified, changeFrequency: "weekly", priority: 0.8 },
+    { url: "https://capitalyouthexpo.com/startups", lastModified, changeFrequency: "weekly", priority: 0.8 },
+    { url: "https://capitalyouthexpo.com/visitors", lastModified, changeFrequency: "weekly", priority: 0.8 },
+    { url: "https://capitalyouthexpo.com/contact", lastModified, changeFrequency: "monthly", priority: 0.6 },
   ];
 }

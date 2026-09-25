@@ -9,7 +9,7 @@ import { cn } from "@/lib/cn";
 export type InterestField = {
   name: string;
   label: string;
-  type?: "text" | "email" | "tel" | "textarea" | "select";
+  type?: "text" | "email" | "tel" | "url" | "number" | "textarea" | "select" | "checkbox";
   required?: boolean;
   autoComplete?: string;
   options?: string[];
@@ -34,7 +34,11 @@ export function InterestForm({
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const name = String(data.get("name") ?? "");
-    const lines = fields.map((field) => `${field.label}: ${String(data.get(field.name) ?? "")}`);
+    const lines = fields.map((field) =>
+      field.type === "checkbox"
+        ? `${field.label}: ${data.get(field.name) ? "Yes" : "No"}`
+        : `${field.label}: ${String(data.get(field.name) ?? "")}`,
+    );
 
     // TODO: POST to a backend endpoint when one is available.
     openMailto(to, `${subjectPrefix} — ${name}`, lines);
@@ -44,7 +48,21 @@ export function InterestForm({
   return (
     <form onSubmit={onSubmit} className="grid gap-4 sm:grid-cols-2">
       {fields.map((field) => {
-        const span = field.span === 2 || field.type === "textarea" ? "sm:col-span-2" : undefined;
+        const span =
+          field.span === 2 || field.type === "textarea" || field.type === "checkbox" ? "sm:col-span-2" : undefined;
+        if (field.type === "checkbox") {
+          return (
+            <label key={field.name} className={cn("flex items-start gap-3 text-sm text-cye-ink/75", span)}>
+              <input
+                name={field.name}
+                type="checkbox"
+                required={field.required}
+                className="mt-0.5 h-4 w-4 shrink-0 accent-cye-orange"
+              />
+              {field.label}
+            </label>
+          );
+        }
         if (field.type === "textarea") {
           return (
             <Field key={field.name} label={field.label} className={span}>
