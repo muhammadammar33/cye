@@ -28,10 +28,7 @@ export function Navbar() {
   }, [pathname]);
 
   useEffect(() => {
-    if (pathname !== "/") {
-      setActiveHash("");
-      return;
-    }
+    if (pathname !== "/") return;
 
     const ids = NAV_LINKS.map((link) => hashId(link.href)).filter(Boolean);
     const sections = ids
