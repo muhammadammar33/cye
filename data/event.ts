@@ -105,40 +105,133 @@ export const STALLS = [
 ];
 
 export const EMAILS = {
+  info: "info@capitalyouthexpo.com",
   sponsors: "sponsors@capitalyouthexpo.com",
   ambassadors: "ambassadors@capitalyouthexpo.com",
   volunteers: "volunteers@capitalyouthexpo.com",
   competitions: "competitions@capitalyouthexpo.com",
+  projects: "projects@capitalyouthexpo.com",
+  startups: "startups@capitalyouthexpo.com",
+  visitors: "visitors@capitalyouthexpo.com",
 };
 
-export const NAV_LINKS = [
-  { href: "/#about", label: "About" },
-  { href: "/#verticals", label: "Verticals" },
-  { href: "/competitions", label: "Competitions" },
-  { href: "/ambassadors", label: "Ambassadors" },
-  { href: "/volunteers", label: "Volunteers" },
-  { href: "/#sponsorship", label: "Sponsorship" },
-  { href: "/#contact", label: "Contact" },
+// Flip a flag to false to close that form and show a "registration closed" notice instead.
+export const REGISTRATION_OPEN = {
+  competitions: true,
+  projects: true,
+  startups: true,
+  visitors: true,
+  volunteers: true,
+  ambassadors: true,
+};
+
+export type NavItem = {
+  href: string;
+  label: string;
+  desc?: string;
+};
+
+export const REGISTER_LINKS: NavItem[] = [
+  { href: "/competitions", label: "Competitions", desc: "Enter a competition solo or as a team" },
+  { href: "/projects", label: "Project Exhibition", desc: "Showcase your project for the prize pool" },
+  { href: "/startups", label: "Startup Arena", desc: "Pitch your startup to investors" },
+  { href: "/visitors", label: "Visitor Pass", desc: "Register to attend the expo" },
+  { href: "/ambassadors", label: "Campus Ambassador", desc: "Represent CYE at your institution" },
+  { href: "/volunteers", label: "Volunteer", desc: "Join the team behind the expo" },
 ];
 
-export const COMPETITIONS = [
-  { name: "Hackathon", vertical: "TechNexus", audience: "University",
-    desc: "Build, ship, and pitch a working prototype in a high-energy coding sprint." },
-  { name: "Project Exhibition", vertical: "TechNexus", audience: "University",
-    desc: "Showcase engineering and emerging-tech projects to judges, guests, and recruiters." },
-  { name: "Debate Championship", vertical: "Spectrum", audience: "University",
-    desc: "Compete in structured debate on culture, policy, and the ideas shaping Pakistan." },
-  { name: "Design Showcase", vertical: "Spectrum", audience: "University",
-    desc: "Present visual, product, and conceptual work to leading creative voices." },
-  { name: "Startup Pitch", vertical: "VentureX", audience: "University",
-    desc: "Pitch your venture to founders and investors in a timed, high-stakes round." },
-  { name: "Business Case Challenge", vertical: "VentureX", audience: "University",
-    desc: "Solve a live business brief and defend your strategy before a jury." },
-  { name: "Research Exhibition", vertical: "BioNova", audience: "University",
-    desc: "Exhibit biology, agriculture, and medical research from Pakistan's campuses." },
-  { name: "School Talent Showdown", vertical: "Talent Fiesta", audience: "Schools",
-    desc: "School-level contests, performances, and recognition that feed the CYE pipeline." },
+export const NAV_LINKS: (NavItem & { children?: NavItem[] })[] = [
+  { href: "/#about", label: "About" },
+  { href: "/#verticals", label: "Verticals" },
+  { href: "/competitions", label: "Register", children: REGISTER_LINKS },
+  { href: "/#guests", label: "Guests" },
+  { href: "/#sponsorship", label: "Sponsorship" },
+  { href: "/contact", label: "Contact" },
 ];
+
+// PLACEHOLDER: fees and team sizes below are dummy values — replace with confirmed details.
+export const COMPETITIONS = [
+  { name: "Hackathon", vertical: "TechNexus", audience: "University", fee: "PKR 2,000", teamMin: 2, teamMax: 4,
+    desc: "Build, ship, and pitch a working prototype in a high-energy coding sprint." },
+  { name: "Speed Programming", vertical: "TechNexus", audience: "University", fee: "PKR 1,000", teamMin: 1, teamMax: 1,
+    desc: "Solve algorithmic problems against the clock in a timed individual contest." },
+  { name: "Project Exhibition", vertical: "TechNexus", audience: "University", fee: "PKR 2,000", teamMin: 1, teamMax: 4,
+    desc: "Showcase engineering and emerging-tech projects to judges, guests, and recruiters." },
+  { name: "Robotics Challenge", vertical: "TechNexus", audience: "University", fee: "PKR 2,500", teamMin: 2, teamMax: 4,
+    desc: "Design, build, and run a robot through timed obstacle and task rounds." },
+  { name: "Debate Championship", vertical: "Spectrum", audience: "University", fee: "PKR 1,500", teamMin: 2, teamMax: 2,
+    desc: "Compete in structured debate on culture, policy, and the ideas shaping Pakistan." },
+  { name: "Design Showcase", vertical: "Spectrum", audience: "University", fee: "PKR 1,000", teamMin: 1, teamMax: 2,
+    desc: "Present visual, product, and conceptual work to leading creative voices." },
+  { name: "Startup Pitch", vertical: "VentureX", audience: "University", fee: "PKR 2,000", teamMin: 1, teamMax: 4,
+    desc: "Pitch your venture to founders and investors in a timed, high-stakes round." },
+  { name: "Business Case Challenge", vertical: "VentureX", audience: "University", fee: "PKR 2,000", teamMin: 2, teamMax: 3,
+    desc: "Solve a live business brief and defend your strategy before a jury." },
+  { name: "Research Exhibition", vertical: "BioNova", audience: "University", fee: "PKR 1,500", teamMin: 1, teamMax: 3,
+    desc: "Exhibit biology, agriculture, and medical research from Pakistan's campuses." },
+  { name: "Medical Quiz", vertical: "BioNova", audience: "University", fee: "PKR 1,000", teamMin: 2, teamMax: 2,
+    desc: "Rapid-fire rounds on anatomy, clinical cases, and health science." },
+  { name: "School Talent Showdown", vertical: "Talent Fiesta", audience: "Schools", fee: "PKR 500", teamMin: 1, teamMax: 4,
+    desc: "School-level contests, performances, and recognition that feed the CYE pipeline." },
+  { name: "Junior Science Fair", vertical: "Talent Fiesta", audience: "Schools", fee: "PKR 500", teamMin: 1, teamMax: 3,
+    desc: "School students present science models and experiments to a panel of judges." },
+];
+
+export const EDUCATION_LEVELS = [
+  "Grade 9", "Grade 10", "Grade 11 (Intermediate Part 1)", "Grade 12 (Intermediate Part 2)",
+  "Undergraduate", "Graduate / Postgraduate", "Other",
+];
+
+// PLACEHOLDER: prize amounts are dummy values — replace with confirmed details.
+export const PROJECT_PRIZES = {
+  pool: "PKR 1,000,000",
+  places: [
+    { place: "1st Place", amount: "PKR 250,000" },
+    { place: "2nd Place", amount: "PKR 150,000" },
+    { place: "3rd Place", amount: "PKR 100,000" },
+  ],
+  extras: [
+    { label: "Honorable mentions (4th–10th)", amount: "PKR 50,000 each" },
+    { label: "Special awards — Best Design, Innovation, Social Impact, People's Choice", amount: "PKR 25,000 each" },
+  ],
+};
+
+export const STARTUP_PERKS = [
+  "Pitch to venture capitalists, angel investors, and seed funds",
+  "Mentorship sessions with founders and industry leaders",
+  "Exhibition space for shortlisted startups on expo day",
+  "Visibility across CYE media and partner networks",
+];
+
+export const STARTUP_SECTORS = [
+  "AgriTech", "EdTech", "FinTech", "HealthTech", "BioTech", "AI / Software",
+  "E-commerce", "Climate / Energy", "Social Impact", "Other",
+];
+
+export const STARTUP_STAGES = ["Idea", "Prototype / MVP", "Early revenue", "Growth"];
+
+export const VISITOR_PERKS = [
+  "Access to all five vertical zones and exhibitions",
+  "Sessions, workshops, and panel discussions",
+  "Job fair and career counselling desks",
+  "Watch live competitions and the talk show",
+];
+
+// PLACEHOLDER: phone numbers are dummy values — replace with confirmed contacts.
+export const CONTACTS = [
+  { label: "General queries", phones: ["+92 300 0000000"], email: "info@capitalyouthexpo.com" },
+  { label: "Competitions & projects", phones: ["+92 300 0000001"], email: "competitions@capitalyouthexpo.com" },
+  { label: "Sponsorship & stalls", phones: ["+92 300 0000002"], email: "sponsors@capitalyouthexpo.com" },
+  { label: "Startups", phones: ["+92 300 0000003"], email: "startups@capitalyouthexpo.com" },
+];
+
+// PLACEHOLDER: point these at the official CYE accounts.
+export const SOCIAL_LINKS = {
+  instagram: "https://instagram.com",
+  facebook: "https://facebook.com",
+  linkedin: "https://linkedin.com",
+  youtube: "https://youtube.com",
+};
 
 export const AMBASSADOR_PERKS = [
   "Official CYE Campus Ambassador certificate",

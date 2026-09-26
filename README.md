@@ -37,16 +37,24 @@ Deploy on Vercel from this repo. No environment variables are required for v1.
 
 ## Pages
 
-| Path             | Purpose                                      |
-| ---------------- | -------------------------------------------- |
-| `/`              | Homepage: event story, guests, sponsorship   |
-| `/competitions`  | Competition list + registration form         |
-| `/ambassadors`   | Campus Ambassador application                |
-| `/volunteers`    | Volunteer roles + sign-up                    |
+| Path            | Purpose                                                        |
+| --------------- | -------------------------------------------------------------- |
+| `/`             | Homepage: event story, guests, sponsorship                     |
+| `/competitions` | Competition catalog (filter by vertical) + team registration   |
+| `/projects`     | Project Exhibition: prize pool + project submission            |
+| `/startups`     | Startup Arena: investor pitch submission                       |
+| `/visitors`     | Visitor pass registration                                      |
+| `/ambassadors`  | Campus Ambassador application                                  |
+| `/volunteers`   | Volunteer roles + sign-up                                      |
+| `/contact`      | Department contacts, venue, message form                       |
 
-`/competition`, `/ambassador`, and `/volunteer` redirect to the plural routes.
+`/competition`, `/ambassador`, `/volunteer`, `/project`, `/startup`, and `/visitor` redirect to the plural routes; `/register` redirects to `/competitions`.
 
-Forms currently open a `mailto:` draft. Swap that for a real POST when an API exists — search for `TODO` in `components/ui/InterestForm.tsx` and `components/ContactCTA.tsx`.
+Each form can be closed without code changes elsewhere: set its flag in `REGISTRATION_OPEN` (`data/event.ts`) to `false` and the page shows a "registration closed" notice instead.
+
+Competition fees and team sizes, project prizes, contact phone numbers, and social links in `data/event.ts` are **placeholders** (marked `PLACEHOLDER`) — replace them with confirmed details.
+
+Forms currently open a `mailto:` draft. Swap that for a real POST when an API exists — search for `TODO` in `components/ui/InterestForm.tsx`, `components/competitions/TeamRegistrationForm.tsx`, and `components/ContactCTA.tsx`.
 
 ## Project layout
 
@@ -58,7 +66,7 @@ lib/            Shared helpers (cn, mailto)
 public/         Logo, gallery placeholders, guest photos
 ```
 
-Edit **`data/event.ts`** for dates, sponsorship prices, guest list, and competition names. Brand colors live in **`app/globals.css`**.
+Edit **`data/event.ts`** for dates, sponsorship prices, guest list, competitions (fees, team sizes), prizes, contacts, and which forms are open. Brand colors live in **`app/globals.css`**.
 
 ## Assets
 

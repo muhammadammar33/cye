@@ -1,5 +1,7 @@
 import { Check } from "lucide-react";
-import { AMBASSADOR_DUTIES, AMBASSADOR_PERKS, EMAILS } from "@/data/event";
+import { AMBASSADOR_DUTIES, AMBASSADOR_PERKS, EMAILS, REGISTRATION_OPEN } from "@/data/event";
+import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
+import { ClosedNotice } from "@/components/ui/ClosedNotice";
 import { Container } from "@/components/ui/Container";
 import { FadeIn } from "@/components/ui/FadeIn";
 import { InterestForm } from "@/components/ui/InterestForm";
@@ -10,6 +12,7 @@ export function CampusAmbassador() {
     <section className="bg-white pt-32 pb-20 sm:pt-36 sm:pb-24">
       <Container>
         <FadeIn>
+          <Breadcrumbs current="Campus Ambassador" />
           <SectionHeading
             eyebrow="Lead your campus"
             title="Campus Ambassador Registration"
@@ -51,32 +54,36 @@ export function CampusAmbassador() {
               Open to students across Islamabad. We review applications on a rolling basis.
             </p>
             <div className="mt-6">
-              <InterestForm
-                to={EMAILS.ambassadors}
-                subjectPrefix="CYE 2026 campus ambassador application"
-                submitLabel="Submit ambassador application"
-                fields={[
-                  { name: "name", label: "Full name", required: true, autoComplete: "name" },
-                  { name: "email", label: "Email", type: "email", required: true, autoComplete: "email" },
-                  { name: "phone", label: "Phone", type: "tel", required: true, autoComplete: "tel" },
-                  { name: "institution", label: "Institution", required: true, autoComplete: "organization" },
-                  { name: "program", label: "Degree / program", required: true },
-                  {
-                    name: "year",
-                    label: "Year of study",
-                    type: "select",
-                    required: true,
-                    options: ["1st year", "2nd year", "3rd year", "4th year", "Graduate", "Other"],
-                  },
-                  { name: "city", label: "City", required: true, autoComplete: "address-level2", span: 2 },
-                  {
-                    name: "message",
-                    label: "Why do you want to be a Campus Ambassador?",
-                    type: "textarea",
-                    required: true,
-                  },
-                ]}
-              />
+              {REGISTRATION_OPEN.ambassadors ? (
+                <InterestForm
+                  to={EMAILS.ambassadors}
+                  subjectPrefix="CYE 2026 campus ambassador application"
+                  submitLabel="Submit ambassador application"
+                  fields={[
+                    { name: "name", label: "Full name", required: true, autoComplete: "name" },
+                    { name: "email", label: "Email", type: "email", required: true, autoComplete: "email" },
+                    { name: "phone", label: "Phone", type: "tel", required: true, autoComplete: "tel" },
+                    { name: "institution", label: "Institution", required: true, autoComplete: "organization" },
+                    { name: "program", label: "Degree / program", required: true },
+                    {
+                      name: "year",
+                      label: "Year of study",
+                      type: "select",
+                      required: true,
+                      options: ["1st year", "2nd year", "3rd year", "4th year", "Graduate", "Other"],
+                    },
+                    { name: "city", label: "City", required: true, autoComplete: "address-level2", span: 2 },
+                    {
+                      name: "message",
+                      label: "Why do you want to be a Campus Ambassador?",
+                      type: "textarea",
+                      required: true,
+                    },
+                  ]}
+                />
+              ) : (
+                <ClosedNotice what="Campus Ambassador registration" email={EMAILS.ambassadors} />
+              )}
             </div>
           </FadeIn>
         </div>
