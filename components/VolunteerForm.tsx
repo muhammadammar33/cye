@@ -1,4 +1,4 @@
-import { VOLUNTEER_ROLES, EMAILS, REGISTRATION_OPEN } from "@/data/event";
+import { EMAILS, EVENT, REGISTRATION_OPEN, VOLUNTEER_ROLES } from "@/data/event";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Card } from "@/components/ui/Card";
 import { ClosedNotice } from "@/components/ui/ClosedNotice";
@@ -32,7 +32,7 @@ export function VolunteerForm() {
         <FadeIn delay={0.1} className="mx-auto mt-12 max-w-2xl rounded-3xl border border-white/80 bg-white p-6 shadow-card sm:p-8">
           <h3 className="font-heading text-xl font-extrabold text-cye-blue">Volunteer sign-up</h3>
           <p className="mt-2 text-sm text-cye-ink/65">
-            Pre-event outreach starts weeks before 18 November. Expo-day roles are assigned after a short briefing.
+            Pre-event outreach starts weeks before {EVENT.date}. Expo-day roles are assigned after a short briefing.
           </p>
           <div className="mt-6">
             {REGISTRATION_OPEN.volunteers ? (
