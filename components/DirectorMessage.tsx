@@ -13,7 +13,7 @@ export function DirectorMessage() {
             From the director
           </p>
           <h2 className="mt-3 max-w-4xl font-heading text-3xl font-black uppercase tracking-tight text-cye-blue sm:text-4xl">
-            Director Message — {EVENT.director}, Director CYE
+            Director Message: {EVENT.director}, Director CYE
           </h2>
         </FadeIn>
         <FadeIn delay={0.08} className="mt-10 grid items-start gap-8 lg:grid-cols-[220px_1fr]">

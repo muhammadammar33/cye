@@ -21,7 +21,7 @@ export function Achievements() {
           <SectionHeading
             eyebrow="CYE Recap"
             title="A Decade of Growing Momentum"
-            description="Visitor growth across editions — a platform that has become Islamabad's defining youth gathering."
+            description="Visitor growth across editions, building a platform that has become Islamabad's defining youth gathering."
           />
         </FadeIn>
         <div ref={ref} className="mt-12 rounded-3xl border border-white/80 bg-white/80 p-5 shadow-card backdrop-blur-sm sm:p-8">

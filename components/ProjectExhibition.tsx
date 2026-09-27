@@ -20,7 +20,7 @@ export function ProjectExhibition() {
           <SectionHeading
             eyebrow="Showcase"
             title="Project Exhibition"
-            description="Present the project you have been building — engineering, research, design, or social innovation — to judges, industry leaders, and 40,000+ visitors."
+            description="Present the project you have been building (engineering, research, design, or social innovation) to judges, industry leaders, and 40,000+ visitors."
           />
         </FadeIn>
 

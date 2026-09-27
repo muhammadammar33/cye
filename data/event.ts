@@ -26,15 +26,15 @@ export const AUDIENCE = [
 
 export const VERTICALS = [
   { name: "TechNexus", subtitle: "Engineering & Technology",
-    desc: "Where Pakistan's future engineers, developers, and innovators converge — project exhibitions, hackathons, and sessions on emerging technology." },
+    desc: "Where Pakistan's future engineers, developers, and innovators converge for project exhibitions, hackathons, and sessions on emerging technology." },
   { name: "Spectrum", subtitle: "Social Sciences, Art, Design & Humanities",
-    desc: "A platform for creative and critical thinkers — design showcases, debates, and dialogue with leading voices in the field." },
+    desc: "A platform for creative and critical thinkers, with design showcases, debates, and dialogue with leading voices in the field." },
   { name: "VentureX", subtitle: "Finance & Business",
     desc: "Startup pitches, business case competitions, and conversations about the economy, investment, and the future of enterprise." },
   { name: "BioNova", subtitle: "Biology, Agriculture & Medicine",
     desc: "Research exhibitions, expert sessions, and competitions that spotlight Pakistan's scientific community." },
   { name: "Talent Fiesta", subtitle: "School Competitions & Activities",
-    desc: "School-level talent through competitions, creative activities, and recognition ceremonies — building the pipeline of future CYE participants." },
+    desc: "School-level talent through competitions, creative activities, and recognition ceremonies, building the pipeline of future CYE participants." },
 ];
 
 export const ACTIVITIES = [
@@ -149,14 +149,14 @@ export const NAV_LINKS: (NavItem & { children?: NavItem[] })[] = [
   { href: "/contact", label: "Contact" },
 ];
 
-// Registration fees are confirmed. PLACEHOLDER: team sizes (teamMin/teamMax) are estimates — confirm per competition.
+// Registration fees are confirmed. PLACEHOLDER: team sizes (teamMin/teamMax) are estimates; confirm per competition.
 export const COMPETITIONS = [
   { name: "Robo War", vertical: "TechNexus", audience: "University", fee: "PKR 2,500", teamMin: 2, teamMax: 4,
     desc: "Build a combat robot and battle it out in the arena until one bot is left standing." },
   { name: "Line Following Robot", vertical: "TechNexus", audience: "University", fee: "PKR 2,500", teamMin: 1, teamMax: 3,
     desc: "Design an autonomous robot that tracks the line and races the course against the clock." },
   { name: "Drone Race", vertical: "TechNexus", audience: "University", fee: "PKR 2,500", teamMin: 1, teamMax: 2,
-    desc: "Pilot your drone through a timed obstacle course — fastest clean run wins." },
+    desc: "Pilot your drone through a timed obstacle course. Fastest clean run wins." },
   { name: "Hackathon", vertical: "TechNexus", audience: "University", fee: "PKR 2,000", teamMin: 2, teamMax: 4,
     desc: "Build, ship, and pitch a working prototype in a high-energy coding sprint." },
   { name: "Capture the Flag", vertical: "TechNexus", audience: "University", fee: "PKR 2,000", teamMin: 2, teamMax: 3,
@@ -184,7 +184,7 @@ export const COMPETITIONS = [
   { name: "Speech (English / Urdu)", vertical: "Literary", audience: "Schools & University", fee: "PKR 500", teamMin: 1, teamMax: 1,
     desc: "Deliver a compelling speech in English or Urdu on the given theme." },
   { name: "Bait Baazi", vertical: "Literary", audience: "Schools & University", fee: "PKR 500", teamMin: 2, teamMax: 3,
-    desc: "Trade couplets in the classic Urdu poetry duel — the team with the last verse wins." },
+    desc: "Trade couplets in the classic Urdu poetry duel. The team with the last verse wins." },
   { name: "Arts", vertical: "Literary", audience: "Schools & University", fee: "PKR 500", teamMin: 1, teamMax: 1,
     desc: "Create an original artwork on the spot around the expo theme." },
 ];
@@ -194,7 +194,7 @@ export const EDUCATION_LEVELS = [
   "Undergraduate", "Graduate / Postgraduate", "Other",
 ];
 
-// PLACEHOLDER: prize amounts are dummy values — replace with confirmed details.
+// PLACEHOLDER: prize amounts are dummy values; replace with confirmed details.
 export const PROJECT_PRIZES = {
   pool: "PKR 1,000,000",
   places: [
@@ -204,7 +204,7 @@ export const PROJECT_PRIZES = {
   ],
   extras: [
     { label: "Honorable mentions (4th–10th)", amount: "PKR 50,000 each" },
-    { label: "Special awards — Best Design, Innovation, Social Impact, People's Choice", amount: "PKR 25,000 each" },
+    { label: "Special awards: Best Design, Innovation, Social Impact, People's Choice", amount: "PKR 25,000 each" },
   ],
 };
 
@@ -229,7 +229,7 @@ export const VISITOR_PERKS = [
   "Watch live competitions and the talk show",
 ];
 
-// PLACEHOLDER: phone numbers are dummy values — replace with confirmed contacts.
+// PLACEHOLDER: phone numbers are dummy values; replace with confirmed contacts.
 export const CONTACTS = [
   { label: "General queries", phones: ["+92 300 0000000"], email: "info@capitalyouthexpo.com" },
   { label: "Competitions & projects", phones: ["+92 300 0000001"], email: "competitions@capitalyouthexpo.com" },

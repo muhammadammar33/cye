@@ -1,6 +1,6 @@
 # Capital Youth Expo 2026
 
-Marketing site for **Capital Youth Expo (CYE) 2026** — Islamabad’s largest youth engagement expo. The site sells sponsorships and stalls, and drives competition, campus ambassador, and volunteer registrations.
+Marketing site for **Capital Youth Expo (CYE) 2026**, Islamabad’s largest youth engagement expo. The site sells sponsorships and stalls, and drives competition, campus ambassador, and volunteer registrations.
 
 **18 November 2026 · Pak-China Friendship Center, Islamabad**  
 Organized by SAFE in collaboration with Youth Insight (YI)
@@ -13,7 +13,7 @@ Live domain: [capitalyouthexpo.com](https://capitalyouthexpo.com)
 - Tailwind CSS
 - Framer Motion
 - lucide-react
-- Static / SSG — no backend in v1
+- Static / SSG, no backend in v1
 
 ## Setup
 
@@ -52,9 +52,9 @@ Deploy on Vercel from this repo. No environment variables are required for v1.
 
 Each form can be closed without code changes elsewhere: set its flag in `REGISTRATION_OPEN` (`data/event.ts`) to `false` and the page shows a "registration closed" notice instead.
 
-Competition fees and team sizes, project prizes, contact phone numbers, and social links in `data/event.ts` are **placeholders** (marked `PLACEHOLDER`) — replace them with confirmed details.
+Competition fees and team sizes, project prizes, contact phone numbers, and social links in `data/event.ts` are **placeholders** (marked `PLACEHOLDER`). Replace them with confirmed details.
 
-Forms currently open a `mailto:` draft. Swap that for a real POST when an API exists — search for `TODO` in `components/ui/InterestForm.tsx`, `components/competitions/TeamRegistrationForm.tsx`, and `components/ContactCTA.tsx`.
+Forms currently open a `mailto:` draft. Swap that for a real POST when an API exists. Search for `TODO` in `components/ui/InterestForm.tsx`, `components/competitions/TeamRegistrationForm.tsx`, and `components/ContactCTA.tsx`.
 
 ## Project layout
 

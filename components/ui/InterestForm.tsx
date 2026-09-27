@@ -41,7 +41,7 @@ export function InterestForm({
     );
 
     // TODO: POST to a backend endpoint when one is available.
-    openMailto(to, `${subjectPrefix} — ${name}`, lines);
+    openMailto(to, `${subjectPrefix}: ${name}`, lines);
     setStatus("sent");
   }
 
@@ -119,7 +119,7 @@ export function InterestForm({
       </button>
       {status === "sent" ? (
         <p className="text-center text-sm text-cye-blue sm:col-span-2" role="status">
-          Opening your email client — if nothing appears, write to {to}.
+          Opening your email client. If nothing appears, write to {to}.
         </p>
       ) : null}
     </form>

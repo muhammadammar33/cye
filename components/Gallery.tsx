@@ -23,7 +23,7 @@ export function Gallery() {
           <SectionHeading
             eyebrow="Memories"
             title="Glimpses from the Past"
-            description="A look back at the energy of previous editions — crowds, stages, exhibitions, and celebrations that built CYE into Islamabad's defining youth gathering."
+            description="A look back at the energy of previous editions: crowds, stages, exhibitions, and celebrations that built CYE into Islamabad's defining youth gathering."
           />
         </FadeIn>
         <div className="mt-12 columns-2 gap-4 sm:columns-3 lg:columns-4">

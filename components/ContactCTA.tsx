@@ -28,7 +28,7 @@ export function ContactCTA() {
     const message = String(data.get("message") ?? "");
 
     // TODO: POST to /api/sponsor-interest when a backend endpoint is available.
-    const subject = encodeURIComponent(`CYE 2026 sponsor interest — ${tier} — ${organization || name}`);
+    const subject = encodeURIComponent(`CYE 2026 sponsor interest: ${tier}, ${organization || name}`);
     const body = encodeURIComponent(
       `Name: ${name}\nOrganization: ${organization}\nEmail: ${email}\nInterested tier: ${tier}\n\n${message}`,
     );
@@ -124,7 +124,7 @@ export function ContactCTA() {
             </button>
             {status === "sent" ? (
               <p className="text-center text-sm text-cye-blue sm:col-span-2" role="status">
-                Opening your email client — if nothing appears, write to {CONTACT_EMAIL}.
+                Opening your email client. If nothing appears, write to {CONTACT_EMAIL}.
               </p>
             ) : null}
           </form>
