@@ -14,6 +14,7 @@ export const VERTICAL_ACCENT: Record<string, string> = {
   VentureX: "text-amber-700 bg-amber-100",
   BioNova: "text-emerald-700 bg-emerald-100",
   "Talent Fiesta": "text-violet-700 bg-violet-100",
+  Literary: "text-rose-700 bg-rose-100",
 };
 
 export function teamLabel(min: number, max: number) {
@@ -22,7 +23,11 @@ export function teamLabel(min: number, max: number) {
   return `${min}–${max} members`;
 }
 
-const FILTERS = ["All", ...VERTICALS.map((vertical) => vertical.name)];
+// Verticals first (in their usual order), then any extra categories such as Literary; empty ones are skipped.
+const FILTERS = [
+  "All",
+  ...new Set([...VERTICALS.map((vertical) => vertical.name), ...COMPETITIONS.map((item) => item.vertical)]),
+].filter((name) => name === "All" || COMPETITIONS.some((item) => item.vertical === name));
 
 export function CompetitionCatalog({ onSelect }: { onSelect: (name: string) => void }) {
   const [filter, setFilter] = useState("All");

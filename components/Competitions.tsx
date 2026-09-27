@@ -21,7 +21,7 @@ export function Competitions() {
           <SectionHeading
             eyebrow="Compete"
             title="Competitions"
-            description="Register for CYE 2026 competitions across all five verticals — university challenges and school-level talent events. Enter solo or as a team."
+            description="Register for CYE 2026 competitions — robotics, coding, and cyber security, startup pitches, creative and debate events, and literary contests for schools and universities. Enter solo or as a team."
           />
         </FadeIn>
         <CompetitionCatalog onSelect={setSelected} />
