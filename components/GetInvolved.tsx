@@ -8,7 +8,7 @@ const PATHS = [
   {
     href: "/competitions",
     title: "Competitions",
-    desc: "Enter hackathons, pitches, exhibitions, and school talent events across all five verticals.",
+    desc: "Enter robotics, hackathons, cyber security, startup pitches, design, and literary competitions.",
     cta: "Open competitions",
   },
   {
