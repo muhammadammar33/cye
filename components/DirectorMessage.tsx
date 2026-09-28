@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { EVENT } from "@/data/event";
 import { Container } from "@/components/ui/Container";
 import { FadeIn } from "@/components/ui/FadeIn";
@@ -17,8 +18,15 @@ export function DirectorMessage() {
           </h2>
         </FadeIn>
         <FadeIn delay={0.08} className="mt-10 grid items-start gap-8 lg:grid-cols-[220px_1fr]">
-          <div className="mx-auto flex h-44 w-44 items-center justify-center rounded-full bg-linear-to-br from-cye-blue to-cye-orange font-heading text-5xl font-black text-white shadow-card lg:mx-0">
-            HI
+          <div className="mx-auto h-44 w-44 rounded-full bg-linear-to-br from-cye-blue to-cye-orange p-1.5 shadow-card lg:mx-0">
+            <Image
+              src="/team/hashir-ijaz-abbasi.webp"
+              alt={`${EVENT.director}, Director CYE`}
+              width={480}
+              height={480}
+              sizes="176px"
+              className="h-full w-full rounded-full object-cover"
+            />
           </div>
           <blockquote className="rounded-3xl bg-cye-mist p-6 text-base leading-relaxed text-cye-ink/80 sm:p-8 sm:text-lg">
             <p>{MESSAGE}</p>
