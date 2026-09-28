@@ -49,7 +49,7 @@ export function TeamRegistrationForm({
     ];
 
     // TODO: POST to a backend endpoint when one is available.
-    openMailto(EMAILS.competitions, `CYE 2026 competition registration — ${selected} — ${get("member0_name")}`, lines);
+    openMailto(EMAILS.competitions, `CYE 2026 competition registration: ${selected}, ${get("member0_name")}`, lines);
     setStatus("sent");
   }
 
@@ -68,7 +68,7 @@ export function TeamRegistrationForm({
           </option>
           {COMPETITIONS.map((item) => (
             <option key={item.name} value={item.name}>
-              {item.name} — {item.fee} — {teamLabel(item.teamMin, item.teamMax)}
+              {item.name} | {item.fee} | {teamLabel(item.teamMin, item.teamMax)}
             </option>
           ))}
         </select>
@@ -154,7 +154,7 @@ export function TeamRegistrationForm({
       </button>
       {status === "sent" ? (
         <p className="text-center text-sm text-cye-blue sm:col-span-2" role="status">
-          Opening your email client — if nothing appears, write to {EMAILS.competitions}.
+          Opening your email client. If nothing appears, write to {EMAILS.competitions}.
         </p>
       ) : null}
     </form>

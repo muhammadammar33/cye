@@ -5,7 +5,7 @@ import { SiteChrome } from "@/components/SiteChrome";
 export const metadata: Metadata = {
   title: "Project Exhibition | Capital Youth Expo 2026",
   description:
-    "Submit your project to the CYE 2026 Project Exhibition — compete for the prize pool and showcase your work at Pak-China Friendship Center, Islamabad.",
+    "Submit your project to the CYE 2026 Project Exhibition. Compete for the prize pool and showcase your work at Pak-China Friendship Center, Islamabad.",
 };
 
 export default function ProjectsPage() {

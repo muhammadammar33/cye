@@ -11,7 +11,7 @@ export function About() {
           <SectionHeading
             eyebrow="What is CYE"
             title="What is Capital Youth Expo"
-            description="A leading youth engagement platform in Islamabad — education, innovation, and talent under one roof."
+            description="A leading youth engagement platform in Islamabad, bringing education, innovation, and talent under one roof."
           />
         </FadeIn>
         <FadeIn delay={0.1} className="mx-auto mt-10 max-w-3xl space-y-5 text-center text-base leading-relaxed text-cye-ink/75 sm:text-lg">
@@ -24,7 +24,7 @@ export function About() {
             young minds to learn, compete, and connect.
           </p>
           <p>
-            CYE 2026 features five distinct verticals — TechNexus, Spectrum, VentureX, BioNova,
+            CYE 2026 features five distinct verticals: TechNexus, Spectrum, VentureX, BioNova,
             and Talent Fiesta. Through competitions, exhibitions, workshops, and speaker sessions,
             the event aims to engage{" "}
             <strong className="text-cye-orange">40,000+</strong> students, educators, and young

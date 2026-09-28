@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://capitalyouthexpo.com"),
   title: "Capital Youth Expo 2026 | Islamabad's Largest Youth Expo",
   description:
-    "Capital Youth Expo 2026 is Islamabad's largest youth engagement platform — five verticals, 40,000+ attendees, 18 November 2026 at Pak-China Friendship Center.",
+    "Capital Youth Expo 2026 is Islamabad's largest youth engagement platform, with five verticals and 40,000+ attendees on 18 November 2026 at Pak-China Friendship Center.",
   keywords: [
     "Capital Youth Expo",
     "CYE 2026",
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Capital Youth Expo 2026 | Islamabad's Largest Youth Expo",
     description:
-      "Youth engagement platform — 5 verticals, 40,000+ attendees, 18 Nov 2026, Pak-China Friendship Center, Islamabad.",
+      "Youth engagement platform: 5 verticals, 40,000+ attendees, 18 Nov 2026, Pak-China Friendship Center, Islamabad.",
   },
   icons: {
     icon: "/logo.svg",

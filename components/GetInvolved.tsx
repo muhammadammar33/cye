@@ -26,7 +26,7 @@ const PATHS = [
   {
     href: "/projects",
     title: "Project Exhibition",
-    desc: "Showcase your project to judges, industry leaders, and visitors — and compete for the prize pool.",
+    desc: "Showcase your project to judges, industry leaders, and visitors, and compete for the prize pool.",
     cta: "Submit a project",
   },
   {
