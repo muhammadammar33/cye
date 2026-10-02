@@ -49,19 +49,21 @@ export async function POST(req: NextRequest) {
     .returning({ id: s.submissions.id });
 
   const kind = TYPE_LABELS[type];
-  const adminUrl = new URL(`/admin/submissions/${row.id}`, req.nextUrl.origin).toString();
+  const origin = process.env.SITE_URL?.replace(/\/$/, "") || req.nextUrl.origin;
+  const adminUrl = `${origin}/admin/submissions/${row.id}`;
+  const ctx = { origin, social: settings.social_links };
   after(async () => {
     await Promise.all([
       sendEmail({
         to: settings.inboxes[INBOX[type]],
         subject: `New ${kind}: ${result.subject ?? result.name}`,
-        html: teamEmail(kind, row.id, adminUrl, { name: result.name, email: result.email, ...result.data }),
+        html: teamEmail(ctx, kind, row.id, adminUrl, { name: result.name, email: result.email, ...result.data }),
         replyTo: result.email,
       }),
       sendEmail({
         to: result.email,
         subject: `${kind} received | Capital Youth Expo 2026`,
-        html: confirmationEmail(result.name, kind, result.subject ?? ""),
+        html: confirmationEmail(ctx, type, result.name, kind, result.subject ?? ""),
         replyTo: settings.inboxes[INBOX[type]],
       }),
     ]);

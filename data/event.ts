@@ -172,15 +172,17 @@ export const STALLS = [
     "Logo on brochures distributed all over Islamabad" ] },
 ];
 
+// Default notification inboxes (editable in Admin → Settings). Hostinger allows 5 aliases on info@,
+// so projects go to competitions@ and visitors/volunteers to the main inbox.
 export const EMAILS = {
   info: "info@capitalyouthexpo.com",
   sponsors: "sponsors@capitalyouthexpo.com",
   ambassadors: "ambassadors@capitalyouthexpo.com",
-  volunteers: "volunteers@capitalyouthexpo.com",
+  volunteers: "info@capitalyouthexpo.com",
   competitions: "competitions@capitalyouthexpo.com",
-  projects: "projects@capitalyouthexpo.com",
+  projects: "competitions@capitalyouthexpo.com",
   startups: "startups@capitalyouthexpo.com",
-  visitors: "visitors@capitalyouthexpo.com",
+  visitors: "info@capitalyouthexpo.com",
 };
 
 // Flip a flag to false to close that form and show a "registration closed" notice instead.
