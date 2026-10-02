@@ -54,10 +54,6 @@ export const metadata: Metadata = {
     description:
       "Youth engagement platform: 5 verticals, 40,000+ attendees, 18 Nov 2026, Pak-China Friendship Center, Islamabad.",
   },
-  icons: {
-    icon: "/logo.svg",
-    apple: "/logo.svg",
-  },
 };
 
 export default function RootLayout({

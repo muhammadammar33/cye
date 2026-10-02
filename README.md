@@ -70,12 +70,20 @@ Edit **`data/event.ts`** for dates, sponsorship prices, guest list, competitions
 
 ## Assets
 
-Drop real files over the placeholders:
+All images come from the CYE 2026 sponsorship proposal. Replace a file in place to update it.
 
-| Asset           | Location                                      |
-| --------------- | --------------------------------------------- |
-| Logo            | `public/logo.svg`                             |
-| Gallery photos  | `public/gallery/` (replace `01.svg`–`08.svg`) |
-| Guest portraits | `public/guests/` then wire paths in `Guests.tsx` |
+| Asset                   | Location                                                                 |
+| ----------------------- | ------------------------------------------------------------------------ |
+| CYE emblem / full logo  | `public/brand/cye-emblem.png`, `public/brand/cye-logo.png`                |
+| Youth Insight logo      | `public/brand/youth-insight.png`                                          |
+| Favicon / Apple icon    | `app/icon.png`, `app/apple-icon.png`                                      |
+| Gallery photos          | `public/gallery/01.webp` to `14.webp` (alt text in `components/Gallery.tsx`) |
+| Guest portraits         | `public/guests/<slug>.webp`, linked via `photo` in `GUESTS`               |
+| Board of Advisory       | `public/advisory/<slug>.webp`, data in `ADVISORY_BOARD`                   |
+| Venue photo             | `public/venue/pak-china-friendship-center.webp`                           |
+| Floor plans             | `public/venue/floor-plan-ground.webp`, `public/venue/floor-plan-first.webp` (zones in `VENUE`) |
+| Director photo          | `public/team/hashir-ijaz-abbasi.webp`                                     |
+| Team photos             | `public/team/<slug>.webp`, data in `TEAM` (first two are featured)        |
+| Hero background         | `public/venue/auditorium.webp`                                            |
 
 `CYE - Proposal.pdf` is gitignored and stays local.

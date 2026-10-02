@@ -112,7 +112,7 @@ export function InterestForm({
       })}
       <button
         type="submit"
-        className="inline-flex items-center justify-center gap-2 rounded-full bg-cye-orange px-6 py-3 font-heading text-sm font-bold uppercase tracking-wide text-white shadow-lg shadow-cye-orange/25 transition-all hover:-translate-y-0.5 hover:bg-cye-orange-lt sm:col-span-2"
+        className="inline-flex items-center justify-center gap-2 rounded-full bg-grad-orange px-6 py-3 font-heading text-sm font-bold uppercase tracking-wide text-white shadow-lg shadow-cye-orange/25 transition-all hover:-translate-y-0.5 hover:brightness-110 sm:col-span-2"
       >
         <Send className="h-4 w-4" aria-hidden />
         {submitLabel}

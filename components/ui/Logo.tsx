@@ -14,12 +14,12 @@ export function Logo({
   return (
     <Link href="/" className={cn("flex items-center gap-2.5", className)} aria-label="Capital Youth Expo 2026 home">
       <Image
-        src="/logo.svg"
+        src="/brand/cye-emblem.png"
         alt=""
-        width={44}
-        height={44}
-        className="h-10 w-10 sm:h-11 sm:w-11"
-        unoptimized
+        width={491}
+        height={474}
+        sizes="44px"
+        className="h-10 w-auto sm:h-11"
         priority={priority}
       />
       <span className="leading-none">

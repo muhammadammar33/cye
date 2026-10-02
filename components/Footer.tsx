@@ -1,6 +1,7 @@
+import Image from "next/image";
+import Link from "next/link";
 import { EMAILS, EVENT, NAV_LINKS, REGISTER_LINKS } from "@/data/event";
 import { Container } from "@/components/ui/Container";
-import { Logo } from "@/components/ui/Logo";
 import { SocialLinks } from "@/components/ui/SocialLinks";
 
 const EXPLORE_LINKS = NAV_LINKS.filter((link) => !link.children);
@@ -10,11 +11,31 @@ export function Footer() {
     <footer className="border-t border-cye-blue/10 bg-white py-12">
       <Container className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div>
-          <Logo />
+          <Link href="/" aria-label="Capital Youth Expo 2026 home" className="inline-block">
+            <Image
+              src="/brand/cye-logo.png"
+              alt="Capital Youth Expo"
+              width={773}
+              height={760}
+              sizes="112px"
+              className="h-28 w-auto"
+            />
+          </Link>
           <p className="mt-4 max-w-sm text-sm leading-relaxed text-cye-ink/65">
             {EVENT.tagline}
             <br />
             {EVENT.date} · {EVENT.venue}, {EVENT.city}
+          </p>
+          <p className="mt-5 flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.25em] text-cye-ink/50">
+            Powered by
+            <Image
+              src="/brand/youth-insight.png"
+              alt={EVENT.poweredBy}
+              width={420}
+              height={174}
+              sizes="96px"
+              className="h-auto w-24"
+            />
           </p>
         </div>
         <div>

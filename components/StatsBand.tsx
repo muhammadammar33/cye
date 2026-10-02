@@ -7,7 +7,7 @@ import { FadeIn } from "@/components/ui/FadeIn";
 
 export function StatsBand() {
   return (
-    <section className="relative overflow-hidden bg-cye-blue-dk py-16 sm:py-20">
+    <section className="relative overflow-hidden bg-grad-blue py-16 sm:py-20">
       <div className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full border-[18px] border-cye-orange/40" aria-hidden />
       <div className="pointer-events-none absolute -bottom-28 -right-16 h-80 w-80 rounded-full border-[14px] border-white/10" aria-hidden />
       <Container className="relative">

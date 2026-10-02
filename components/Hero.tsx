@@ -1,6 +1,7 @@
 "use client";
 
 import { CalendarDays, MapPin } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useSyncExternalStore } from "react";
 import { EVENT } from "@/data/event";
@@ -60,7 +61,18 @@ export function Hero() {
   const countdown = useCountdown(EVENT.isoDate);
 
   return (
-    <section id="top" className="relative overflow-hidden bg-wash pt-28 pb-16 sm:pt-32 sm:pb-24">
+    <section id="top" className="relative overflow-hidden bg-white pt-28 pb-16 sm:pt-32 sm:pb-24">
+      <Image
+        src="/venue/auditorium.webp"
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover object-center"
+      />
+      {/* Light wash over the photo keeps the existing blue/orange text readable. */}
+      <div className="absolute inset-0 bg-white/72" aria-hidden />
+      <div className="bg-wash absolute inset-0 opacity-60" aria-hidden />
       <ArcDecoration corner="top-right" className="-translate-y-[18%] translate-x-[18%] opacity-90" />
       <ArcDecoration
         corner="bottom-left"
@@ -90,6 +102,18 @@ export function Hero() {
           </p>
           <p className="mt-4 text-sm font-medium text-cye-ink/60">
             Organized by {EVENT.organizers.join(" in collaboration with ")}
+          </p>
+          <p className="mt-3 flex items-center justify-center gap-3 text-[11px] font-semibold uppercase tracking-[0.3em] text-cye-ink/50">
+            Powered by
+            <Image
+              src="/brand/youth-insight.png"
+              alt={EVENT.poweredBy}
+              width={420}
+              height={174}
+              sizes="104px"
+              className="h-auto w-26"
+              priority
+            />
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Button href="/#contact" className="w-full sm:w-auto">

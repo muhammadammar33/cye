@@ -30,11 +30,11 @@ export function ArcDecoration({
         className,
       )}
     >
-      <circle cx="500" cy="0" r="150" fill="none" stroke="#FF5A1F" strokeWidth="38" />
-      <circle cx="500" cy="0" r="214" fill="none" stroke="#0B4DA2" strokeWidth="30" />
-      <circle cx="500" cy="0" r="274" fill="none" stroke="#FF7A45" strokeWidth="20" opacity="0.85" />
-      <circle cx="500" cy="0" r="328" fill="none" stroke="#0B4DA2" strokeWidth="14" opacity="0.55" />
-      <circle cx="500" cy="0" r="376" fill="none" stroke="#FF5A1F" strokeWidth="8" opacity="0.35" />
+      <circle cx="500" cy="0" r="150" fill="none" stroke="#EF432C" strokeWidth="38" />
+      <circle cx="500" cy="0" r="214" fill="none" stroke="#1B4694" strokeWidth="30" />
+      <circle cx="500" cy="0" r="274" fill="none" stroke="#F4782A" strokeWidth="20" opacity="0.85" />
+      <circle cx="500" cy="0" r="328" fill="none" stroke="#315FAC" strokeWidth="14" opacity="0.55" />
+      <circle cx="500" cy="0" r="376" fill="none" stroke="#EF432C" strokeWidth="8" opacity="0.35" />
     </svg>
   );
 }

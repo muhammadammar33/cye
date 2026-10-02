@@ -5,14 +5,20 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { cn } from "@/lib/cn";
 
 const SHOTS = [
-  { src: "/gallery/01.svg", alt: "Crowd gathered at a previous Capital Youth Expo", w: 1200, h: 900, rotate: "-rotate-3" },
-  { src: "/gallery/02.svg", alt: "Keynote session on the main stage", w: 900, h: 1200, rotate: "rotate-2" },
-  { src: "/gallery/03.svg", alt: "Students presenting a project exhibition", w: 1200, h: 800, rotate: "rotate-6" },
-  { src: "/gallery/04.svg", alt: "Award ceremony at Capital Youth Expo", w: 1000, h: 1000, rotate: "-rotate-2" },
-  { src: "/gallery/05.svg", alt: "Workshop in progress with student participants", w: 1200, h: 1500, rotate: "rotate-3" },
-  { src: "/gallery/06.svg", alt: "Guests and organizers on the expo floor", w: 1400, h: 900, rotate: "-rotate-6" },
-  { src: "/gallery/07.svg", alt: "Talent performance during a past edition", w: 900, h: 1100, rotate: "rotate-1" },
-  { src: "/gallery/08.svg", alt: "Expo booths and sponsor stalls", w: 1100, h: 800, rotate: "-rotate-1" },
+  { src: "/gallery/01.webp", alt: "Students assembling electronics at a project stall", w: 443, h: 336, rotate: "-rotate-3" },
+  { src: "/gallery/02.webp", alt: "Remote-controlled aircraft built by student teams", w: 425, h: 336, rotate: "rotate-2" },
+  { src: "/gallery/03.webp", alt: "Visitors gathered around a robotics exhibit", w: 531, h: 283, rotate: "rotate-3" },
+  { src: "/gallery/04.webp", alt: "Keynote speaker at the SAFE podium", w: 489, h: 301, rotate: "-rotate-2" },
+  { src: "/gallery/05.webp", alt: "Guests standing for the national anthem at BizzTech", w: 549, h: 336, rotate: "rotate-1" },
+  { src: "/gallery/06.webp", alt: "Students demonstrating a robotic arm", w: 460, h: 354, rotate: "-rotate-3" },
+  { src: "/gallery/07.webp", alt: "Speaker presenting in front of a robot backdrop", w: 513, h: 265, rotate: "rotate-2" },
+  { src: "/gallery/08.webp", alt: "Packed audience in the main hall", w: 513, h: 310, rotate: "-rotate-1" },
+  { src: "/gallery/09.webp", alt: "Capital Youth Expo crowd filling the auditorium", w: 451, h: 318, rotate: "rotate-3" },
+  { src: "/gallery/10.webp", alt: "Speaker addressing students during a session", w: 513, h: 226, rotate: "-rotate-2" },
+  { src: "/gallery/11.webp", alt: "Guests touring the outdoor exhibition", w: 496, h: 265, rotate: "rotate-1" },
+  { src: "/gallery/12.webp", alt: "Visitors arriving at the BizzTech hall", w: 308, h: 350, rotate: "-rotate-3" },
+  { src: "/gallery/13.webp", alt: "Teams coding during the BizzTank hackathon", w: 513, h: 336, rotate: "rotate-2" },
+  { src: "/gallery/14.webp", alt: "Speaker delivering a talk at the podium", w: 558, h: 363, rotate: "-rotate-1" },
 ];
 
 export function Gallery() {
@@ -40,8 +46,8 @@ export function Gallery() {
                   alt={shot.alt}
                   width={shot.w}
                   height={shot.h}
+                  sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
                   className="h-auto w-full object-cover"
-                  unoptimized
                 />
                 <figcaption className="px-1 py-2 text-center font-display text-sm text-cye-blue">
                   CYE Archives
