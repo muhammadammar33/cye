@@ -1,5 +1,5 @@
 import { Award, Medal, Trophy } from "lucide-react";
-import { EMAILS, PROJECT_PRIZES, REGISTRATION_OPEN, VERTICALS } from "@/data/event";
+import { PROJECT_PRIZES, VERTICALS } from "@/data/event";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Card } from "@/components/ui/Card";
 import { ClosedNotice } from "@/components/ui/ClosedNotice";
@@ -8,10 +8,12 @@ import { FadeIn } from "@/components/ui/FadeIn";
 import { InterestForm } from "@/components/ui/InterestForm";
 import { CONSENT_FIELDS } from "@/lib/consent";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { getSettings } from "@/lib/content";
 
 const PLACE_ICONS = [Trophy, Medal, Award];
 
-export function ProjectExhibition() {
+export async function ProjectExhibition() {
+  const { registration_open: REGISTRATION_OPEN, inboxes: EMAILS } = await getSettings();
   return (
     <section className="bg-wash pt-32 pb-20 sm:pt-36 sm:pb-24">
       <Container>
@@ -60,8 +62,8 @@ export function ProjectExhibition() {
           <div className="mt-6">
             {REGISTRATION_OPEN.projects ? (
               <InterestForm
+                type="project"
                 to={EMAILS.projects}
-                subjectPrefix="CYE 2026 project submission"
                 submitLabel="Submit project"
                 fields={[
                   { name: "title", label: "Project title", required: true, span: 2 },

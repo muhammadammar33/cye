@@ -1,39 +1,28 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { CalendarDays, MapPin, Send } from "lucide-react";
-import { EMAILS, EVENT, SPONSORSHIP, STALLS } from "@/data/event";
+import { CalendarDays, Loader2, MapPin, Send } from "lucide-react";
+import { EVENT } from "@/data/event";
 import { Container } from "@/components/ui/Container";
 import { FadeIn } from "@/components/ui/FadeIn";
+import { FormError, FormSuccess, Honeypot, type FormState } from "@/components/ui/FormStatus";
+import { submitForm } from "@/lib/submit";
 
-const TIERS = [
-  ...SPONSORSHIP.map((tier) => tier.tier),
-  ...STALLS.map((stall) => stall.tier),
-  "Not sure yet",
-];
+export function ContactCTA({ tiers, inbox }: { tiers: string[]; inbox: string }) {
+  const [state, setState] = useState<FormState>({ status: "idle" });
+  const options = [...tiers, "Not sure yet"];
 
-const CONTACT_EMAIL = EMAILS.sponsors;
-
-export function ContactCTA() {
-  const [status, setStatus] = useState<"idle" | "sent">("idle");
-
-  function onSubmit(event: FormEvent<HTMLFormElement>) {
+  async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const form = event.currentTarget;
-    const data = new FormData(form);
-    const name = String(data.get("name") ?? "");
-    const organization = String(data.get("organization") ?? "");
-    const email = String(data.get("email") ?? "");
-    const tier = String(data.get("tier") ?? "");
-    const message = String(data.get("message") ?? "");
-
-    // TODO: POST to /api/sponsor-interest when a backend endpoint is available.
-    const subject = encodeURIComponent(`CYE 2026 sponsor interest: ${tier}, ${organization || name}`);
-    const body = encodeURIComponent(
-      `Name: ${name}\nOrganization: ${organization}\nEmail: ${email}\nInterested tier: ${tier}\n\n${message}`,
+    const form = new FormData(event.currentTarget);
+    const get = (key: string) => String(form.get(key) ?? "");
+    setState({ status: "sending" });
+    const result = await submitForm(
+      "sponsor",
+      { name: get("name"), organization: get("organization"), email: get("email"), tier: get("tier"), message: get("message") },
+      get("company_website"),
     );
-    window.location.href = `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
-    setStatus("sent");
+    setState(result.ok ? { status: "sent" } : { status: "error", error: `${result.error} If this keeps happening, email ${inbox}.` });
   }
 
   return (
@@ -59,7 +48,13 @@ export function ContactCTA() {
         </FadeIn>
 
         <FadeIn delay={0.1} className="mx-auto mt-12 max-w-2xl rounded-3xl bg-white p-6 shadow-lift sm:p-8">
-          <form onSubmit={onSubmit} className="grid gap-4 sm:grid-cols-2">
+          {state.status === "sent" ? (
+            <FormSuccess title="Thank you for your interest!">
+              Our partnerships team has your enquiry and will contact you shortly. A confirmation is on its way to your email.
+            </FormSuccess>
+          ) : (
+          <form onSubmit={onSubmit} className="relative grid gap-4 sm:grid-cols-2">
+            <Honeypot />
             <label className="block text-sm font-semibold text-cye-blue">
               Name
               <input
@@ -99,7 +94,7 @@ export function ContactCTA() {
                 <option value="" disabled>
                   Select a package
                 </option>
-                {TIERS.map((tier) => (
+                {options.map((tier) => (
                   <option key={tier} value={tier}>
                     {tier}
                   </option>
@@ -115,19 +110,17 @@ export function ContactCTA() {
                 className="mt-1.5 w-full resize-y rounded-2xl border border-cye-blue/15 bg-cye-mist px-4 py-3 font-medium text-cye-ink outline-none ring-cye-orange/40 focus:ring-2"
               />
             </label>
+            <FormError state={state} />
             <button
               type="submit"
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-grad-orange px-6 py-3 font-heading text-sm font-bold uppercase tracking-wide text-white shadow-lg shadow-cye-orange/25 transition-all hover:-translate-y-0.5 hover:brightness-110 sm:col-span-2"
+              disabled={state.status === "sending"}
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-grad-orange px-6 py-3 font-heading text-sm font-bold uppercase tracking-wide text-white shadow-lg shadow-cye-orange/25 transition-all hover:-translate-y-0.5 hover:brightness-110 disabled:cursor-wait disabled:opacity-70 sm:col-span-2"
             >
-              <Send className="h-4 w-4" aria-hidden />
-              Send sponsor interest
+              {state.status === "sending" ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <Send className="h-4 w-4" aria-hidden />}
+              {state.status === "sending" ? "Sending..." : "Send sponsor interest"}
             </button>
-            {status === "sent" ? (
-              <p className="text-center text-sm text-cye-blue sm:col-span-2" role="status">
-                Opening your email client. If nothing appears, write to {CONTACT_EMAIL}.
-              </p>
-            ) : null}
           </form>
+          )}
         </FadeIn>
       </Container>
     </section>

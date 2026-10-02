@@ -1,60 +1,71 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { Send } from "lucide-react";
-import { COMPETITIONS, EDUCATION_LEVELS, EMAILS } from "@/data/event";
+import { Loader2, Send } from "lucide-react";
+import { EDUCATION_LEVELS } from "@/data/event";
 import { teamLabel } from "@/components/competitions/CompetitionCatalog";
 import { Field, fieldClass } from "@/components/ui/Field";
+import { FormError, FormSuccess, Honeypot, type FormState } from "@/components/ui/FormStatus";
+import type { Competition } from "@/lib/content";
 import { CONSENT_FIELDS } from "@/lib/consent";
-import { openMailto } from "@/lib/mailto";
+import { submitForm } from "@/lib/submit";
 
 const MEMBER_ORDINALS = ["Team lead", "2nd member", "3rd member", "4th member"];
 
 export function TeamRegistrationForm({
+  competitions,
+  inbox,
   selected,
   onSelect,
 }: {
+  competitions: Competition[];
+  inbox: string;
   selected: string;
   onSelect: (name: string) => void;
 }) {
   const [teamSize, setTeamSize] = useState(1);
-  const [status, setStatus] = useState<"idle" | "sent">("idle");
-  const competition = COMPETITIONS.find((item) => item.name === selected);
+  const [state, setState] = useState<FormState>({ status: "idle" });
+  const competition = competitions.find((item) => item.name === selected);
   const sizes = competition
     ? Array.from({ length: competition.teamMax - competition.teamMin + 1 }, (_, i) => competition.teamMin + i)
     : [1];
   const size = sizes.includes(teamSize) ? teamSize : sizes[0];
 
-  function onSubmit(event: FormEvent<HTMLFormElement>) {
+  async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    const get = (key: string) => String(data.get(key) ?? "");
-    const lines = [
-      `Competition: ${selected}`,
-      `Fee: ${competition?.fee ?? ""}`,
-      `Team name: ${get("team")}`,
-      `Team size: ${size}`,
-      `Education level: ${get("level")}`,
-      `CNIC / Student ID / B-Form (lead): ${get("idNumber")}`,
-      "",
-      ...Array.from({ length: size }, (_, i) => [
-        `${MEMBER_ORDINALS[i]}:`,
-        `  Name: ${get(`member${i}_name`)}`,
-        `  Email: ${get(`member${i}_email`)}`,
-        `  Phone: ${get(`member${i}_phone`)}`,
-        `  Institution: ${get(`member${i}_institution`)}`,
-      ]).flat(),
-      "",
-      ...CONSENT_FIELDS.map((field) => `${field.label} Yes`),
-    ];
+    const form = new FormData(event.currentTarget);
+    const get = (key: string) => String(form.get(key) ?? "");
+    const data = {
+      competition: selected,
+      size,
+      team: get("team"),
+      level: get("level"),
+      idNumber: get("idNumber"),
+      members: Array.from({ length: size }, (_, i) => ({
+        name: get(`member${i}_name`),
+        email: get(`member${i}_email`),
+        phone: get(`member${i}_phone`),
+        institution: get(`member${i}_institution`),
+      })),
+      ...Object.fromEntries(CONSENT_FIELDS.filter((field) => form.get(field.name)).map((field) => [field.name, "on"])),
+    };
+    setState({ status: "sending" });
+    const result = await submitForm("competition", data, get("company_website"));
+    setState(result.ok ? { status: "sent" } : { status: "error", error: `${result.error} If this keeps happening, email ${inbox}.` });
+  }
 
-    // TODO: POST to a backend endpoint when one is available.
-    openMailto(EMAILS.competitions, `CYE 2026 competition registration: ${selected}, ${get("member0_name")}`, lines);
-    setStatus("sent");
+  if (state.status === "sent") {
+    return (
+      <FormSuccess title="Registration received!">
+        Thank you for registering for {selected}. We have emailed a confirmation to your team lead; fee payment details
+        follow once your registration is confirmed.
+      </FormSuccess>
+    );
   }
 
   return (
-    <form onSubmit={onSubmit} className="grid gap-4 sm:grid-cols-2">
+    <form onSubmit={onSubmit} className="relative grid gap-4 sm:grid-cols-2">
+      <Honeypot />
       <Field label="Competition" className="sm:col-span-2">
         <select
           name="competition"
@@ -66,7 +77,7 @@ export function TeamRegistrationForm({
           <option value="" disabled>
             Select a competition
           </option>
-          {COMPETITIONS.map((item) => (
+          {competitions.map((item) => (
             <option key={item.name} value={item.name}>
               {item.name} | {item.fee} | {teamLabel(item.teamMin, item.teamMax)}
             </option>
@@ -145,18 +156,15 @@ export function TeamRegistrationForm({
         </label>
       ))}
 
+      <FormError state={state} />
       <button
         type="submit"
-        className="inline-flex items-center justify-center gap-2 rounded-full bg-grad-orange px-6 py-3 font-heading text-sm font-bold uppercase tracking-wide text-white shadow-lg shadow-cye-orange/25 transition-all hover:-translate-y-0.5 hover:brightness-110 sm:col-span-2"
+        disabled={state.status === "sending" || !selected}
+        className="inline-flex items-center justify-center gap-2 rounded-full bg-grad-orange px-6 py-3 font-heading text-sm font-bold uppercase tracking-wide text-white shadow-lg shadow-cye-orange/25 transition-all hover:-translate-y-0.5 hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-70 sm:col-span-2"
       >
-        <Send className="h-4 w-4" aria-hidden />
-        Submit registration
+        {state.status === "sending" ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <Send className="h-4 w-4" aria-hidden />}
+        {state.status === "sending" ? "Submitting..." : "Submit registration"}
       </button>
-      {status === "sent" ? (
-        <p className="text-center text-sm text-cye-blue sm:col-span-2" role="status">
-          Opening your email client. If nothing appears, write to {EMAILS.competitions}.
-        </p>
-      ) : null}
     </form>
   );
 }

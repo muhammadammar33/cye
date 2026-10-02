@@ -1,13 +1,15 @@
 import { Check } from "lucide-react";
-import { SPONSORSHIP } from "@/data/event";
+
 import { ArcDecoration } from "@/components/ui/ArcDecoration";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { FadeIn } from "@/components/ui/FadeIn";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { cn } from "@/lib/cn";
+import { getSponsorshipTiers } from "@/lib/content";
 
-export function Sponsorship() {
+export async function Sponsorship() {
+  const SPONSORSHIP = await getSponsorshipTiers();
   return (
     <section id="sponsorship" className="relative scroll-mt-24 overflow-hidden bg-white py-20 sm:py-24">
       <ArcDecoration corner="top-right" className="opacity-50" />
@@ -22,7 +24,7 @@ export function Sponsorship() {
         </FadeIn>
         <div className="mt-12 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
           {SPONSORSHIP.map((tier, index) => (
-            <FadeIn key={tier.tier} delay={index * 0.07} className={tier.highlight ? "xl:-mt-3" : undefined}>
+            <FadeIn key={tier.name} delay={index * 0.07} className={tier.highlight ? "xl:-mt-3" : undefined}>
               <article
                 className={cn(
                   "flex h-full flex-col rounded-3xl border bg-white p-6 shadow-card",
@@ -37,7 +39,7 @@ export function Sponsorship() {
                   </p>
                 ) : null}
                 <h3 className="font-heading text-2xl font-black uppercase tracking-tight text-cye-blue">
-                  {tier.tier}
+                  {tier.name}
                 </h3>
                 <p className="mt-2 font-heading text-2xl font-extrabold text-cye-orange">{tier.price}</p>
                 <ul className="mt-5 flex-1 space-y-2.5">
@@ -49,7 +51,7 @@ export function Sponsorship() {
                   ))}
                 </ul>
                 <Button href="#contact" className="mt-6 w-full" variant={tier.highlight ? "primary" : "secondary"}>
-                  Choose {tier.tier}
+                  Choose {tier.name}
                 </Button>
               </article>
             </FadeIn>

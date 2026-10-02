@@ -1,13 +1,15 @@
 import { Check } from "lucide-react";
-import { AMBASSADOR_DUTIES, AMBASSADOR_PERKS, EMAILS, REGISTRATION_OPEN } from "@/data/event";
+import { AMBASSADOR_DUTIES, AMBASSADOR_PERKS } from "@/data/event";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { ClosedNotice } from "@/components/ui/ClosedNotice";
 import { Container } from "@/components/ui/Container";
 import { FadeIn } from "@/components/ui/FadeIn";
 import { InterestForm } from "@/components/ui/InterestForm";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { getSettings } from "@/lib/content";
 
-export function CampusAmbassador() {
+export async function CampusAmbassador() {
+  const { registration_open: REGISTRATION_OPEN, inboxes: EMAILS } = await getSettings();
   return (
     <section className="bg-white pt-32 pb-20 sm:pt-36 sm:pb-24">
       <Container>
@@ -56,8 +58,8 @@ export function CampusAmbassador() {
             <div className="mt-6">
               {REGISTRATION_OPEN.ambassadors ? (
                 <InterestForm
+                  type="ambassador"
                   to={EMAILS.ambassadors}
-                  subjectPrefix="CYE 2026 campus ambassador application"
                   submitLabel="Submit ambassador application"
                   fields={[
                     { name: "name", label: "Full name", required: true, autoComplete: "name" },

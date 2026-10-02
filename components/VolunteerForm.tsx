@@ -1,4 +1,4 @@
-import { EMAILS, EVENT, REGISTRATION_OPEN, VOLUNTEER_ROLES } from "@/data/event";
+import { EVENT, VOLUNTEER_ROLES } from "@/data/event";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Card } from "@/components/ui/Card";
 import { ClosedNotice } from "@/components/ui/ClosedNotice";
@@ -6,8 +6,10 @@ import { Container } from "@/components/ui/Container";
 import { FadeIn } from "@/components/ui/FadeIn";
 import { InterestForm } from "@/components/ui/InterestForm";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { getSettings } from "@/lib/content";
 
-export function VolunteerForm() {
+export async function VolunteerForm() {
+  const { registration_open: REGISTRATION_OPEN, inboxes: EMAILS } = await getSettings();
   return (
     <section className="bg-wash-mist pt-32 pb-20 sm:pt-36 sm:pb-24">
       <Container>
@@ -37,8 +39,8 @@ export function VolunteerForm() {
           <div className="mt-6">
             {REGISTRATION_OPEN.volunteers ? (
               <InterestForm
+                type="volunteer"
                 to={EMAILS.volunteers}
-                subjectPrefix="CYE 2026 volunteer application"
                 submitLabel="Submit volunteer form"
                 fields={[
                   { name: "name", label: "Full name", required: true, autoComplete: "name" },

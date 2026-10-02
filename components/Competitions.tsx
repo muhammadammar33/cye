@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { EMAILS, REGISTRATION_OPEN } from "@/data/event";
 import { CompetitionCatalog } from "@/components/competitions/CompetitionCatalog";
 import { TeamRegistrationForm } from "@/components/competitions/TeamRegistrationForm";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
@@ -10,8 +9,9 @@ import { ClosedNotice } from "@/components/ui/ClosedNotice";
 import { Container } from "@/components/ui/Container";
 import { FadeIn } from "@/components/ui/FadeIn";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import type { Competition } from "@/lib/content";
 
-export function Competitions() {
+export function Competitions({ competitions, open, inbox }: { competitions: Competition[]; open: boolean; inbox: string }) {
   const [selected, setSelected] = useState("");
 
   return (
@@ -34,7 +34,7 @@ export function Competitions() {
             View details
           </Link>
         </FadeIn>
-        <CompetitionCatalog onSelect={setSelected} />
+        <CompetitionCatalog competitions={competitions} onSelect={setSelected} />
         <FadeIn delay={0.1} className="mx-auto mt-12 max-w-2xl rounded-3xl border border-white/80 bg-white p-6 shadow-card sm:p-8">
           <div id="competition-register" className="scroll-mt-28">
             <h3 className="font-heading text-xl font-extrabold text-cye-blue">Competition registration</h3>
@@ -43,10 +43,10 @@ export function Competitions() {
               shared after your registration is confirmed.
             </p>
             <div className="mt-6">
-              {REGISTRATION_OPEN.competitions ? (
-                <TeamRegistrationForm selected={selected} onSelect={setSelected} />
+              {open ? (
+                <TeamRegistrationForm competitions={competitions} inbox={inbox} selected={selected} onSelect={setSelected} />
               ) : (
-                <ClosedNotice what="Competition registration" email={EMAILS.competitions} />
+                <ClosedNotice what="Competition registration" email={inbox} />
               )}
             </div>
           </div>

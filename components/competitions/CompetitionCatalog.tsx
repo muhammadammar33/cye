@@ -2,7 +2,8 @@
 
 import { Users, Wallet } from "lucide-react";
 import { useState } from "react";
-import { COMPETITIONS, VERTICALS } from "@/data/event";
+import { VERTICALS } from "@/data/event";
+import type { Competition } from "@/lib/content";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { FadeIn } from "@/components/ui/FadeIn";
@@ -23,20 +24,19 @@ export function teamLabel(min: number, max: number) {
   return `${min}–${max} members`;
 }
 
-// Verticals first (in their usual order), then any extra categories such as Literary; empty ones are skipped.
-const FILTERS = [
-  "All",
-  ...new Set([...VERTICALS.map((vertical) => vertical.name), ...COMPETITIONS.map((item) => item.vertical)]),
-].filter((name) => name === "All" || COMPETITIONS.some((item) => item.vertical === name));
-
-export function CompetitionCatalog({ onSelect }: { onSelect: (name: string) => void }) {
+export function CompetitionCatalog({ competitions, onSelect }: { competitions: Competition[]; onSelect: (name: string) => void }) {
   const [filter, setFilter] = useState("All");
-  const items = filter === "All" ? COMPETITIONS : COMPETITIONS.filter((item) => item.vertical === filter);
+  // Verticals first (in their usual order), then any extra categories such as Literary; empty ones are skipped.
+  const filters = [
+    "All",
+    ...new Set([...VERTICALS.map((vertical) => vertical.name), ...competitions.map((item) => item.vertical)]),
+  ].filter((name) => name === "All" || competitions.some((item) => item.vertical === name));
+  const items = filter === "All" ? competitions : competitions.filter((item) => item.vertical === filter);
 
   return (
     <>
       <div role="tablist" aria-label="Filter competitions by vertical" className="mt-10 flex flex-wrap justify-center gap-2">
-        {FILTERS.map((name) => (
+        {filters.map((name) => (
           <button
             key={name}
             type="button"

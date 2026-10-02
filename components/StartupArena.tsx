@@ -1,5 +1,5 @@
 import { Check } from "lucide-react";
-import { EMAILS, REGISTRATION_OPEN, STARTUP_PERKS, STARTUP_SECTORS, STARTUP_STAGES } from "@/data/event";
+import { STARTUP_PERKS, STARTUP_SECTORS, STARTUP_STAGES } from "@/data/event";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { ClosedNotice } from "@/components/ui/ClosedNotice";
 import { Container } from "@/components/ui/Container";
@@ -7,8 +7,10 @@ import { FadeIn } from "@/components/ui/FadeIn";
 import { InterestForm } from "@/components/ui/InterestForm";
 import { CONSENT_FIELDS } from "@/lib/consent";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { getSettings } from "@/lib/content";
 
-export function StartupArena() {
+export async function StartupArena() {
+  const { registration_open: REGISTRATION_OPEN, inboxes: EMAILS } = await getSettings();
   return (
     <section className="bg-white pt-32 pb-20 sm:pt-36 sm:pb-24">
       <Container>
@@ -51,8 +53,8 @@ export function StartupArena() {
             <div className="mt-6">
               {REGISTRATION_OPEN.startups ? (
                 <InterestForm
+                  type="startup"
                   to={EMAILS.startups}
-                  subjectPrefix="CYE 2026 startup submission"
                   submitLabel="Submit startup"
                   fields={[
                     { name: "startup", label: "Startup name", required: true, autoComplete: "organization" },

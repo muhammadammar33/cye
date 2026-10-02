@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { GUESTS } from "@/data/event";
+import { getGuests } from "@/lib/content";
 import { Container } from "@/components/ui/Container";
 import { FadeIn } from "@/components/ui/FadeIn";
 import { SectionHeading } from "@/components/ui/SectionHeading";
@@ -14,7 +14,8 @@ function initials(name: string) {
   return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
 }
 
-export function Guests() {
+export async function Guests() {
+  const GUESTS = await getGuests();
   return (
     <section id="guests" className="scroll-mt-24 bg-wash-mist py-20 sm:py-24">
       <Container>
@@ -36,7 +37,7 @@ export function Guests() {
               <article className="h-full rounded-3xl border border-white/80 bg-white/90 p-5 text-center shadow-card transition-transform duration-300 hover:-translate-y-1">
                 {guest.photo ? (
                   <Image
-                    src={`/guests/${guest.photo}.webp`}
+                    src={guest.photo}
                     alt={guest.name}
                     width={320}
                     height={320}

@@ -15,8 +15,10 @@ import { Team } from "@/components/Team";
 import { StatsBand } from "@/components/StatsBand";
 import { Venue } from "@/components/Venue";
 import { Verticals } from "@/components/Verticals";
+import { getSettings, getSponsorshipTiers, getStallTiers } from "@/lib/content";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const [sponsorship, stalls, settings] = await Promise.all([getSponsorshipTiers(), getStallTiers(), getSettings()]);
   return (
     <SiteChrome>
       <main id="main">
@@ -35,7 +37,7 @@ export default function HomePage() {
         <Venue />
         <DirectorMessage />
         <Team />
-        <ContactCTA />
+        <ContactCTA tiers={[...sponsorship, ...stalls].map((tier) => tier.name)} inbox={settings.inboxes.sponsors} />
       </main>
     </SiteChrome>
   );
