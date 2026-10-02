@@ -1,6 +1,7 @@
 "use client";
 
 import { CalendarDays, MapPin } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useSyncExternalStore } from "react";
 import { EVENT } from "@/data/event";
@@ -90,6 +91,18 @@ export function Hero() {
           </p>
           <p className="mt-4 text-sm font-medium text-cye-ink/60">
             Organized by {EVENT.organizers.join(" in collaboration with ")}
+          </p>
+          <p className="mt-3 flex items-center justify-center gap-3 text-[11px] font-semibold uppercase tracking-[0.3em] text-cye-ink/50">
+            Powered by
+            <Image
+              src="/brand/youth-insight.png"
+              alt={EVENT.poweredBy}
+              width={420}
+              height={174}
+              sizes="104px"
+              className="h-auto w-26"
+              priority
+            />
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Button href="/#contact" className="w-full sm:w-auto">

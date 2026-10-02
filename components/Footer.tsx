@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { EMAILS, EVENT, NAV_LINKS, REGISTER_LINKS } from "@/data/event";
 import { Container } from "@/components/ui/Container";
 import { Logo } from "@/components/ui/Logo";
@@ -15,6 +16,17 @@ export function Footer() {
             {EVENT.tagline}
             <br />
             {EVENT.date} · {EVENT.venue}, {EVENT.city}
+          </p>
+          <p className="mt-5 flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.25em] text-cye-ink/50">
+            Powered by
+            <Image
+              src="/brand/youth-insight.png"
+              alt={EVENT.poweredBy}
+              width={420}
+              height={174}
+              sizes="96px"
+              className="h-auto w-24"
+            />
           </p>
         </div>
         <div>

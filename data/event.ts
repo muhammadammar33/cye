@@ -7,15 +7,16 @@ export const EVENT = {
   venue: "Pak-China Friendship Center",
   city: "Islamabad",
   organizers: ["SAFE", "Youth Insight (YI)"],
+  poweredBy: "Youth Insight",
   director: "Hashir Ijaz Abbasi",
   website: "capitalyouthexpo.com",
   quote: "Together, We Empower the Next Generation.",
 };
 
 export const COMMUNITY = [
-  { value: 99, suffix: "", label: "Fully committed core team members" },
-  { value: 80, suffix: "", label: "Associate members driving operations & engagement" },
-  { value: 2000, suffix: "+", label: "Volunteers across educational institutions" },
+  { value: 105, suffix: "", label: "Fully committed core team members" },
+  { value: 90, suffix: "", label: "Associate members driving operations, outreach & participant engagement" },
+  { value: 3000, suffix: "+", label: "Volunteers mobilized across educational institutions throughout the Islamabad Region" },
 ];
 
 export const AUDIENCE = [
@@ -26,15 +27,15 @@ export const AUDIENCE = [
 
 export const VERTICALS = [
   { name: "TechNexus", subtitle: "Engineering & Technology",
-    desc: "Where Pakistan's future engineers, developers, and innovators converge for project exhibitions, hackathons, and sessions on emerging technology." },
+    desc: "Where Pakistan's future engineers, developers, and innovators converge. TechNexus hosts cutting-edge project exhibitions, hackathons, and sessions on emerging technology that draw some of the sharpest technical minds in the country." },
   { name: "Spectrum", subtitle: "Social Sciences, Art, Design & Humanities",
-    desc: "A platform for creative and critical thinkers, with design showcases, debates, and dialogue with leading voices in the field." },
+    desc: "A platform for creative and critical thinkers. Spectrum explores the disciplines that shape culture, communication, and society through design showcases, debates, and dialogue with leading voices in the field." },
   { name: "VentureX", subtitle: "Finance & Business",
-    desc: "Startup pitches, business case competitions, and conversations about the economy, investment, and the future of enterprise." },
+    desc: "Pakistan's next generation of entrepreneurs and business leaders take the stage. VentureX brings together startup pitches, business case competitions, and conversations about the economy, investment, and the future of enterprise." },
   { name: "BioNova", subtitle: "Biology, Agriculture & Medicine",
-    desc: "Research exhibitions, expert sessions, and competitions that spotlight Pakistan's scientific community." },
+    desc: "Dedicated to the sciences that sustain life. BioNova engages students in biology, medicine, and agriculture through research exhibitions, expert sessions, and competitions that spotlight Pakistan's scientific community." },
   { name: "Talent Fiesta", subtitle: "School Competitions & Activities",
-    desc: "School-level talent through competitions, creative activities, and recognition ceremonies, building the pipeline of future CYE participants." },
+    desc: "The youngest voices on the CYE stage. Talent Fiesta showcases school-level talent through competitions, creative activities, and recognition ceremonies, building the pipeline of future CYE participants." },
 ];
 
 export const ACTIVITIES = [
@@ -51,33 +52,86 @@ export const ACHIEVEMENTS = [
   { year: 2024, visitors: 22000 },
 ];
 
-export const GUESTS = [
-  { name: "Hafiz Naeem ur Rehman", role: "Ameer Jamaat e Islami Pakistan" },
-  { name: "Ahsan Iqbal", role: "Federal Minister for Planning, Development & Special Initiatives" },
-  { name: "Wasim Haider", role: "President Islami Jamiat e Talaba Pakistan" },
-  { name: "Dr. Wasay Shakir", role: "Brain Health & Neurological Diseases, Agha Khan University" },
-  { name: "Wajeeha Qamar", role: "Member National Assembly of Pakistan" },
-  { name: "Dr M. Iqbal Khan", role: "VC Shifa Tameer e Millat University" },
-  { name: "Saqib Azhar", role: "Co-Founder & CEO, Enablers" },
-  { name: "Usman Asif", role: "Founder & CEO, Devsinc" },
-  { name: "Hisham Sarwar", role: "CEO Innovista, Founder of BeingGuru" },
-  { name: "Irfan Malik", role: "Founder & CEO, Xeven Solutions" },
-  { name: "Nasrullah Randhawa", role: "Ex CTO, PTCL" },
-  { name: "Wahaj Siraj", role: "CEO, Nayatel" },
-  { name: "Mushahid Hussain Syed", role: "Ex Senator" },
-  { name: "Dr. Anees", role: "VC Riphah University" },
-  { name: "Dr. Niaz Ahmad Akhtar", role: "Chairman, Higher Education Commission" },
+// `photo` is a file in public/guests/ (omit it to show initials).
+export const GUESTS: { name: string; role: string; photo?: string }[] = [
+  { name: "Hafiz Naeem ur Rehman", role: "Ameer Jamaat e Islami Pakistan", photo: "hafiz-naeem-ur-rehman" },
+  { name: "Wasim Haider", role: "President Islami Jamiat e Talaba Pakistan", photo: "wasim-haider" },
+  { name: "Ahsan Iqbal", role: "Federal Minister for Planning, Development & Special Initiatives", photo: "ahsan-iqbal" },
+  { name: "Dr. Wasay Shakir", role: "Brain Health & Neurological Diseases, Agha Khan University", photo: "wasay-shakir" },
+  { name: "Wajeeha Qamar", role: "Minister of State, Federal Education & Professional Training", photo: "wajeeha-qamar" },
+  { name: "Dr. Mohsin Ansari", role: "Ex President Islamic Circle of North America", photo: "mohsin-ansari" },
+  { name: "Saqib Azhar", role: "Co-Founder & CEO, Enablers", photo: "saqib-azhar" },
+  { name: "Usman Asif", role: "Founder & CEO, Devsinc", photo: "usman-asif" },
+  { name: "Hisham Sarwar", role: "CEO Innovista, Founder of BeingGuru", photo: "hisham-sarwar" },
+  { name: "Irfan Malik", role: "Founder & CEO, Xeven Solutions", photo: "irfan-malik" },
+  { name: "Nasrullah Randhawa", role: "Ex CTO, PTCL", photo: "nasrullah-randhawa" },
+  { name: "Mushahid Hussain Syed", role: "Ex Senator", photo: "mushahid-hussain-syed" },
+  { name: "Dr. Anees", role: "VC Riphah University", photo: "anees" },
+  { name: "Dr. Niaz Ahmad Akhtar", role: "Chairman, Higher Education Commission", photo: "niaz-ahmad-akhtar" },
+  // No photo: the image in the proposal does not appear to be of Kanwal Cheema. Add a confirmed one.
   { name: "Kanwal Cheema", role: "Founder & CEO, My Impact Meter" },
-  { name: "Farhan Malik", role: "Founder & CEO, Raftar" },
-  { name: "Talat Hussain", role: "Senior Journalist, Author & TV Anchor" },
-  { name: "Mansoor Ali Khan", role: "Journalist, TV Anchor & YouTuber" },
-  { name: "Dr. Hafeez ur Rehman", role: "President Alkhidmat Foundation Pakistan" },
-  { name: "Dr Javed Iqbal", role: "Renowned Surgeon" },
-  { name: "Salman Asif Siddiqui", role: "Director ERDC" },
-  { name: "Shoaib Akhtar", role: "Ex Cricketer" },
-  { name: "Lt. (Retd.) Sohail Ashraf", role: "Chief Commissioner Islamabad" },
-  { name: "Amanullah Khan", role: "Co Founder, EON Pakistan" },
+  { name: "Farhan Malik", role: "Founder & CEO, Raftar", photo: "farhan-malik" },
+  { name: "Talat Hussain", role: "Senior Journalist, Author & TV Anchor", photo: "talat-hussain" },
+  { name: "Mansoor Ali Khan", role: "Journalist, TV Anchor & YouTuber", photo: "mansoor-ali-khan" },
+  { name: "Dr. Hafeez ur Rehman", role: "President Alkhidmat Foundation Pakistan", photo: "hafeez-ur-rehman" },
+  { name: "Dr. Javed Iqbal", role: "Renowned Surgeon", photo: "javed-iqbal" },
+  { name: "Salman Asif Siddiqui", role: "Director ERDC", photo: "salman-asif-siddiqui" },
+  { name: "Shoaib Akhtar", role: "Ex Cricketer", photo: "shoaib-akhtar" },
+  { name: "Lt. (Retd.) Sohail Ashraf", role: "Chief Commissioner Islamabad", photo: "sohail-ashraf" },
+  { name: "Amanullah Khan", role: "Co-Founder, EON Pakistan", photo: "amanullah-khan" },
 ];
+
+export const ADVISORY_BOARD = [
+  { name: "Wahaj Siraj", role: "CEO, Nayatel", photo: "wahaj-siraj",
+    bio: "A leading technology entrepreneur and telecommunications professional, Wahaj Siraj brings extensive experience in technology, entrepreneurship, leadership, and youth development. He is the CEO and Co-Founder of Nayatel and has been a Patron-in-Chief of CYE's BizzTech 2024." },
+  { name: "Prof. Dr. Mukhtar Ahmed", role: "Former Chairman, Higher Education Commission (HEC)", photo: "mukhtar-ahmed",
+    bio: "An eminent educationist and academic leader with over three decades of experience in higher education, policy, research, and institutional development. He has served in senior leadership positions at HEC and has contributed extensively to higher education reforms and university-industry collaboration." },
+  { name: "Prof. Dr. Muhammad Iqbal Khan", role: "Vice Chancellor, Shifa Tameer-e-Millat University", photo: "muhammad-iqbal-khan",
+    bio: "An accomplished academic and healthcare professional with extensive experience in university leadership, medical education, research, and institutional development. He has held senior academic and administrative positions in Pakistan and the UK." },
+  { name: "Tahir Chaudhary", role: "Chairman, Punjab Cash & Carry", photo: "tahir-chaudhary",
+    bio: "A prominent business leader with extensive experience in retail, entrepreneurship, and business development. His leadership and entrepreneurial insight add valuable perspective to CYE's advisory board." },
+];
+
+export const VENUE = {
+  name: "Pak-China Friendship Center",
+  city: "Islamabad",
+  mapEmbed: "https://www.google.com/maps?q=Pak-China+Friendship+Center,+Islamabad&output=embed",
+  mapLink: "https://www.google.com/maps/search/?api=1&query=Pak-China+Friendship+Center+Islamabad",
+  floors: [
+    {
+      name: "Ground Floor",
+      image: "/venue/floor-plan-ground.webp",
+      width: 1400,
+      height: 1031,
+      zones: [
+        "Entrance with separate male and female registration desks",
+        "Open areas on both sides of the entrance",
+        "Stalls areas (east and west wings)",
+        "Main Auditorium with left and right galleries",
+        "Palestine & Kashmir Gallery",
+        "Banquet Hall",
+        "Ministry of IT area",
+        "Building official area",
+        "Male and female washrooms",
+        "Stairs to the first floor",
+      ],
+    },
+    {
+      name: "First Floor",
+      image: "/venue/floor-plan-first.webp",
+      width: 1400,
+      height: 1065,
+      zones: [
+        "Talent Fiesta Main Hall",
+        "Talent Fiesta competition room",
+        "Exhibition area for kids",
+        "Three competition rooms (two conference rooms and one 144-seat room)",
+        "Dedicated room for competitions",
+        "Central open area with walking areas",
+      ],
+    },
+  ],
+};
 
 export const SPONSORSHIP = [
   { tier: "Titanium", price: "PKR 1,000,000", highlight: true, benefits: [
@@ -145,6 +199,7 @@ export const NAV_LINKS: (NavItem & { children?: NavItem[] })[] = [
   { href: "/#verticals", label: "Verticals" },
   { href: "/competitions", label: "Register", children: REGISTER_LINKS },
   { href: "/#guests", label: "Guests" },
+  { href: "/#venue", label: "Venue" },
   { href: "/#sponsorship", label: "Sponsorship" },
   { href: "/contact", label: "Contact" },
 ];

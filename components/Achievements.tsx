@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, useInView, useReducedMotion } from "framer-motion";
+import Image from "next/image";
 import { useRef } from "react";
 import { ACHIEVEMENTS } from "@/data/event";
 import { Container } from "@/components/ui/Container";
@@ -52,6 +53,16 @@ export function Achievements() {
             ))}
           </ol>
         </div>
+        <FadeIn delay={0.1} className="mt-8 overflow-hidden rounded-3xl shadow-card">
+          <Image
+            src="/venue/auditorium.webp"
+            alt="A packed auditorium at a previous Capital Youth Expo"
+            width={1800}
+            height={874}
+            sizes="(min-width: 1280px) 1216px, 100vw"
+            className="h-auto w-full"
+          />
+        </FadeIn>
       </Container>
     </section>
   );

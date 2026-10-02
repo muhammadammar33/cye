@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { GUESTS } from "@/data/event";
 import { Container } from "@/components/ui/Container";
 import { FadeIn } from "@/components/ui/FadeIn";
@@ -28,12 +29,23 @@ export function Guests() {
           {GUESTS.map((guest, index) => (
             <FadeIn key={guest.name} delay={(index % 5) * 0.04}>
               <article className="h-full rounded-3xl border border-white/80 bg-white/90 p-5 text-center shadow-card transition-transform duration-300 hover:-translate-y-1">
-                <div
-                  className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-linear-to-br from-cye-blue to-cye-orange font-heading text-lg font-black text-white sm:h-24 sm:w-24 sm:text-xl"
-                  aria-hidden
-                >
-                  {initials(guest.name)}
-                </div>
+                {guest.photo ? (
+                  <Image
+                    src={`/guests/${guest.photo}.webp`}
+                    alt={guest.name}
+                    width={320}
+                    height={320}
+                    sizes="(min-width: 640px) 96px, 80px"
+                    className="mx-auto h-20 w-20 rounded-full object-cover object-top ring-2 ring-cye-orange/30 sm:h-24 sm:w-24"
+                  />
+                ) : (
+                  <div
+                    className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-linear-to-br from-cye-blue to-cye-orange font-heading text-lg font-black text-white sm:h-24 sm:w-24 sm:text-xl"
+                    aria-hidden
+                  >
+                    {initials(guest.name)}
+                  </div>
+                )}
                 <h3 className="mt-4 font-heading text-sm font-extrabold leading-snug text-cye-blue sm:text-base">
                   {guest.name}
                 </h3>

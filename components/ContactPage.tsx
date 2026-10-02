@@ -1,5 +1,5 @@
 import { CalendarDays, Mail, MapPin, Phone } from "lucide-react";
-import { CONTACTS, EMAILS, EVENT } from "@/data/event";
+import { CONTACTS, EMAILS, EVENT, VENUE } from "@/data/event";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Card } from "@/components/ui/Card";
 import { Container } from "@/components/ui/Container";
@@ -56,6 +56,14 @@ export function ContactPage() {
               <CalendarDays className="h-5 w-5 text-cye-orange-lt" aria-hidden />
               {EVENT.date}
             </p>
+            <a
+              href={VENUE.mapLink}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-4 inline-flex text-sm font-semibold text-cye-orange-lt hover:text-white"
+            >
+              Get directions on Google Maps
+            </a>
             <p className="mt-8 font-heading text-sm font-bold uppercase tracking-wider text-cye-orange-lt">Follow CYE</p>
             <SocialLinks className="mt-4" />
           </FadeIn>
