@@ -68,8 +68,7 @@ export const GUESTS: { name: string; role: string; photo?: string }[] = [
   { name: "Mushahid Hussain Syed", role: "Ex Senator", photo: "mushahid-hussain-syed" },
   { name: "Dr. Anees", role: "VC Riphah University", photo: "anees" },
   { name: "Dr. Niaz Ahmad Akhtar", role: "Chairman, Higher Education Commission", photo: "niaz-ahmad-akhtar" },
-  // No photo: the image in the proposal does not appear to be of Kanwal Cheema. Add a confirmed one.
-  { name: "Kanwal Cheema", role: "Founder & CEO, My Impact Meter" },
+  { name: "Kanwal Cheema", role: "Founder & CEO, My Impact Meter", photo: "kanwal-cheema" },
   { name: "Farhan Malik", role: "Founder & CEO, Raftar", photo: "farhan-malik" },
   { name: "Talat Hussain", role: "Senior Journalist, Author & TV Anchor", photo: "talat-hussain" },
   { name: "Mansoor Ali Khan", role: "Journalist, TV Anchor & YouTuber", photo: "mansoor-ali-khan" },

@@ -30,16 +30,22 @@ export function Achievements() {
             {ACHIEVEMENTS.map((item, index) => {
               const height = `${Math.max(12, (item.visitors / MAX) * 100)}%`;
               return (
-                <div key={item.year} className="flex h-full flex-1 flex-col items-center justify-end gap-2">
-                  <p className="text-[10px] font-bold text-cye-blue sm:text-sm">
-                    {item.visitors.toLocaleString()}
-                  </p>
-                  <motion.div
-                    className="w-full max-w-16 rounded-t-2xl bg-linear-to-t from-cye-blue to-cye-orange"
-                    initial={{ height: reduceMotion ? height : "8%" }}
-                    animate={inView ? { height } : undefined}
-                    transition={{ duration: 0.9, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
-                  />
+                <div key={item.year} className="flex h-full flex-1 flex-col items-center gap-2">
+                  {/* Bars scale against this track only, so labels never squeeze the tallest bars to the same height. */}
+                  <div className="relative w-full max-w-16 flex-1 pt-7">
+                    <div className="relative h-full">
+                      <motion.div
+                        className="absolute inset-x-0 bottom-0 rounded-t-2xl bg-linear-to-t from-cye-blue to-cye-orange"
+                        initial={{ height: reduceMotion ? height : "8%" }}
+                        animate={inView ? { height } : undefined}
+                        transition={{ duration: 0.9, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                      >
+                        <p className="absolute inset-x-0 -top-6 text-center text-[10px] font-bold text-cye-blue sm:text-sm">
+                          {item.visitors.toLocaleString()}
+                        </p>
+                      </motion.div>
+                    </div>
+                  </div>
                   <p className="font-heading text-xs font-bold text-cye-ink/60 sm:text-sm">{item.year}</p>
                 </div>
               );
