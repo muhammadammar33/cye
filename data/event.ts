@@ -80,6 +80,21 @@ export const GUESTS: { name: string; role: string; photo?: string }[] = [
   { name: "Amanullah Khan", role: "Co-Founder, EON Pakistan", photo: "amanullah-khan" },
 ];
 
+// Order matches the team list supplied by CYE. The first two are shown as featured cards.
+export const TEAM = [
+  { name: "Hashir Ijaz Abbasi", role: "Director", photo: "hashir-ijaz-abbasi-team" },
+  { name: "Siraj Ul Haq", role: "Event Head", photo: "siraj-ul-haq" },
+  { name: "Ukasha Alam", role: "Incharge PR & Guests", photo: "ukasha-alam" },
+  { name: "Junaid Rashid", role: "Head Finance", photo: "junaid-rashid" },
+  { name: "Anas Hussiani", role: "Head Marketing", photo: "anas-hussaini" },
+  { name: "Bilal Shehzad", role: "Incharge Stalls", photo: "bilal-shehzad" },
+  { name: "Asadullah Mughal", role: "Head Ambassador", photo: "asadullah-mughal" },
+  { name: "Asadullah Tahir", role: "Head Media & IT", photo: "asadullah-tahir" },
+  { name: "Fuzail Faraz", role: "Incharge TechNexus", photo: "fuzail-faraz" },
+  { name: "Sanaullah", role: "Incharge BioNova", photo: "sanaullah" },
+  { name: "Ismail Saleem", role: "Incharge Talent Fiesta", photo: "ismail-saleem" },
+];
+
 export const ADVISORY_BOARD = [
   { name: "Wahaj Siraj", role: "CEO, Nayatel", photo: "wahaj-siraj",
     bio: "A leading technology entrepreneur and telecommunications professional, Wahaj Siraj brings extensive experience in technology, entrepreneurship, leadership, and youth development. He is the CEO and Co-Founder of Nayatel and has been a Patron-in-Chief of CYE's BizzTech 2024." },
@@ -199,6 +214,7 @@ export const NAV_LINKS: (NavItem & { children?: NavItem[] })[] = [
   { href: "/#verticals", label: "Verticals" },
   { href: "/competitions", label: "Register", children: REGISTER_LINKS },
   { href: "/#guests", label: "Guests" },
+  { href: "/#team", label: "Team" },
   { href: "/#venue", label: "Venue" },
   { href: "/#sponsorship", label: "Sponsorship" },
   { href: "/contact", label: "Contact" },

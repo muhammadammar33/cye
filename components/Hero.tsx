@@ -61,7 +61,18 @@ export function Hero() {
   const countdown = useCountdown(EVENT.isoDate);
 
   return (
-    <section id="top" className="relative overflow-hidden bg-wash pt-28 pb-16 sm:pt-32 sm:pb-24">
+    <section id="top" className="relative overflow-hidden bg-white pt-28 pb-16 sm:pt-32 sm:pb-24">
+      <Image
+        src="/venue/auditorium.webp"
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover object-center"
+      />
+      {/* Light wash over the photo keeps the existing blue/orange text readable. */}
+      <div className="absolute inset-0 bg-white/72" aria-hidden />
+      <div className="bg-wash absolute inset-0 opacity-60" aria-hidden />
       <ArcDecoration corner="top-right" className="-translate-y-[18%] translate-x-[18%] opacity-90" />
       <ArcDecoration
         corner="bottom-left"
@@ -70,15 +81,6 @@ export function Hero() {
       />
       <Container className="relative z-10">
         <FadeIn className="mx-auto max-w-4xl text-center">
-          <Image
-            src="/brand/cye-logo.png"
-            alt="Capital Youth Expo"
-            width={773}
-            height={760}
-            sizes="(min-width: 640px) 176px, 136px"
-            className="mx-auto mb-6 h-34 w-auto sm:h-44"
-            priority
-          />
           <p className="font-heading text-xs font-bold uppercase tracking-[0.35em] text-cye-blue sm:text-sm">
             {EVENT.tagline}
           </p>

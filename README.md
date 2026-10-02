@@ -80,8 +80,10 @@ All images come from the CYE 2026 sponsorship proposal. Replace a file in place 
 | Gallery photos          | `public/gallery/01.webp` to `14.webp` (alt text in `components/Gallery.tsx`) |
 | Guest portraits         | `public/guests/<slug>.webp`, linked via `photo` in `GUESTS`               |
 | Board of Advisory       | `public/advisory/<slug>.webp`, data in `ADVISORY_BOARD`                   |
-| Venue photo, auditorium | `public/venue/pak-china-friendship-center.webp`, `public/venue/auditorium.webp` |
+| Venue photo             | `public/venue/pak-china-friendship-center.webp`                           |
 | Floor plans             | `public/venue/floor-plan-ground.webp`, `public/venue/floor-plan-first.webp` (zones in `VENUE`) |
 | Director photo          | `public/team/hashir-ijaz-abbasi.webp`                                     |
+| Team photos             | `public/team/<slug>.webp`, data in `TEAM` (first two are featured)        |
+| Hero background         | `public/venue/auditorium.webp`                                            |
 
 `CYE - Proposal.pdf` is gitignored and stays local.
