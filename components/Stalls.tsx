@@ -1,12 +1,14 @@
 import { Check } from "lucide-react";
-import { STALLS } from "@/data/event";
+
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Container } from "@/components/ui/Container";
 import { FadeIn } from "@/components/ui/FadeIn";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { getStallTiers } from "@/lib/content";
 
-export function Stalls() {
+export async function Stalls() {
+  const STALLS = await getStallTiers();
   return (
     <section className="bg-wash-mist py-20 sm:py-24">
       <Container>
@@ -19,11 +21,11 @@ export function Stalls() {
         </FadeIn>
         <div className="mt-12 grid gap-5 lg:grid-cols-2">
           {STALLS.map((stall, index) => (
-            <FadeIn key={stall.tier} delay={index * 0.08}>
+            <FadeIn key={stall.name} delay={index * 0.08}>
               <Card className="h-full p-7 sm:p-8">
                 <div className="flex flex-wrap items-end justify-between gap-3">
                   <h3 className="font-heading text-2xl font-black uppercase text-cye-blue">
-                    {stall.tier}
+                    {stall.name}
                   </h3>
                   <p className="font-heading text-2xl font-extrabold text-cye-orange">{stall.price}</p>
                 </div>
@@ -36,7 +38,7 @@ export function Stalls() {
                   ))}
                 </ul>
                 <Button href="#contact" className="mt-7">
-                  Book {stall.tier}
+                  Book {stall.name}
                 </Button>
               </Card>
             </FadeIn>

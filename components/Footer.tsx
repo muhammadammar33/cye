@@ -1,12 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
-import { EMAILS, EVENT, NAV_LINKS, REGISTER_LINKS } from "@/data/event";
+import { EVENT, NAV_LINKS, REGISTER_LINKS } from "@/data/event";
 import { Container } from "@/components/ui/Container";
 import { SocialLinks } from "@/components/ui/SocialLinks";
+import { getSettings } from "@/lib/content";
 
 const EXPLORE_LINKS = NAV_LINKS.filter((link) => !link.children);
 
-export function Footer() {
+export async function Footer() {
+  const { inboxes: EMAILS } = await getSettings();
   return (
     <footer className="border-t border-cye-blue/10 bg-white py-12">
       <Container className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1fr]">

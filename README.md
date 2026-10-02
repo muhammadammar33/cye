@@ -13,7 +13,8 @@ Live domain: [capitalyouthexpo.com](https://capitalyouthexpo.com)
 - Tailwind CSS
 - Framer Motion
 - lucide-react
-- Static / SSG, no backend in v1
+- PostgreSQL (Neon) with Drizzle ORM, Resend for email, Vercel Blob for admin photo uploads
+- Pages are prerendered and refreshed automatically when content changes in the admin dashboard
 
 ## Setup
 
@@ -33,7 +34,7 @@ Open [http://localhost:3000](http://localhost:3000).
 | `npm start`   | Serve the production build |
 | `npm run lint` | ESLint              |
 
-Deploy on Vercel from this repo. No environment variables are required for v1.
+Deploy on Vercel from this repo. See **Backend & admin dashboard** below for the environment variables.
 
 ## Pages
 
@@ -50,11 +51,11 @@ Deploy on Vercel from this repo. No environment variables are required for v1.
 
 `/competition`, `/ambassador`, `/volunteer`, `/project`, `/startup`, and `/visitor` redirect to the plural routes; `/register` redirects to `/competitions`.
 
-Each form can be closed without code changes elsewhere: set its flag in `REGISTRATION_OPEN` (`data/event.ts`) to `false` and the page shows a "registration closed" notice instead.
+Registrations are opened and closed from **Admin → Settings**; a closed form shows a "registration closed" notice.
 
 Competition fees and team sizes, project prizes, contact phone numbers, and social links in `data/event.ts` are **placeholders** (marked `PLACEHOLDER`). Replace them with confirmed details.
 
-Forms currently open a `mailto:` draft. Swap that for a real POST when an API exists. Search for `TODO` in `components/ui/InterestForm.tsx`, `components/competitions/TeamRegistrationForm.tsx`, and `components/ContactCTA.tsx`.
+Every form posts to `/api/submissions`, is validated on the server (`lib/submissions.ts`), saved to Postgres, and triggers two emails: one to the team inbox and a confirmation to the applicant.
 
 ## Project layout
 
@@ -62,11 +63,16 @@ Forms currently open a `mailto:` draft. Swap that for a real POST when an API ex
 app/            Routes, metadata, global styles
 components/     Page sections and UI primitives
 data/event.ts   Dates, copy, guests, tiers, competitions
-lib/            Shared helpers (cn, mailto)
+lib/            Content getters, DB client + schema, auth, email, form validation
+lib/admin/      Admin dashboard config (content types, labels, queries)
+app/admin/      Admin dashboard (login, submissions, content, settings, admins)
+app/api/        Submissions endpoint
+drizzle/        SQL migrations
+scripts/        db-setup (migrate, seed, first admin)
 public/         Logo, gallery placeholders, guest photos
 ```
 
-Edit **`data/event.ts`** for dates, sponsorship prices, guest list, competitions (fees, team sizes), prizes, contacts, and which forms are open. Brand colors live in **`app/globals.css`**.
+Competitions, guests, advisory board, team, sponsorship/stall packages, contacts, inboxes, social links and registration switches are edited in the **admin dashboard**. `data/event.ts` holds the event basics and the defaults used to seed the database (and served when no database is configured). Brand colors live in **`app/globals.css`**.
 
 ## Assets
 
@@ -87,3 +93,38 @@ All images come from the CYE 2026 sponsorship proposal. Replace a file in place 
 | Hero background         | `public/venue/auditorium.webp`                                            |
 
 `CYE - Proposal.pdf` is gitignored and stays local.
+
+## Backend & admin dashboard
+
+### One-time setup on Vercel
+
+1. **Database:** Vercel project → Storage → add **Neon Postgres** and connect it to the project. This sets `DATABASE_URL`.
+2. **Environment variables** (Project → Settings → Environment Variables), see `.env.example`:
+   - `AUTH_SECRET`: a random string of 32+ characters (`openssl rand -base64 48`).
+   - `ADMIN_EMAIL`, `ADMIN_PASSWORD`: the first admin login.
+   - `RESEND_API_KEY`, `EMAIL_FROM`: from [Resend](https://resend.com), with `capitalyouthexpo.com` verified as a sending domain.
+   - Optional: Storage → add a **Blob** store for photo uploads (sets `BLOB_READ_WRITE_TOKEN`).
+3. **Redeploy.** The build runs `scripts/db-setup.ts`, which applies migrations, seeds all site content into empty tables, and creates the first admin.
+4. Sign in at **`/admin`**, then add the rest of the team under **Admins** and change your password.
+
+### What the dashboard does
+
+| Area | Purpose |
+| ---- | ------- |
+| Overview | Totals, new submissions per form, latest activity |
+| Submissions | Filter by form/status, search, bulk status changes, CSV export; each submission has contact shortcuts (email, call, WhatsApp), team members, status and internal notes |
+| Site content | Add, edit, reorder, hide or delete competitions, guests, advisory board, team, sponsorship & stall packages, contacts (with photo upload) |
+| Settings | Open/close each registration, notification inboxes, social links |
+| Admins | Add/remove admins, change password |
+
+### Local development
+
+```bash
+cp .env.example .env.local   # fill in DATABASE_URL (any Postgres) and AUTH_SECRET
+npm run db:setup             # migrate + seed + first admin
+npm run dev
+```
+
+Schema lives in `lib/db/schema.ts`. After changing it, run `npm run db:generate` and commit the new file in `drizzle/`; it is applied on the next deploy.
+
+Without `DATABASE_URL` the site still builds and shows the content from `data/event.ts`; forms reply that submissions are temporarily unavailable.

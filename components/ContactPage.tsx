@@ -1,5 +1,5 @@
 import { CalendarDays, Mail, MapPin, Phone } from "lucide-react";
-import { CONTACTS, EMAILS, EVENT, VENUE } from "@/data/event";
+import { EVENT, VENUE } from "@/data/event";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Card } from "@/components/ui/Card";
 import { Container } from "@/components/ui/Container";
@@ -7,8 +7,10 @@ import { FadeIn } from "@/components/ui/FadeIn";
 import { InterestForm } from "@/components/ui/InterestForm";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { SocialLinks } from "@/components/ui/SocialLinks";
+import { getContacts, getSettings } from "@/lib/content";
 
-export function ContactPage() {
+export async function ContactPage() {
+  const [CONTACTS, { inboxes: EMAILS }] = await Promise.all([getContacts(), getSettings()]);
   return (
     <section className="bg-wash pt-32 pb-20 sm:pt-36 sm:pb-24">
       <Container>
@@ -71,8 +73,8 @@ export function ContactPage() {
             <h3 className="font-heading text-xl font-extrabold text-cye-blue">Send us a message</h3>
             <div className="mt-6">
               <InterestForm
+                type="contact"
                 to={EMAILS.info}
-                subjectPrefix="CYE 2026 enquiry"
                 submitLabel="Send message"
                 fields={[
                   { name: "name", label: "Your name", required: true, autoComplete: "name" },

@@ -1,10 +1,12 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { Send } from "lucide-react";
+import { Loader2, Send } from "lucide-react";
 import { Field, fieldClass } from "@/components/ui/Field";
-import { openMailto } from "@/lib/mailto";
+import { FormError, FormSuccess, Honeypot, type FormState } from "@/components/ui/FormStatus";
+import type { SubmissionType } from "@/lib/db/schema";
 import { cn } from "@/lib/cn";
+import { submitForm } from "@/lib/submit";
 
 export type InterestField = {
   name: string;
@@ -19,34 +21,40 @@ export type InterestField = {
 
 export function InterestForm({
   fields,
+  type,
   to,
-  subjectPrefix,
   submitLabel,
 }: {
   fields: InterestField[];
+  type: SubmissionType;
+  /** Inbox shown if something goes wrong. */
   to: string;
-  subjectPrefix: string;
   submitLabel: string;
 }) {
-  const [status, setStatus] = useState<"idle" | "sent">("idle");
+  const [state, setState] = useState<FormState>({ status: "idle" });
 
-  function onSubmit(event: FormEvent<HTMLFormElement>) {
+  async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    const name = String(data.get("name") ?? "");
-    const lines = fields.map((field) =>
-      field.type === "checkbox"
-        ? `${field.label}: ${data.get(field.name) ? "Yes" : "No"}`
-        : `${field.label}: ${String(data.get(field.name) ?? "")}`,
-    );
-
-    // TODO: POST to a backend endpoint when one is available.
-    openMailto(to, `${subjectPrefix}: ${name}`, lines);
-    setStatus("sent");
+    const form = new FormData(event.currentTarget);
+    const data: Record<string, string> = {};
+    for (const field of fields) {
+      const value = form.get(field.name);
+      if (field.type === "checkbox") {
+        if (value) data[field.name] = "on";
+      } else {
+        data[field.name] = String(value ?? "");
+      }
+    }
+    setState({ status: "sending" });
+    const result = await submitForm(type, data, String(form.get("company_website") ?? ""));
+    setState(result.ok ? { status: "sent" } : { status: "error", error: `${result.error} If this keeps happening, email ${to}.` });
   }
 
+  if (state.status === "sent") return <FormSuccess />;
+
   return (
-    <form onSubmit={onSubmit} className="grid gap-4 sm:grid-cols-2">
+    <form onSubmit={onSubmit} className="relative grid gap-4 sm:grid-cols-2">
+      <Honeypot />
       {fields.map((field) => {
         const span =
           field.span === 2 || field.type === "textarea" || field.type === "checkbox" ? "sm:col-span-2" : undefined;
@@ -110,18 +118,15 @@ export function InterestForm({
           </Field>
         );
       })}
+      <FormError state={state} />
       <button
         type="submit"
-        className="inline-flex items-center justify-center gap-2 rounded-full bg-grad-orange px-6 py-3 font-heading text-sm font-bold uppercase tracking-wide text-white shadow-lg shadow-cye-orange/25 transition-all hover:-translate-y-0.5 hover:brightness-110 sm:col-span-2"
+        disabled={state.status === "sending"}
+        className="inline-flex items-center justify-center gap-2 rounded-full bg-grad-orange px-6 py-3 font-heading text-sm font-bold uppercase tracking-wide text-white shadow-lg shadow-cye-orange/25 transition-all hover:-translate-y-0.5 hover:brightness-110 disabled:cursor-wait disabled:opacity-70 sm:col-span-2"
       >
-        <Send className="h-4 w-4" aria-hidden />
-        {submitLabel}
+        {state.status === "sending" ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <Send className="h-4 w-4" aria-hidden />}
+        {state.status === "sending" ? "Submitting..." : submitLabel}
       </button>
-      {status === "sent" ? (
-        <p className="text-center text-sm text-cye-blue sm:col-span-2" role="status">
-          Opening your email client. If nothing appears, write to {to}.
-        </p>
-      ) : null}
     </form>
   );
 }

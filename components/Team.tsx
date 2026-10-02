@@ -1,24 +1,28 @@
 import Image from "next/image";
-import { TEAM } from "@/data/event";
+import { getTeam, type TeamMember } from "@/lib/content";
 import { Container } from "@/components/ui/Container";
 import { FadeIn } from "@/components/ui/FadeIn";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { cn } from "@/lib/cn";
 
-const [featured, rest] = [TEAM.slice(0, 2), TEAM.slice(2)];
-
-function Member({ member, large = false }: { member: (typeof TEAM)[number]; large?: boolean }) {
+function Member({ member, large = false }: { member: TeamMember; large?: boolean }) {
   return (
     <article className="h-full rounded-3xl border border-white/80 bg-white p-4 text-center shadow-card transition-transform duration-300 hover:-translate-y-1 sm:p-5">
       <div className="overflow-hidden rounded-2xl bg-cye-mist">
+        {member.photo ? (
         <Image
-          src={`/team/${member.photo}.webp`}
+          src={member.photo}
           alt={member.name}
           width={480}
           height={480}
           sizes={large ? "(min-width: 640px) 288px, 90vw" : "(min-width: 1280px) 200px, (min-width: 640px) 30vw, 45vw"}
           className="aspect-square h-auto w-full object-cover"
         />
+        ) : (
+          <div className="flex aspect-square w-full items-center justify-center bg-grad-blue font-heading text-4xl font-black text-white" aria-hidden>
+            {member.name.split(" ").map((part) => part[0]).slice(0, 2).join("")}
+          </div>
+        )}
       </div>
       <h3 className={cn("mt-4 font-heading font-extrabold leading-snug text-cye-blue", large ? "text-lg sm:text-xl" : "text-sm sm:text-base")}>
         {member.name}
@@ -28,7 +32,10 @@ function Member({ member, large = false }: { member: (typeof TEAM)[number]; larg
   );
 }
 
-export function Team() {
+export async function Team() {
+  const team = await getTeam();
+  const featured = team.filter((member) => member.featured);
+  const rest = team.filter((member) => !member.featured);
   return (
     <section id="team" className="scroll-mt-24 bg-wash-mist py-20 sm:py-24">
       <Container>

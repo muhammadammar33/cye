@@ -3,6 +3,12 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   images: {
     unoptimized: false,
+    // Admin-uploaded photos are stored in Vercel Blob.
+    remotePatterns: [{ protocol: "https", hostname: "*.public.blob.vercel-storage.com" }],
+  },
+  experimental: {
+    // Room for admin photo uploads (images are capped at 3 MB in the upload action).
+    serverActions: { bodySizeLimit: "4mb" },
   },
   agentRules: false,
   async redirects() {
