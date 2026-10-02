@@ -75,14 +75,26 @@ export async function deleteSubmission(id: number) {
 /* ---------------------------- content ---------------------------- */
 
 async function uploadImage(file: File, folder: string): Promise<string> {
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+  // Vercel Blob authenticates with either a read-write token (older stores) or the
+  // store id plus Vercel's automatic OIDC token (newer stores connected to the project).
+  if (!process.env.BLOB_READ_WRITE_TOKEN && !process.env.BLOB_STORE_ID) {
     throw new Error("Photo uploads are not set up yet (add a Vercel Blob store to the project). You can use a site image path meanwhile.");
   }
   if (!file.type.startsWith("image/")) throw new Error("Please upload an image file.");
   if (file.size > 3 * 1024 * 1024) throw new Error("Images must be 3 MB or smaller.");
   const safe = file.name.toLowerCase().replace(/[^a-z0-9.]+/g, "-");
-  const blob = await put(`cye/${folder}/${Date.now()}-${safe}`, file, { access: "public" });
-  return blob.url;
+  try {
+    const blob = await put(`cye/${folder}/${Date.now()}-${safe}`, file, { access: "public" });
+    return blob.url;
+  } catch (err) {
+    console.error("[blob] upload failed", err);
+    const detail = err instanceof Error ? err.message : String(err);
+    throw new Error(
+      /private/i.test(detail)
+        ? "Upload failed: the Blob store is private. Connect a public Blob store so photos can be shown on the website."
+        : `Upload failed: ${detail}`,
+    );
+  }
 }
 
 async function readField(field: FieldDef, form: FormData, folder: string): Promise<unknown> {
