@@ -104,7 +104,7 @@ All images come from the CYE 2026 sponsorship proposal. Replace a file in place 
    - `ADMIN_EMAIL`, `ADMIN_PASSWORD`: the first admin login.
    - `RESEND_API_KEY`, `EMAIL_FROM`: from [Resend](https://resend.com), with `capitalyouthexpo.com` verified as a sending domain.
    - `SITE_URL`: `https://capitalyouthexpo.com`, so logos and links in emails always point at the live site.
-   - Optional: Storage → add a **Blob** store for photo uploads (sets `BLOB_READ_WRITE_TOKEN`).
+   - Optional: Storage → add a **public Blob** store for photo uploads and connect it to the project (sets `BLOB_STORE_ID`, or `BLOB_READ_WRITE_TOKEN` on older stores), then redeploy.
 3. **Redeploy.** The build runs `scripts/db-setup.ts`, which applies migrations, seeds all site content into empty tables, and creates the first admin.
 4. Sign in at **`/admin`**, then add the rest of the team under **Admins** and change your password.
 
