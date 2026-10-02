@@ -25,9 +25,14 @@ export function Guests() {
             description="Leaders from government, academia, industry, media, and civil society expected at CYE 2026."
           />
         </FadeIn>
-        <div className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">
+        {/* Flex-wrap (not grid) so a short last row is centered. Widths keep 2/3/4/5 columns with gap-4. */}
+        <div className="mt-12 flex flex-wrap justify-center gap-4">
           {GUESTS.map((guest, index) => (
-            <FadeIn key={guest.name} delay={(index % 5) * 0.04}>
+            <FadeIn
+              key={guest.name}
+              delay={(index % 5) * 0.04}
+              className="w-[calc((100%-1rem)/2)] sm:w-[calc((100%-2rem)/3)] md:w-[calc((100%-3rem)/4)] xl:w-[calc((100%-4rem)/5)]"
+            >
               <article className="h-full rounded-3xl border border-white/80 bg-white/90 p-5 text-center shadow-card transition-transform duration-300 hover:-translate-y-1">
                 {guest.photo ? (
                   <Image
