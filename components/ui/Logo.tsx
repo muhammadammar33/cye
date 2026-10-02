@@ -16,8 +16,8 @@ export function Logo({
       <Image
         src="/brand/cye-emblem.png"
         alt=""
-        width={320}
-        height={309}
+        width={491}
+        height={474}
         sizes="44px"
         className="h-10 w-auto sm:h-11"
         priority={priority}

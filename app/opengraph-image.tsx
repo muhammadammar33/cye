@@ -16,11 +16,11 @@ export default function OpenGraphImage() {
           justifyContent: "center",
           padding: 80,
           background:
-            "radial-gradient(circle at 100% 0%, rgba(255,90,31,0.28), transparent 42%), radial-gradient(circle at 0% 100%, rgba(11,77,162,0.35), transparent 40%), #073A7A",
+            "radial-gradient(circle at 100% 0%, rgba(239,67,44,0.3), transparent 42%), radial-gradient(circle at 0% 100%, rgba(49,95,172,0.45), transparent 40%), #1B4694",
           color: "white",
         }}
       >
-        <div style={{ fontSize: 28, letterSpacing: 8, color: "#FF7A45", fontWeight: 700 }}>
+        <div style={{ fontSize: 28, letterSpacing: 8, color: "#F4782A", fontWeight: 700 }}>
           ENGAGE · ENCOURAGE · EMPOWER
         </div>
         <div style={{ fontSize: 72, fontWeight: 900, marginTop: 18, lineHeight: 1.05 }}>

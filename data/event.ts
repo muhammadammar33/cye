@@ -55,7 +55,7 @@ export const ACHIEVEMENTS = [
 // `photo` is a file in public/guests/ (omit it to show initials).
 export const GUESTS: { name: string; role: string; photo?: string }[] = [
   { name: "Hafiz Naeem ur Rehman", role: "Ameer Jamaat e Islami Pakistan", photo: "hafiz-naeem-ur-rehman" },
-  { name: "Wasim Haider", role: "President Islami Jamiat e Talaba Pakistan", photo: "wasim-haider" },
+  { name: "Wasim Haider", role: "President SAFE", photo: "wasim-haider" },
   { name: "Ahsan Iqbal", role: "Federal Minister for Planning, Development & Special Initiatives", photo: "ahsan-iqbal" },
   { name: "Dr. Wasay Shakir", role: "Brain Health & Neurological Diseases, Agha Khan University", photo: "wasay-shakir" },
   { name: "Wajeeha Qamar", role: "Minister of State, Federal Education & Professional Training", photo: "wajeeha-qamar" },
@@ -186,6 +186,7 @@ export type NavItem = {
 
 export const REGISTER_LINKS: NavItem[] = [
   { href: "/competitions", label: "Competitions", desc: "Enter a competition solo or as a team" },
+  { href: "/article-writing", label: "Article Writing", desc: "National Article Writing Competition 2026" },
   { href: "/projects", label: "Project Exhibition", desc: "Showcase your project for the prize pool" },
   { href: "/startups", label: "Startup Arena", desc: "Pitch your startup to investors" },
   { href: "/visitors", label: "Visitor Pass", desc: "Register to attend the expo" },
@@ -237,11 +238,66 @@ export const COMPETITIONS = [
     desc: "Recite the Holy Quran with tajweed, judged on precision and melody." },
   { name: "Speech (English / Urdu)", vertical: "Literary", audience: "Schools & University", fee: "PKR 500", teamMin: 1, teamMax: 1,
     desc: "Deliver a compelling speech in English or Urdu on the given theme." },
-  { name: "Bait Baazi", vertical: "Literary", audience: "Schools & University", fee: "PKR 500", teamMin: 2, teamMax: 3,
-    desc: "Trade couplets in the classic Urdu poetry duel. The team with the last verse wins." },
   { name: "Arts", vertical: "Literary", audience: "Schools & University", fee: "PKR 500", teamMin: 1, teamMax: 1,
     desc: "Create an original artwork on the spot around the expo theme." },
 ];
+
+// Source: https://prize.org.pk/national-article-writing-competition
+export const ARTICLE_COMPETITION = {
+  title: "National Article Writing Competition 2026",
+  organizer: "Policy Research Initiative for Zakat-Based, Interest-Free Economy (PRIZE)",
+  organizerShort: "PRIZE",
+  source: "https://prize.org.pk/national-article-writing-competition",
+  registerUrl: "https://forms.gle/dmaYepw2r2KNk8G67",
+  submitUrl: "https://forms.gle/dExtBZyYuj2DZFZM9",
+  overview: [
+    "The National Article Writing Competition 2026 is a flagship youth initiative of PRIZE, designed to empower the next generation of thinkers, researchers, and leaders. This competition provides a platform for young minds to critically examine today's exploitative financial structures and present innovative, Islamic economic alternatives rooted in justice, equity, and sustainability.",
+    "PRIZE envisions a future where zakat-based public finance and interest-free banking serve as pillars of a just and prosperous economy. Through this initiative, the nation's youth are invited to help shape economic thought that safeguards human dignity, eliminates financial crises, and establishes welfare for all.",
+  ],
+  themes: [
+    "A Zakat-Based Fiscal System: Breaking the Trap of Poverty and Unemployment",
+    "A Full-Reserve, Interest-Free Money System: Breaking the Trap of Debt and Inflation",
+  ],
+  eligibility: [
+    "University students, researchers, and scholars from recognized colleges, universities, and Islamic institutions across Pakistan.",
+    "Especially encouraged: students of Economics, Finance, Business Administration, Public Policy, Political Science, Islamic Studies, and Development Studies.",
+    "Open to all disciplines: any student passionate about social justice and Islamic economic reform is welcome to contribute.",
+  ],
+  languages: ["English", "Urdu"],
+  wordCount: "2,000 to 5,000 words",
+  dates: [
+    { label: "Competition launch", value: "01 September 2026" },
+    { label: "Submission deadline", value: "30 December 2026" },
+    { label: "Results announcement", value: "March 2027" },
+    { label: "Prize distribution ceremonies", value: "June 2027" },
+  ],
+  closingEvents: [
+    { city: "Karachi", venue: "University of Karachi" },
+    { city: "Lahore", venue: "University of Management and Technology (UMT)" },
+    { city: "Islamabad", venue: "Riphah International University" },
+  ],
+  prizes: [
+    { place: "1st Prize", amount: "Rs. 100,000" },
+    { place: "2nd Prize", amount: "Rs. 60,000" },
+    { place: "3rd Prize", amount: "Rs. 40,000" },
+  ],
+  prizeExtras: "Each winner also receives a certificate, national recognition, and article publication.",
+  benefits: [
+    "National recognition",
+    "Publication opportunities on PRIZE platforms",
+    "Certificates of distinction",
+    "Potential internships and collaborations with PRIZE",
+  ],
+  rules: [
+    "Pre-registration is required before submitting an article.",
+    "There is no registration fee.",
+    "Word count: 2,000 to 5,000 words, in English or Urdu.",
+    "Plagiarism: maximum 20% allowed.",
+    "Content must be original; AI-generated submissions will not be accepted.",
+    "Use proper citations where applicable.",
+    "Submit only through the official submission link.",
+  ],
+};
 
 export const EDUCATION_LEVELS = [
   "Grade 9", "Grade 10", "Grade 11 (Intermediate Part 1)", "Grade 12 (Intermediate Part 2)",

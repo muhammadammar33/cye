@@ -46,7 +46,7 @@ export function ContactPage() {
           ))}
         </div>
         <div className="mt-12 grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
-          <FadeIn className="rounded-3xl bg-cye-blue-dk p-6 text-white sm:p-8">
+          <FadeIn className="rounded-3xl bg-grad-blue p-6 text-white sm:p-8">
             <h3 className="font-heading text-sm font-bold uppercase tracking-wider text-cye-orange-lt">Event venue</h3>
             <p className="mt-4 flex items-start gap-2 text-lg font-semibold">
               <MapPin className="mt-1 h-5 w-5 shrink-0 text-cye-orange-lt" aria-hidden />

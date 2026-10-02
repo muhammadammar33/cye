@@ -27,7 +27,8 @@ export function Verticals() {
             description="CYE 2026 unites five distinct verticals, each designed to serve a specific academic and professional audience through specialized competitions, workshops, exhibitions, and speaker sessions."
           />
         </FadeIn>
-        <div className="mt-12 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+        {/* Flex-wrap so the short last row is centered (2 columns on md, 3 on xl). */}
+        <div className="mt-12 flex flex-wrap justify-center gap-5">
           {VERTICALS.map((vertical, index) => {
             const meta = META[vertical.name] ?? META.TechNexus;
             const Icon = meta.icon;
@@ -35,7 +36,7 @@ export function Verticals() {
               <FadeIn
                 key={vertical.name}
                 delay={index * 0.06}
-                className={index === 4 ? "md:col-span-2 xl:col-span-1" : undefined}
+                className="w-full md:w-[calc((100%-1.25rem)/2)] xl:w-[calc((100%-2.5rem)/3)]"
               >
                 <Card className="h-full p-6 sm:p-7">
                   <span className={`inline-flex h-12 w-12 items-center justify-center rounded-2xl ${meta.accent}`}>

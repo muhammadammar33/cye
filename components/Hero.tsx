@@ -70,6 +70,15 @@ export function Hero() {
       />
       <Container className="relative z-10">
         <FadeIn className="mx-auto max-w-4xl text-center">
+          <Image
+            src="/brand/cye-logo.png"
+            alt="Capital Youth Expo"
+            width={773}
+            height={760}
+            sizes="(min-width: 640px) 176px, 136px"
+            className="mx-auto mb-6 h-34 w-auto sm:h-44"
+            priority
+          />
           <p className="font-heading text-xs font-bold uppercase tracking-[0.35em] text-cye-blue sm:text-sm">
             {EVENT.tagline}
           </p>
