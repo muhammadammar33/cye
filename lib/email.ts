@@ -1,6 +1,7 @@
 import "server-only";
 import { AUDIENCE, EVENT, VERTICALS } from "@/data/event";
 import type { SubmissionType } from "@/lib/db/schema";
+import type { PaymentSettings } from "@/lib/defaults";
 
 type Mail = { to: string | string[]; subject: string; html: string; replyTo?: string };
 
@@ -30,6 +31,8 @@ export function dataTable(data: Record<string, unknown>): string {
             : esc(item),
         )
         .join("");
+    } else if (typeof value === "string" && /^https:\/\//.test(value)) {
+      cell = `<a href="${esc(value)}" style="color:${ORANGE};font-weight:bold;word-break:break-all">${key === "paymentSlip" ? "View payment slip" : esc(value)}</a>`;
     } else {
       cell = esc(value).replace(/\n/g, "<br>");
     }
@@ -128,7 +131,7 @@ function layout(ctx: EmailContext, opts: { preheader: string; eyebrow: string; t
 
 /** What happens next, per form, for the applicant's confirmation. */
 const NEXT_STEPS: Record<SubmissionType, string> = {
-  competition: "Our competitions team will review your registration and share fee payment details and the competition guidelines with your team lead.",
+  competition: "Our competitions team will verify your registration and payment, then share the competition guidelines and schedule with your team lead.",
   project: "Our judges will review your project. Shortlisted teams will be contacted with exhibition space details for expo day.",
   startup: "Our VentureX team will review your pitch. Shortlisted startups will be invited for investor networking and mentorship sessions.",
   visitor: "Your visitor registration is confirmed. Keep this email handy and bring a valid student or national ID on expo day.",
@@ -139,16 +142,39 @@ const NEXT_STEPS: Record<SubmissionType, string> = {
 };
 
 export function teamEmail(ctx: EmailContext, kind: string, id: number, adminUrl: string, data: Record<string, unknown>) {
+  const slip = typeof data.paymentSlip === "string" ? data.paymentSlip : "";
+  const slipBlock = slip
+    ? `<p style="margin:20px 0 8px;font-weight:bold;color:${BLUE}">Payment slip</p><a href="${esc(slip)}"><img src="${esc(slip)}" width="260" alt="Payment slip" style="display:block;width:260px;max-width:100%;height:auto;border:1px solid #e5e9f2;border-radius:10px"></a>`
+    : "";
   return layout(ctx, {
     preheader: `New ${kind} #${id}`,
     eyebrow: "ADMIN NOTIFICATION",
     title: `New ${kind}`,
-    body: `<p style="margin:0 0 16px;color:#6b7280">Submission #${id} just came in through the website.</p>${dataTable(data)}
+    body: `<p style="margin:0 0 16px;color:#6b7280">Submission #${id} just came in through the website.</p>${dataTable(data)}${slipBlock}
 <p style="margin:24px 0 0;text-align:center">${button(adminUrl, "Open in the admin dashboard")}</p>`,
   });
 }
 
-export function confirmationEmail(ctx: EmailContext, type: SubmissionType, name: string, kind: string, summary: string) {
+type PaymentInfo = { payment: PaymentSettings; fee: string; slipReceived: boolean };
+
+function paymentBlock(info: PaymentInfo) {
+  if (info.slipReceived) {
+    return `<p style="margin:0 0 12px">We have received your <strong>payment slip</strong>${info.fee ? ` for <strong>${esc(info.fee)}</strong>` : ""}. Our team will verify it and confirm your registration.</p>`;
+  }
+  if (!info.payment.accounts.length) return "";
+  const rows = info.payment.accounts
+    .map(
+      (a) =>
+        `<tr><td style="padding:8px 12px;border-bottom:1px solid #eef1f6;font:14px ${FONT}"><strong style="color:${BLUE}">${esc(a.method)}</strong>${a.title ? `<br><span style="color:#6b7280;font-size:12px">${esc(a.title)}</span>` : ""}</td><td style="padding:8px 12px;border-bottom:1px solid #eef1f6;font:bold 14px monospace;color:#1a1a1a">${esc(a.number)}</td></tr>`,
+    )
+    .join("");
+  return `<p style="margin:0 0 8px;font-weight:bold;color:${BLUE}">Payment details${info.fee ? `: ${esc(info.fee)}` : ""}</p>
+<p style="margin:0 0 8px;font-size:14px;color:#374151">${esc(info.payment.instructions)}</p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:0 0 12px;background:#f5f7fb;border-radius:8px">${rows}</table>
+<p style="margin:0 0 12px;font-size:14px;color:#374151">After paying, reply to this email with a photo of your payment slip.</p>`;
+}
+
+export function confirmationEmail(ctx: EmailContext, type: SubmissionType, name: string, kind: string, summary: string, payment?: PaymentInfo) {
   return layout(ctx, {
     preheader: `Thank you, ${name}. We received your ${kind.toLowerCase()}.`,
     eyebrow: "SUBMISSION RECEIVED",
@@ -159,6 +185,7 @@ export function confirmationEmail(ctx: EmailContext, type: SubmissionType, name:
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:16px 0;background:#f5f7fb;border-left:4px solid ${ORANGE};border-radius:8px">
   <tr><td style="padding:14px 16px;font:14px/1.6 ${FONT};color:#374151"><strong style="color:${BLUE}">What happens next</strong><br>${esc(NEXT_STEPS[type])}</td></tr>
 </table>
+${payment ? paymentBlock(payment) : ""}
 <p style="margin:0 0 4px">Questions? Simply reply to this email.</p>
 <p style="margin:16px 0 0">Regards,<br><strong>Team ${esc(EVENT.name)}</strong></p>`,
   });
