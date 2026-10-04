@@ -28,7 +28,7 @@ export default async function SubmissionPage({ params }: { params: Promise<{ id:
   const [row] = await requireDb().select().from(s.submissions).where(eq(s.submissions.id, id)).limit(1);
   if (!row) notFound();
 
-  const { members, ...data } = row.data as Record<string, unknown> & { members?: Record<string, string>[] };
+  const { members, paymentSlip, ...data } = row.data as Record<string, unknown> & { members?: Record<string, string>[]; paymentSlip?: string };
   const phone = row.phone?.replace(/[^\d+]/g, "");
   const whatsapp = phone ? phone.replace(/^0/, "92").replace(/^\+/, "") : null;
 
@@ -69,6 +69,22 @@ export default async function SubmissionPage({ params }: { params: Promise<{ id:
               ))}
             </dl>
           </section>
+
+          {paymentSlip ? (
+            <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div className="flex items-center justify-between gap-3">
+                <h2 className="font-heading text-base font-bold text-cye-blue">Payment slip</h2>
+                <a href={paymentSlip} target="_blank" rel="noreferrer" className="text-sm font-semibold text-cye-orange hover:underline">
+                  Open full size
+                </a>
+              </div>
+              <a href={paymentSlip} target="_blank" rel="noreferrer" className="mt-3 block">
+                {/* eslint-disable-next-line @next/next/no-img-element -- uploaded slip from Vercel Blob */}
+                <img src={paymentSlip} alt={`Payment slip from ${row.name}`} className="max-h-[420px] rounded-xl border border-slate-200 object-contain" />
+              </a>
+              <p className="mt-2 text-xs text-slate-500">Check the amount and reference, then set the status to Approved.</p>
+            </section>
+          ) : null}
 
           {members?.length ? (
             <section className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">

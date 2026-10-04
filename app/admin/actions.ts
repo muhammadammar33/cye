@@ -1,11 +1,11 @@
 "use server";
 
-import { put } from "@vercel/blob";
 import bcrypt from "bcryptjs";
 import { count, eq, inArray } from "drizzle-orm";
 import { revalidatePath, updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { endSession, requireAdmin, startSession } from "@/lib/auth";
+import { uploadImage } from "@/lib/blob";
 import { CONTENT_TAG } from "@/lib/content";
 import { db, requireDb, schema as s } from "@/lib/db";
 import { SUBMISSION_STATUSES, type SubmissionStatus } from "@/lib/db/schema";
@@ -13,6 +13,9 @@ import { DEFAULT_SETTINGS } from "@/lib/defaults";
 import { ENTITIES, isEntity, type FieldDef } from "@/lib/admin/entities";
 
 export type ActionState = { error?: string; ok?: string } | undefined;
+
+/** Number of payment account rows in Admin → Settings. */
+const PAYMENT_SLOTS = 4;
 
 // Compared against when the email is unknown, so failed logins take the same time either way.
 const DUMMY_HASH = "$2b$12$EWGzmlVP52KFwBHFVeUbM.EagAw/tc2O.K1WXn1L8JHtvt7tBSkie";
@@ -73,29 +76,6 @@ export async function deleteSubmission(id: number) {
 }
 
 /* ---------------------------- content ---------------------------- */
-
-async function uploadImage(file: File, folder: string): Promise<string> {
-  // Vercel Blob authenticates with either a read-write token (older stores) or the
-  // store id plus Vercel's automatic OIDC token (newer stores connected to the project).
-  if (!process.env.BLOB_READ_WRITE_TOKEN && !process.env.BLOB_STORE_ID) {
-    throw new Error("Photo uploads are not set up yet (add a Vercel Blob store to the project). You can use a site image path meanwhile.");
-  }
-  if (!file.type.startsWith("image/")) throw new Error("Please upload an image file.");
-  if (file.size > 3 * 1024 * 1024) throw new Error("Images must be 3 MB or smaller.");
-  const safe = file.name.toLowerCase().replace(/[^a-z0-9.]+/g, "-");
-  try {
-    const blob = await put(`cye/${folder}/${Date.now()}-${safe}`, file, { access: "public" });
-    return blob.url;
-  } catch (err) {
-    console.error("[blob] upload failed", err);
-    const detail = err instanceof Error ? err.message : String(err);
-    throw new Error(
-      /private/i.test(detail)
-        ? "Upload failed: the Blob store is private. Connect a public Blob store so photos can be shown on the website."
-        : `Upload failed: ${detail}`,
-    );
-  }
-}
 
 async function readField(field: FieldDef, form: FormData, folder: string): Promise<unknown> {
   const raw = form.get(field.name);
@@ -189,7 +169,21 @@ export async function saveSettings(_prev: ActionState, form: FormData): Promise<
     if (v && !v.startsWith("https://")) return { error: `The ${k} link must start with https://` };
     social_links[k] = v;
   }
-  for (const [key, value] of Object.entries({ registration_open, inboxes, social_links })) {
+  const accounts = [];
+  for (let i = 0; i < PAYMENT_SLOTS; i++) {
+    const method = String(form.get(`payment.accounts.${i}.method`) ?? "").trim();
+    const title = String(form.get(`payment.accounts.${i}.title`) ?? "").trim();
+    const number = String(form.get(`payment.accounts.${i}.number`) ?? "").trim();
+    if (!method && !title && !number) continue;
+    if (!method || !number) return { error: `Payment account ${i + 1}: enter at least the method and the account number.` };
+    accounts.push({ method: method.slice(0, 80), title: title.slice(0, 120), number: number.slice(0, 80) });
+  }
+  const payment = {
+    slipRequired: form.get("payment.slipRequired") === "on",
+    instructions: String(form.get("payment.instructions") ?? "").trim().slice(0, 2000),
+    accounts,
+  };
+  for (const [key, value] of Object.entries({ registration_open, inboxes, social_links, payment })) {
     await database.insert(s.settings).values({ key, value }).onConflictDoUpdate({ target: s.settings.key, set: { value } });
   }
   refreshContent();

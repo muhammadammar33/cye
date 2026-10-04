@@ -97,6 +97,9 @@ export default async function SubmissionsPage({ searchParams }: { searchParams: 
                     <td className="px-4 py-3 text-slate-600">{TYPE_NAMES[row.type]}</td>
                     <td className="px-4 py-3 text-slate-600">
                       {row.subject}
+                      {row.data.paymentSlip ? (
+                        <span className="ml-2 rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-bold text-emerald-700">Slip</span>
+                      ) : null}
                       {row.institution && row.institution !== row.subject ? <p className="text-xs text-slate-400">{row.institution}</p> : null}
                     </td>
                     <td className="px-4 py-3">

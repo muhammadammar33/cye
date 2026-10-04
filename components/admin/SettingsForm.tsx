@@ -30,6 +30,43 @@ export function SettingsForm({ settings }: { settings: SiteSettings }) {
         </div>
       </section>
       <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <h2 className="font-heading text-base font-bold text-cye-blue">Competition payments</h2>
+        <p className="mt-1 text-sm text-slate-500">
+          Shown on the Competitions page next to the registration form, and in the competitor&apos;s confirmation email.
+        </p>
+        <label className="mt-4 flex items-center justify-between gap-3 rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700">
+          Require a payment slip with each registration
+          <input type="checkbox" name="payment.slipRequired" defaultChecked={settings.payment.slipRequired} className="h-5 w-5 accent-cye-orange" />
+        </label>
+        <label className="mt-4 block text-sm font-semibold text-slate-700">
+          Payment instructions
+          <textarea name="payment.instructions" rows={3} defaultValue={settings.payment.instructions} className={inputClass} />
+        </label>
+        <p className="mt-4 text-sm font-semibold text-slate-700">Accounts</p>
+        <p className="text-xs text-slate-500">Leave a row empty to hide it. e.g. Meezan Bank / JazzCash / Easypaisa.</p>
+        <div className="mt-2 space-y-3">
+          {Array.from({ length: 4 }, (_, i) => {
+            const account = settings.payment.accounts[i];
+            return (
+              <div key={i} className="grid gap-3 rounded-xl border border-slate-200 p-3 sm:grid-cols-3">
+                <label className="block text-xs font-semibold text-slate-600">
+                  Bank / method
+                  <input name={`payment.accounts.${i}.method`} defaultValue={account?.method ?? ""} placeholder="Meezan Bank" className={inputClass} />
+                </label>
+                <label className="block text-xs font-semibold text-slate-600">
+                  Account title
+                  <input name={`payment.accounts.${i}.title`} defaultValue={account?.title ?? ""} placeholder="Capital Youth Expo" className={inputClass} />
+                </label>
+                <label className="block text-xs font-semibold text-slate-600">
+                  Account number / IBAN
+                  <input name={`payment.accounts.${i}.number`} defaultValue={account?.number ?? ""} placeholder="PK00 MEZN 0000 0000 0000 0000" className={inputClass} />
+                </label>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <h2 className="font-heading text-base font-bold text-cye-blue">Notification inboxes</h2>
         <p className="mt-1 text-sm text-slate-500">New submissions are emailed to these addresses.</p>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">

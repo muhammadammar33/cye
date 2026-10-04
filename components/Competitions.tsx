@@ -9,9 +9,24 @@ import { ClosedNotice } from "@/components/ui/ClosedNotice";
 import { Container } from "@/components/ui/Container";
 import { FadeIn } from "@/components/ui/FadeIn";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { PaymentDetails } from "@/components/competitions/PaymentDetails";
+import type { SlipMode } from "@/components/competitions/TeamRegistrationForm";
 import type { Competition } from "@/lib/content";
+import type { PaymentSettings } from "@/lib/defaults";
 
-export function Competitions({ competitions, open, inbox }: { competitions: Competition[]; open: boolean; inbox: string }) {
+export function Competitions({
+  competitions,
+  open,
+  inbox,
+  payment,
+  slipMode,
+}: {
+  competitions: Competition[];
+  open: boolean;
+  inbox: string;
+  payment: PaymentSettings;
+  slipMode: SlipMode;
+}) {
   const [selected, setSelected] = useState("");
 
   return (
@@ -39,12 +54,25 @@ export function Competitions({ competitions, open, inbox }: { competitions: Comp
           <div id="competition-register" className="scroll-mt-28">
             <h3 className="font-heading text-xl font-extrabold text-cye-blue">Competition registration</h3>
             <p className="mt-2 text-sm text-cye-ink/65">
-              Pick a competition and team size, then add details for every team member. Fee payment details are
-              shared after your registration is confirmed.
+              Pick a competition and team size, then add details for every team member.{" "}
+              {payment.accounts.length
+                ? "Pay the registration fee using the details below and attach your payment slip."
+                : "Fee payment details are shared after your registration is confirmed."}
             </p>
+            {open && payment.accounts.length ? (
+              <div className="mt-5">
+                <PaymentDetails payment={payment} fee={competitions.find((item) => item.name === selected)?.fee} />
+              </div>
+            ) : null}
             <div className="mt-6">
               {open ? (
-                <TeamRegistrationForm competitions={competitions} inbox={inbox} selected={selected} onSelect={setSelected} />
+                <TeamRegistrationForm
+                  competitions={competitions}
+                  inbox={inbox}
+                  selected={selected}
+                  onSelect={setSelected}
+                  slipMode={slipMode}
+                />
               ) : (
                 <ClosedNotice what="Competition registration" email={inbox} />
               )}

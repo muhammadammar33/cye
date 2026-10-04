@@ -1,17 +1,36 @@
 import { and, eq, gt } from "drizzle-orm";
 import { after, type NextRequest } from "next/server";
+import { uploadImage } from "@/lib/blob";
 import { getCompetitions, getSettings } from "@/lib/content";
 import { db, schema as s } from "@/lib/db";
 import { SUBMISSION_TYPES, type SubmissionType } from "@/lib/db/schema";
 import { confirmationEmail, sendEmail, teamEmail } from "@/lib/email";
+import { slipModeFor } from "@/lib/payment";
 import { GATE, INBOX, normalize, TYPE_LABELS } from "@/lib/submissions";
+
+const MAX_SLIP_BYTES = 4 * 1024 * 1024;
 
 const json = (body: unknown, status = 200) => Response.json(body, { status });
 
 export async function POST(req: NextRequest) {
   if (!db) return json({ ok: false, error: "Submissions are temporarily unavailable. Please email us instead." }, 503);
 
-  const raw = await req.text();
+  // JSON for most forms; multipart (payload + slip image) when a competition payment slip is attached.
+  let raw: string;
+  let slip: File | null = null;
+  if (req.headers.get("content-type")?.includes("multipart/form-data")) {
+    let form: FormData;
+    try {
+      form = await req.formData();
+    } catch {
+      return json({ ok: false, error: "Invalid request." }, 400);
+    }
+    raw = String(form.get("payload") ?? "");
+    const file = form.get("slip");
+    if (file instanceof File && file.size > 0) slip = file;
+  } else {
+    raw = await req.text();
+  }
   if (raw.length > 50_000) return json({ ok: false, error: "Submission is too large." }, 413);
   let body: { type?: string; data?: Record<string, unknown>; hp?: string };
   try {
@@ -42,6 +61,20 @@ export async function POST(req: NextRequest) {
     .limit(1);
   if (recent.length) return json({ ok: false, error: "You just submitted this form. Please wait a minute before trying again." }, 429);
 
+  if (type === "competition") {
+    const mode = slipModeFor(settings);
+    if (mode === "required" && !slip) return json({ ok: false, error: "Please upload a photo or screenshot of your payment slip." }, 422);
+    if (slip && mode !== "off") {
+      try {
+        result.data.paymentSlip = await uploadImage(slip, "payment-slips", { maxBytes: MAX_SLIP_BYTES, unguessable: true });
+      } catch (err) {
+        return json({ ok: false, error: err instanceof Error ? err.message : "Could not upload the payment slip." }, 422);
+      }
+    }
+  } else if (slip) {
+    return json({ ok: false, error: "Invalid request." }, 400);
+  }
+
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || null;
   const [row] = await db
     .insert(s.submissions)
@@ -63,7 +96,7 @@ export async function POST(req: NextRequest) {
       sendEmail({
         to: result.email,
         subject: `${kind} received | Capital Youth Expo 2026`,
-        html: confirmationEmail(ctx, type, result.name, kind, result.subject ?? ""),
+        html: confirmationEmail(ctx, type, result.name, kind, result.subject ?? "", type === "competition" ? { payment: settings.payment, fee: String(result.data.fee ?? ""), slipReceived: Boolean(result.data.paymentSlip) } : undefined),
         replyTo: settings.inboxes[INBOX[type]],
       }),
     ]);
