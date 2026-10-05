@@ -1,6 +1,6 @@
 "use client";
 
-import { ExternalLink, FileText, Gauge, Inbox, LogOut, Settings, Users } from "lucide-react";
+import { ExternalLink, FileText, Gauge, History, Inbox, LogOut, Settings, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { logout } from "@/app/admin/actions";
@@ -43,6 +43,10 @@ export function AdminNav({ content, name, newCount }: { content: { key: string; 
       <Link href="/admin/admins" className={link("/admin/admins", isActive("/admin/admins"))}>
         <Users className="h-4 w-4" aria-hidden />
         Admins
+      </Link>
+      <Link href="/admin/activity" className={link("/admin/activity", isActive("/admin/activity"))}>
+        <History className="h-4 w-4" aria-hidden />
+        Activity log
       </Link>
       <div className="mt-auto space-y-1 border-t border-white/15 pt-4">
         <Link href="/" target="_blank" className={link("/", false)}>

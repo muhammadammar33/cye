@@ -11,6 +11,8 @@ import { db, requireDb, schema as s } from "@/lib/db";
 import { SUBMISSION_STATUSES, type SubmissionStatus } from "@/lib/db/schema";
 import { DEFAULT_SETTINGS } from "@/lib/defaults";
 import { ENTITIES, isEntity, type FieldDef } from "@/lib/admin/entities";
+import { STATUS_LABELS, TYPE_NAMES } from "@/lib/admin/labels";
+import { logActivity } from "@/lib/admin/log";
 
 export type ActionState = { error?: string; ok?: string } | undefined;
 
@@ -26,6 +28,18 @@ function refreshContent() {
   revalidatePath("/", "layout");
 }
 
+/** JSON with object keys sorted, so stored and submitted values compare equal regardless of key order. */
+function stable(value: unknown): string {
+  return JSON.stringify(value ?? null, (_key, v) =>
+    v && typeof v === "object" && !Array.isArray(v) && !(v instanceof Date) ? Object.fromEntries(Object.entries(v).sort(([a], [b]) => a.localeCompare(b))) : v,
+  );
+}
+
+/** A readable name for a content row: its name, or a contact's label. */
+function rowName(row: Record<string, unknown> | undefined) {
+  return String(row?.name ?? row?.label ?? "");
+}
+
 /* ----------------------------- auth ----------------------------- */
 
 export async function login(_prev: ActionState, form: FormData): Promise<ActionState> {
@@ -35,7 +49,11 @@ export async function login(_prev: ActionState, form: FormData): Promise<ActionS
   const password = String(form.get("password") ?? "");
   const [admin] = await db.select().from(s.admins).where(eq(s.admins.email, email)).limit(1);
   const ok = await bcrypt.compare(password, admin?.passwordHash ?? DUMMY_HASH);
-  if (!admin || !ok) return { error: "Incorrect email or password." };
+  if (!admin || !ok) {
+    await logActivity(admin ?? { id: null, name: "Unknown", email: email.slice(0, 200) }, "Failed sign-in");
+    return { error: "Incorrect email or password." };
+  }
+  await logActivity(admin, "Signed in");
   await db.update(s.admins).set({ lastLoginAt: new Date() }).where(eq(s.admins.id, admin.id));
   await startSession(admin);
   const next = String(form.get("next") ?? "");
@@ -43,6 +61,7 @@ export async function login(_prev: ActionState, form: FormData): Promise<ActionS
 }
 
 export async function logout() {
+  await logActivity(await requireAdmin(), "Signed out");
   await endSession();
   redirect("/admin/login");
 }
@@ -50,27 +69,44 @@ export async function logout() {
 /* -------------------------- submissions -------------------------- */
 
 export async function updateSubmission(id: number, _prev: ActionState, form: FormData): Promise<ActionState> {
-  await requireAdmin();
+  const me = await requireAdmin();
   const status = String(form.get("status")) as SubmissionStatus;
   if (!SUBMISSION_STATUSES.includes(status)) return { error: "Invalid status." };
   const notes = String(form.get("notes") ?? "").slice(0, 10_000);
-  await requireDb().update(s.submissions).set({ status, notes: notes || null }).where(eq(s.submissions.id, id));
+  const database = requireDb();
+  const [before] = await database.select().from(s.submissions).where(eq(s.submissions.id, id)).limit(1);
+  if (!before) return { error: "This submission no longer exists." };
+  await database.update(s.submissions).set({ status, notes: notes || null }).where(eq(s.submissions.id, id));
+  const changes = [
+    before.status !== status ? `Status: ${STATUS_LABELS[before.status]} to ${STATUS_LABELS[status]}` : "",
+    (before.notes ?? "") !== notes ? "Notes updated" : "",
+  ].filter(Boolean);
+  if (changes.length) await logActivity(me, "Updated submission", `#${id} ${before.name} (${TYPE_NAMES[before.type]})`, changes.join("; "));
   revalidatePath("/admin", "layout");
   return { ok: "Saved." };
 }
 
 export async function bulkSetStatus(form: FormData) {
-  await requireAdmin();
+  const me = await requireAdmin();
   const status = String(form.get("bulkStatus")) as SubmissionStatus;
   const ids = form.getAll("ids").map(Number).filter(Number.isInteger);
   if (!SUBMISSION_STATUSES.includes(status) || ids.length === 0) return;
   await requireDb().update(s.submissions).set({ status }).where(inArray(s.submissions.id, ids));
+  await logActivity(
+    me,
+    "Bulk status change",
+    `${ids.length} submission${ids.length === 1 ? "" : "s"}: ${ids.map((n) => `#${n}`).join(", ")}`,
+    `Marked as ${STATUS_LABELS[status]}`,
+  );
   revalidatePath("/admin", "layout");
 }
 
 export async function deleteSubmission(id: number) {
-  await requireAdmin();
-  await requireDb().delete(s.submissions).where(eq(s.submissions.id, id));
+  const me = await requireAdmin();
+  const database = requireDb();
+  const [row] = await database.select().from(s.submissions).where(eq(s.submissions.id, id)).limit(1);
+  await database.delete(s.submissions).where(eq(s.submissions.id, id));
+  if (row) await logActivity(me, "Deleted submission", `#${id} ${row.name} (${TYPE_NAMES[row.type]})`, `${row.email}${row.subject ? `, ${row.subject}` : ""}`);
   revalidatePath("/admin", "layout");
   redirect("/admin/submissions");
 }
@@ -115,7 +151,7 @@ async function readField(field: FieldDef, form: FormData, folder: string): Promi
 }
 
 export async function saveEntity(entity: string, id: number | null, _prev: ActionState, form: FormData): Promise<ActionState> {
-  await requireAdmin();
+  const me = await requireAdmin();
   if (!isEntity(entity)) return { error: "Unknown content type." };
   const def = ENTITIES[entity];
   const values: Record<string, unknown> = {};
@@ -128,33 +164,44 @@ export async function saveEntity(entity: string, id: number | null, _prev: Actio
 
   const table = def.table as typeof s.guests; // every content table has an id plus the fields above
   const database = requireDb();
-  if (id) await database.update(table).set(values).where(eq(table.id, id));
-  else await database.insert(table).values(values as typeof table.$inferInsert);
+  if (id) {
+    const [before] = (await database.select().from(table).where(eq(table.id, id)).limit(1)) as Record<string, unknown>[];
+    await database.update(table).set(values).where(eq(table.id, id));
+    const changed = def.fields.filter((f) => stable(before?.[f.name]) !== stable(values[f.name])).map((f) => f.label);
+    if (changed.length) await logActivity(me, `Edited ${def.singular}`, rowName(values), `Changed: ${changed.join(", ")}`);
+  } else {
+    await database.insert(table).values(values as typeof table.$inferInsert);
+    await logActivity(me, `Added ${def.singular}`, rowName(values));
+  }
   refreshContent();
   redirect(`/admin/content/${entity}?saved=1`);
 }
 
 export async function deleteEntity(entity: string, id: number) {
-  await requireAdmin();
+  const me = await requireAdmin();
   if (!isEntity(entity)) return;
   const table = ENTITIES[entity].table as typeof s.guests;
-  await requireDb().delete(table).where(eq(table.id, id));
+  const database = requireDb();
+  const [row] = (await database.select().from(table).where(eq(table.id, id)).limit(1)) as Record<string, unknown>[];
+  await database.delete(table).where(eq(table.id, id));
+  if (row) await logActivity(me, `Deleted ${ENTITIES[entity].singular}`, rowName(row));
   refreshContent();
   redirect(`/admin/content/${entity}?deleted=1`);
 }
 
 export async function toggleEntityActive(entity: string, id: number, active: boolean) {
-  await requireAdmin();
+  const me = await requireAdmin();
   if (!isEntity(entity)) return;
   const table = ENTITIES[entity].table as typeof s.guests;
-  await requireDb().update(table).set({ active }).where(eq(table.id, id));
+  const [row] = (await requireDb().update(table).set({ active }).where(eq(table.id, id)).returning()) as Record<string, unknown>[];
+  if (row) await logActivity(me, `${active ? "Showed" : "Hid"} ${ENTITIES[entity].singular}`, rowName(row), active ? "Now visible on the website" : "Hidden from the website");
   refreshContent();
 }
 
 /* ---------------------------- settings ---------------------------- */
 
 export async function saveSettings(_prev: ActionState, form: FormData): Promise<ActionState> {
-  await requireAdmin();
+  const me = await requireAdmin();
   const database = requireDb();
   const registration_open = Object.fromEntries(Object.keys(DEFAULT_SETTINGS.registration_open).map((k) => [k, form.get(`registration_open.${k}`) === "on"]));
   const inboxes: Record<string, string> = {};
@@ -183,17 +230,37 @@ export async function saveSettings(_prev: ActionState, form: FormData): Promise<
     instructions: String(form.get("payment.instructions") ?? "").trim().slice(0, 2000),
     accounts,
   };
-  for (const [key, value] of Object.entries({ registration_open, inboxes, social_links, payment })) {
+  const next = { registration_open, inboxes, social_links, payment };
+  const current = new Map((await database.select().from(s.settings)).map((row) => [row.key, row.value]));
+  const changed: string[] = [];
+  for (const [key, value] of Object.entries(next)) {
+    if (stable(current.get(key)) !== stable(value)) changed.push(SETTING_LABELS[key] ?? key);
     await database.insert(s.settings).values({ key, value }).onConflictDoUpdate({ target: s.settings.key, set: { value } });
   }
+  if (changed.length) await logActivity(me, "Updated settings", changed.join(", "), describeRegistrationChanges(current.get("registration_open"), registration_open));
   refreshContent();
   return { ok: "Settings saved. The website updates within a few seconds." };
+}
+
+const SETTING_LABELS: Record<string, string> = {
+  registration_open: "Registrations",
+  inboxes: "Notification inboxes",
+  social_links: "Social links",
+  payment: "Competition payments",
+};
+
+/** e.g. "Opened: visitor. Closed: ambassador" so the log shows which forms were switched. */
+function describeRegistrationChanges(before: unknown, after: Record<string, boolean>) {
+  const prev = (before ?? DEFAULT_SETTINGS.registration_open) as Record<string, boolean>;
+  const opened = Object.keys(after).filter((k) => after[k] && !prev[k]);
+  const closed = Object.keys(after).filter((k) => !after[k] && prev[k]);
+  return [opened.length ? `Opened: ${opened.join(", ")}` : "", closed.length ? `Closed: ${closed.join(", ")}` : ""].filter(Boolean).join(". ") || null;
 }
 
 /* ----------------------------- admins ----------------------------- */
 
 export async function createAdmin(_prev: ActionState, form: FormData): Promise<ActionState> {
-  await requireAdmin();
+  const me = await requireAdmin();
   const name = String(form.get("name") ?? "").trim();
   const email = String(form.get("email") ?? "").trim().toLowerCase();
   const password = String(form.get("password") ?? "");
@@ -203,6 +270,7 @@ export async function createAdmin(_prev: ActionState, form: FormData): Promise<A
   const [existing] = await database.select({ id: s.admins.id }).from(s.admins).where(eq(s.admins.email, email)).limit(1);
   if (existing) return { error: "An admin with that email already exists." };
   await database.insert(s.admins).values({ name, email, passwordHash: await bcrypt.hash(password, 12) });
+  await logActivity(me, "Added admin", `${name} (${email})`);
   revalidatePath("/admin/admins");
   return { ok: `Added ${email}.` };
 }
@@ -213,7 +281,8 @@ export async function deleteAdmin(id: number) {
   const database = requireDb();
   const [{ n }] = await database.select({ n: count() }).from(s.admins);
   if (n <= 1) return;
-  await database.delete(s.admins).where(eq(s.admins.id, id));
+  const [removed] = await database.delete(s.admins).where(eq(s.admins.id, id)).returning();
+  if (removed) await logActivity(me, "Removed admin", `${removed.name} (${removed.email})`);
   revalidatePath("/admin/admins");
 }
 
@@ -226,5 +295,6 @@ export async function changePassword(_prev: ActionState, form: FormData): Promis
   const [admin] = await database.select().from(s.admins).where(eq(s.admins.id, me.id)).limit(1);
   if (!admin || !(await bcrypt.compare(current, admin.passwordHash))) return { error: "Current password is incorrect." };
   await database.update(s.admins).set({ passwordHash: await bcrypt.hash(next, 12) }).where(eq(s.admins.id, me.id));
+  await logActivity(me, "Changed own password");
   return { ok: "Password updated." };
 }
