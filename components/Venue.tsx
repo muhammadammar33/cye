@@ -73,13 +73,26 @@ export function Venue() {
               <ExternalLink className="h-4 w-4" aria-hidden />
             </a>
           </div>
-          <iframe
-            title={`Map of ${VENUE.name}, ${VENUE.city}`}
-            src={VENUE.mapEmbed}
-            className="h-72 w-full border-0 sm:h-96"
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-          />
+          <div className="relative">
+            <iframe
+              title={`Map of ${VENUE.name}, ${VENUE.city}`}
+              src={VENUE.mapEmbed}
+              className="h-72 w-full border-0 sm:h-96"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              allowFullScreen
+            />
+            {/* Always-visible fallback in case the embed is blocked by the browser or network. */}
+            <a
+              href={VENUE.mapLink}
+              target="_blank"
+              rel="noreferrer"
+              className="absolute bottom-3 right-3 inline-flex items-center gap-1.5 rounded-full bg-white px-4 py-2 text-xs font-bold text-cye-blue shadow-card hover:text-cye-orange"
+            >
+              <MapPin className="h-4 w-4 text-cye-orange" aria-hidden />
+              Open in Google Maps
+            </a>
+          </div>
         </FadeIn>
       </Container>
     </section>

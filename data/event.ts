@@ -109,7 +109,9 @@ export const ADVISORY_BOARD = [
 export const VENUE = {
   name: "Pak-China Friendship Center",
   city: "Islamabad",
-  mapEmbed: "https://www.google.com/maps?q=Pak-China+Friendship+Center,+Islamabad&output=embed",
+  // Direct /maps/embed URL: the older ?output=embed form 301-redirects with X-Frame-Options,
+  // which some mobile browsers enforce and block (ERR_BLOCKED_BY_RESPONSE).
+  mapEmbed: "https://www.google.com/maps/embed?origin=mfe&pb=!1m3!2m1!1sPak-China+Friendship+Center+Islamabad!6i15",
   mapLink: "https://www.google.com/maps/search/?api=1&query=Pak-China+Friendship+Center+Islamabad",
   floors: [
     {

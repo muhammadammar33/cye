@@ -116,16 +116,22 @@ export function Hero() {
             />
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Button href="/#contact" className="w-full sm:w-auto">
-              Become a Sponsor
+            <Button href="/competitions" className="w-full sm:w-auto sm:px-9">
+              Register Now
             </Button>
-            <Button href="/#about" variant="secondary" className="w-full sm:w-auto">
-              Explore the Expo
+            <Button href="/#contact" variant="secondary" className="w-full sm:w-auto">
+              Become a Sponsor
             </Button>
           </div>
           <p className="mt-5 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm font-semibold">
-            <Link href="/competitions" className="text-cye-blue hover:text-cye-orange">
-              Competitions
+            <Link href="/visitors" className="text-cye-blue hover:text-cye-orange">
+              Visitor Pass
+            </Link>
+            <Link href="/projects" className="text-cye-blue hover:text-cye-orange">
+              Project Exhibition
+            </Link>
+            <Link href="/startups" className="text-cye-blue hover:text-cye-orange">
+              Startup Arena
             </Link>
             <Link href="/ambassadors" className="text-cye-blue hover:text-cye-orange">
               Campus Ambassador
