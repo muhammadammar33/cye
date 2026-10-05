@@ -170,7 +170,7 @@ export function Navbar() {
           )}
         </ul>
         <div className="hidden xl:block">
-          <Button href="/#contact">Become a Sponsor</Button>
+          <Button href="/competitions">Register Now</Button>
         </div>
         <button
           type="button"
@@ -227,8 +227,8 @@ export function Navbar() {
                 ),
               )}
               <li className="pt-2" onClick={() => setOpen(false)}>
-                <Button href="/#contact" className="w-full">
-                  Become a Sponsor
+                <Button href="/competitions" className="w-full">
+                  Register Now
                 </Button>
               </li>
             </ul>
