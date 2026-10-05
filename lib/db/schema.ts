@@ -122,3 +122,20 @@ export const settings = pgTable("settings", {
   value: jsonb("value").notNull(),
   ...timestamps,
 });
+
+/** Who did what in the admin dashboard. Name and email are copied in so entries survive an admin's removal. */
+export const adminLogs = pgTable(
+  "admin_logs",
+  {
+    id: serial("id").primaryKey(),
+    adminId: integer("admin_id").references(() => admins.id, { onDelete: "set null" }),
+    adminName: text("admin_name").notNull(),
+    adminEmail: text("admin_email").notNull(),
+    action: text("action").notNull(),
+    target: text("target"),
+    details: text("details"),
+    ip: text("ip"),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [index("admin_logs_created_idx").on(t.createdAt), index("admin_logs_admin_idx").on(t.adminId)],
+);
