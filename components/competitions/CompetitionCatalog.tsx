@@ -63,7 +63,8 @@ export function CompetitionCatalog({ competitions, onSelect }: { competitions: C
               >
                 {item.vertical}
               </span>
-              <h3 className="mt-4 font-heading text-lg font-extrabold text-cye-blue">{item.name}</h3>
+              {/* Two-line title slot keeps the audience line and description aligned across a row. */}
+              <h3 className="mt-4 line-clamp-2 min-h-[2lh] font-heading text-lg font-extrabold leading-snug text-cye-blue">{item.name}</h3>
               <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-cye-ink/45">
                 {item.audience}
               </p>
@@ -74,14 +75,14 @@ export function CompetitionCatalog({ competitions, onSelect }: { competitions: C
                     <Wallet className="h-3.5 w-3.5 text-cye-orange" aria-hidden />
                     Fee
                   </dt>
-                  <dd className="mt-0.5 font-heading font-bold text-cye-blue">{item.fee}</dd>
+                  <dd className="mt-0.5 min-h-[2lh] font-heading font-bold leading-snug text-cye-blue">{item.fee}</dd>
                 </div>
                 <div className="rounded-2xl bg-cye-mist px-3 py-2">
                   <dt className="flex items-center gap-1 font-semibold uppercase tracking-wide text-cye-ink/45">
                     <Users className="h-3.5 w-3.5 text-cye-orange" aria-hidden />
                     Team
                   </dt>
-                  <dd className="mt-0.5 font-heading font-bold text-cye-blue">
+                  <dd className="mt-0.5 min-h-[2lh] font-heading font-bold leading-snug text-cye-blue">
                     {teamLabel(item.teamMin, item.teamMax)}
                   </dd>
                 </div>

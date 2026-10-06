@@ -115,6 +115,13 @@ async function applyPatches(db: Db) {
     console.log("[db-setup] applied patch 2026-10-rulebooks");
   }
 
+  if (!applied.has("2026-10-ctf-fee")) {
+    // Shorter fee label so the card stays the same height as its neighbours (early bird / regular).
+    await db.update(s.competitions).set({ fee: "PKR 1,500 / 1,800" }).where(eq(s.competitions.fee, "PKR 1,500 early bird, PKR 1,800 regular"));
+    applied.add("2026-10-ctf-fee");
+    console.log("[db-setup] applied patch 2026-10-ctf-fee");
+  }
+
   const value = [...applied];
   await db.insert(s.settings).values({ key: "applied_patches", value }).onConflictDoUpdate({ target: s.settings.key, set: { value } });
 }
