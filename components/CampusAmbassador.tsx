@@ -1,5 +1,5 @@
 import { Check } from "lucide-react";
-import { AMBASSADOR_DUTIES, AMBASSADOR_PERKS } from "@/data/event";
+import { AMBASSADOR_DUTIES, AMBASSADOR_PERKS, GENDERS } from "@/data/event";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { ClosedNotice } from "@/components/ui/ClosedNotice";
 import { Container } from "@/components/ui/Container";
@@ -65,6 +65,7 @@ export async function CampusAmbassador() {
                     { name: "name", label: "Full name", required: true, autoComplete: "name" },
                     { name: "email", label: "Email", type: "email", required: true, autoComplete: "email" },
                     { name: "phone", label: "Phone", type: "tel", required: true, autoComplete: "tel" },
+                    { name: "gender", label: "Gender", type: "select", required: true, options: [...GENDERS], placeholder: "Select gender" },
                     { name: "institution", label: "Institution", required: true, autoComplete: "organization" },
                     { name: "program", label: "Degree / program", required: true },
                     {

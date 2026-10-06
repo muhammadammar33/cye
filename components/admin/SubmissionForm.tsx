@@ -4,8 +4,9 @@ import type { ActionState } from "@/app/admin/actions";
 import { FormMessage, inputClass, SubmitButton, useFormAction } from "@/components/admin/ui";
 import { STATUS_LABELS } from "@/lib/admin/labels";
 import { SUBMISSION_STATUSES } from "@/lib/db/schema";
+import { GENDERS } from "@/data/event";
 
-export function SubmissionForm({ status, notes, action }: { status: string; notes: string; action: (state: ActionState, form: FormData) => Promise<ActionState> }) {
+export function SubmissionForm({ status, notes, gender, showGender, action }: { status: string; notes: string; gender: string; showGender: boolean; action: (state: ActionState, form: FormData) => Promise<ActionState> }) {
   const { state, onSubmit, pending } = useFormAction(action);
   return (
     <form onSubmit={onSubmit} className="space-y-4">
@@ -19,6 +20,21 @@ export function SubmissionForm({ status, notes, action }: { status: string; note
           ))}
         </select>
       </label>
+      {showGender ? (
+        <label className="block text-sm font-semibold text-slate-700">
+          Gender
+          <select name="gender" defaultValue={gender} className={inputClass}>
+            <option value="">Not set</option>
+            {GENDERS.map((g) => (
+              <option key={g} value={g}>
+                {g}
+              </option>
+            ))}
+          </select>
+        </label>
+      ) : (
+        <input type="hidden" name="gender" value={gender} />
+      )}
       <label className="block text-sm font-semibold text-slate-700">
         Internal notes
         <textarea name="notes" rows={6} defaultValue={notes} placeholder="Calls made, payment received, follow-ups..." className={inputClass} />

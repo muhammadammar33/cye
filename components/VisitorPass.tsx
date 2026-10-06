@@ -1,5 +1,5 @@
 import { CalendarDays, Check, MapPin } from "lucide-react";
-import { EDUCATION_LEVELS, EVENT, VISITOR_PERKS } from "@/data/event";
+import { EDUCATION_LEVELS, EVENT, GENDERS, VISITOR_PERKS } from "@/data/event";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { ClosedNotice } from "@/components/ui/ClosedNotice";
 import { Container } from "@/components/ui/Container";
@@ -58,6 +58,7 @@ export async function VisitorPass() {
                     { name: "name", label: "Full name", required: true, autoComplete: "name" },
                     { name: "email", label: "Email", type: "email", required: true, autoComplete: "email" },
                     { name: "phone", label: "Phone (WhatsApp preferred)", type: "tel", required: true, autoComplete: "tel" },
+                    { name: "gender", label: "Gender", type: "select", required: true, options: [...GENDERS], placeholder: "Select gender" },
                     { name: "age", label: "Age", type: "number", required: true },
                     { name: "institution", label: "Institution / organization", required: true, autoComplete: "organization" },
                     {

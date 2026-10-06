@@ -28,7 +28,9 @@ export default async function SubmissionPage({ params }: { params: Promise<{ id:
   const [row] = await requireDb().select().from(s.submissions).where(eq(s.submissions.id, id)).limit(1);
   if (!row) notFound();
 
-  const { members, paymentSlip, ...data } = row.data as Record<string, unknown> & { members?: Record<string, string>[]; paymentSlip?: string };
+  // Gender is edited in the sidebar form (the column is the source of truth), so it is not repeated here.
+  const { members, paymentSlip, gender: _gender, ...data } = row.data as Record<string, unknown> & { members?: Record<string, string>[]; paymentSlip?: string };
+  void _gender;
   const phone = row.phone?.replace(/[^\d+]/g, "");
   const whatsapp = phone ? phone.replace(/^0/, "92").replace(/^\+/, "") : null;
 
@@ -97,6 +99,7 @@ export default async function SubmissionPage({ params }: { params: Promise<{ id:
                     <th className="px-5 py-2">Email</th>
                     <th className="px-5 py-2">Phone</th>
                     <th className="px-5 py-2">Institution</th>
+                    <th className="px-5 py-2">Gender</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -107,6 +110,7 @@ export default async function SubmissionPage({ params }: { params: Promise<{ id:
                       <td className="px-5 py-2.5">{m.email}</td>
                       <td className="px-5 py-2.5">{m.phone}</td>
                       <td className="px-5 py-2.5">{m.institution}</td>
+                      <td className="px-5 py-2.5">{m.gender ?? ""}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -117,7 +121,7 @@ export default async function SubmissionPage({ params }: { params: Promise<{ id:
 
         <aside className="space-y-4">
           <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <SubmissionForm status={row.status} notes={row.notes ?? ""} action={updateSubmission.bind(null, row.id)} />
+            <SubmissionForm status={row.status} notes={row.notes ?? ""} gender={row.gender ?? ""} showGender={row.type !== "sponsor" && row.type !== "contact"} action={updateSubmission.bind(null, row.id)} />
           </section>
           <section className="rounded-2xl border border-red-100 bg-white p-5 shadow-sm">
             <ConfirmForm action={deleteSubmission.bind(null, row.id)} message={`Delete ${row.name}'s submission permanently?`}>

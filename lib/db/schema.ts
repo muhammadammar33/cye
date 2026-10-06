@@ -45,6 +45,8 @@ export const submissions = pgTable(
     email: text("email").notNull(),
     phone: text("phone"),
     institution: text("institution"),
+    /** "Male" | "Female"; empty for older submissions until an admin sets it. */
+    gender: text("gender"),
     // What the submission is about: competition name, project title, sponsor tier, subject line...
     subject: text("subject"),
     data: jsonb("data").$type<Record<string, unknown>>().notNull(),

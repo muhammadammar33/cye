@@ -1,4 +1,4 @@
-import { EVENT, VOLUNTEER_ROLES } from "@/data/event";
+import { EVENT, GENDERS, VOLUNTEER_ROLES } from "@/data/event";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Card } from "@/components/ui/Card";
 import { ClosedNotice } from "@/components/ui/ClosedNotice";
@@ -46,6 +46,7 @@ export async function VolunteerForm() {
                   { name: "name", label: "Full name", required: true, autoComplete: "name" },
                   { name: "email", label: "Email", type: "email", required: true, autoComplete: "email" },
                   { name: "phone", label: "Phone", type: "tel", required: true, autoComplete: "tel" },
+                  { name: "gender", label: "Gender", type: "select", required: true, options: [...GENDERS], placeholder: "Select gender" },
                   { name: "institution", label: "Institution / organization", required: true, autoComplete: "organization" },
                   {
                     name: "role",

@@ -101,16 +101,6 @@ async function applyPatches(db: Db) {
       .where(byName("Capture the Flag"))
       .returning({ id: s.competitions.id });
     if (merged.length) await db.update(s.competitions).set({ active: false }).where(byName("Cyber Security"));
-    // New: Debate.
-    const [debate] = await db.select({ id: s.competitions.id }).from(s.competitions).where(byName("Debate"));
-    if (!debate) {
-      const [anchor] = await db.select({ sortOrder: s.competitions.sortOrder }).from(s.competitions).where(byName("Youth Parliament"));
-      const d = comp("Debate");
-      await db.insert(s.competitions).values({
-        name: d.name, vertical: d.vertical, audience: d.audience, fee: d.fee, teamMin: d.teamMin, teamMax: d.teamMax,
-        description: d.desc, rulebook: d.rulebook, sortOrder: anchor?.sortOrder ?? 100,
-      });
-    }
     applied.add("2026-10-rulebooks");
     console.log("[db-setup] applied patch 2026-10-rulebooks");
   }
@@ -120,6 +110,12 @@ async function applyPatches(db: Db) {
     await db.update(s.competitions).set({ fee: "PKR 1,500 / 1,800" }).where(eq(s.competitions.fee, "PKR 1,500 early bird, PKR 1,800 regular"));
     applied.add("2026-10-ctf-fee");
     console.log("[db-setup] applied patch 2026-10-ctf-fee");
+  }
+
+  if (!applied.has("2026-10-remove-debate")) {
+    await db.delete(s.competitions).where(byName("Debate"));
+    applied.add("2026-10-remove-debate");
+    console.log("[db-setup] applied patch 2026-10-remove-debate");
   }
 
   const value = [...applied];

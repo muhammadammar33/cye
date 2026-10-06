@@ -250,8 +250,6 @@ export const COMPETITIONS = [
     desc: "Shoot and edit a short-form reel that tells a story and grabs attention." },
   { name: "Youth Parliament", vertical: "Spectrum", audience: "University", fee: "PKR 1,000", teamMin: 1, teamMax: 1, rulebook: "/rulebooks/13-youth-parliament.pdf",
     desc: "Debate national issues in a parliamentary session modelled on the National Assembly." },
-  { name: "Debate", vertical: "Literary", audience: "Schools & University", fee: "PKR 500", teamMin: 2, teamMax: 2, rulebook: "/rulebooks/12-debate.pdf",
-    desc: "Teams of two argue for or against the motion, with motions announced 30 minutes before each round." },
   { name: "Naat", vertical: "Literary", audience: "Schools & University", fee: "PKR 500", teamMin: 1, teamMax: 1, rulebook: "/rulebooks/16-naat.pdf",
     desc: "Recite a naat in honour of the Prophet (PBUH) before a panel of judges." },
   { name: "Qirat", vertical: "Literary", audience: "Schools & University", fee: "PKR 500", teamMin: 1, teamMax: 1, rulebook: "/rulebooks/17-qirat.pdf",
@@ -318,6 +316,8 @@ export const ARTICLE_COMPETITION = {
     "Submit only through the official submission link.",
   ],
 };
+
+export const GENDERS = ["Male", "Female"] as const;
 
 export const EDUCATION_LEVELS = [
   "Grade 9", "Grade 10", "Grade 11 (Intermediate Part 1)", "Grade 12 (Intermediate Part 2)",

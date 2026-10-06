@@ -1,5 +1,5 @@
 import { Check } from "lucide-react";
-import { STARTUP_PERKS, STARTUP_SECTORS, STARTUP_STAGES } from "@/data/event";
+import { GENDERS, STARTUP_PERKS, STARTUP_SECTORS, STARTUP_STAGES } from "@/data/event";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { ClosedNotice } from "@/components/ui/ClosedNotice";
 import { Container } from "@/components/ui/Container";
@@ -61,6 +61,7 @@ export async function StartupArena() {
                     { name: "name", label: "Founder name", required: true, autoComplete: "name" },
                     { name: "email", label: "Email", type: "email", required: true, autoComplete: "email" },
                     { name: "phone", label: "Phone", type: "tel", required: true, autoComplete: "tel" },
+                    { name: "gender", label: "Founder gender", type: "select", required: true, options: [...GENDERS], placeholder: "Select gender" },
                     {
                       name: "sector",
                       label: "Sector",

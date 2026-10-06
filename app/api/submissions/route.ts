@@ -78,7 +78,7 @@ export async function POST(req: NextRequest) {
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || null;
   const [row] = await db
     .insert(s.submissions)
-    .values({ type, name: result.name, email: result.email, phone: result.phone, institution: result.institution, subject: result.subject, data: result.data, ip })
+    .values({ type, name: result.name, email: result.email, phone: result.phone, institution: result.institution, gender: result.gender, subject: result.subject, data: result.data, ip })
     .returning({ id: s.submissions.id });
 
   const kind = TYPE_LABELS[type];
