@@ -8,7 +8,7 @@ import { DEFAULT_SETTINGS, type SiteSettings } from "@/lib/defaults";
 /** Cache tag for every piece of site content; admin edits expire it. */
 export const CONTENT_TAG = "content";
 
-export type Competition = { id?: number; name: string; vertical: string; audience: string; fee: string; teamMin: number; teamMax: number; desc: string };
+export type Competition = { id?: number; name: string; vertical: string; audience: string; fee: string; teamMin: number; teamMax: number; desc: string; rulebook: string | null };
 export type Person = { id?: number; name: string; role: string; photo: string | null };
 export type Advisor = Person & { bio: string };
 export type TeamMember = Person & { featured: boolean };
@@ -48,7 +48,7 @@ export const getCompetitions = cached(
   "competitions",
   async () =>
     (await need().select().from(s.competitions).where(eq(s.competitions.active, true)).orderBy(asc(s.competitions.sortOrder), asc(s.competitions.id))).map(
-      (c) => ({ id: c.id, name: c.name, vertical: c.vertical, audience: c.audience, fee: c.fee, teamMin: c.teamMin, teamMax: c.teamMax, desc: c.description }),
+      (c) => ({ id: c.id, name: c.name, vertical: c.vertical, audience: c.audience, fee: c.fee, teamMin: c.teamMin, teamMax: c.teamMax, desc: c.description, rulebook: c.rulebook }),
     ),
   fallback.competitions,
 );

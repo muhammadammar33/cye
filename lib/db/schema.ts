@@ -70,6 +70,8 @@ export const competitions = pgTable("competitions", {
   teamMin: integer("team_min").default(1).notNull(),
   teamMax: integer("team_max").default(1).notNull(),
   description: text("description").notNull(),
+  /** Link to the competition's rule book PDF, e.g. /rulebooks/01-robo-war.pdf */
+  rulebook: text("rulebook"),
   ...content,
 });
 

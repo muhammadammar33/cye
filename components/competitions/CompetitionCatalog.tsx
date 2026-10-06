@@ -1,6 +1,6 @@
 "use client";
 
-import { Users, Wallet } from "lucide-react";
+import { FileText, Users, Wallet } from "lucide-react";
 import { useState } from "react";
 import { VERTICALS } from "@/data/event";
 import type { Competition } from "@/lib/content";
@@ -94,6 +94,17 @@ export function CompetitionCatalog({ competitions, onSelect }: { competitions: C
               >
                 Register
               </Button>
+              {item.rulebook ? (
+                <a
+                  href={item.rulebook}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-3 inline-flex items-center justify-center gap-1.5 text-sm font-semibold text-cye-orange hover:text-cye-orange-lt"
+                >
+                  <FileText className="h-4 w-4" aria-hidden />
+                  View rule book
+                </a>
+              ) : null}
             </Card>
           </FadeIn>
         ))}

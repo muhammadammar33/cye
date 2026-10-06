@@ -1,7 +1,7 @@
 import { VERTICALS } from "@/data/event";
 import { schema as s } from "@/lib/db";
 
-export type FieldKind = "text" | "textarea" | "number" | "checkbox" | "select" | "list" | "image";
+export type FieldKind = "text" | "textarea" | "number" | "checkbox" | "select" | "list" | "image" | "link";
 export type FieldDef = { name: string; label: string; kind: FieldKind; required?: boolean; options?: string[]; help?: string };
 
 type EntityDef = {
@@ -37,6 +37,7 @@ export const ENTITIES = {
       { name: "teamMin", label: "Min team size", kind: "number", required: true },
       { name: "teamMax", label: "Max team size", kind: "number", required: true },
       { name: "description", label: "Description", kind: "textarea", required: true },
+      { name: "rulebook", label: "Rule book link", kind: "link", help: "A site file such as /rulebooks/01-robo-war.pdf, or a full https:// link. Leave empty to hide the rule book button." },
       order,
       active,
     ],
