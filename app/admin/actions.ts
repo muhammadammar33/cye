@@ -12,6 +12,7 @@ import { SUBMISSION_STATUSES, type SubmissionStatus } from "@/lib/db/schema";
 import { DEFAULT_SETTINGS } from "@/lib/defaults";
 import { ENTITIES, isEntity, type FieldDef } from "@/lib/admin/entities";
 import { STATUS_LABELS, TYPE_NAMES } from "@/lib/admin/labels";
+import { GENDERS } from "@/data/event";
 import { logActivity } from "@/lib/admin/log";
 
 export type ActionState = { error?: string; ok?: string } | undefined;
@@ -73,15 +74,32 @@ export async function updateSubmission(id: number, _prev: ActionState, form: For
   const status = String(form.get("status")) as SubmissionStatus;
   if (!SUBMISSION_STATUSES.includes(status)) return { error: "Invalid status." };
   const notes = String(form.get("notes") ?? "").slice(0, 10_000);
+  const genderRaw = String(form.get("gender") ?? "");
+  const gender = (GENDERS as readonly string[]).includes(genderRaw) ? genderRaw : null;
   const database = requireDb();
   const [before] = await database.select().from(s.submissions).where(eq(s.submissions.id, id)).limit(1);
   if (!before) return { error: "This submission no longer exists." };
-  await database.update(s.submissions).set({ status, notes: notes || null }).where(eq(s.submissions.id, id));
+  await database.update(s.submissions).set({ status, notes: notes || null, gender }).where(eq(s.submissions.id, id));
   const changes = [
+    (before.gender ?? null) !== gender ? `Gender: ${before.gender ?? "not set"} to ${gender ?? "not set"}` : "",
     before.status !== status ? `Status: ${STATUS_LABELS[before.status]} to ${STATUS_LABELS[status]}` : "",
     (before.notes ?? "") !== notes ? "Notes updated" : "",
   ].filter(Boolean);
   if (changes.length) await logActivity(me, "Updated submission", `#${id} ${before.name} (${TYPE_NAMES[before.type]})`, changes.join("; "));
+  revalidatePath("/admin", "layout");
+  return { ok: "Saved." };
+}
+
+/** Inline gender picker in the submissions table. */
+export async function setSubmissionGender(id: number, value: string): Promise<ActionState> {
+  const me = await requireAdmin();
+  const gender = (GENDERS as readonly string[]).includes(value) ? value : null;
+  const database = requireDb();
+  const [before] = await database.select().from(s.submissions).where(eq(s.submissions.id, id)).limit(1);
+  if (!before) return { error: "This submission no longer exists." };
+  if ((before.gender ?? null) === gender) return { ok: "Saved." };
+  await database.update(s.submissions).set({ gender }).where(eq(s.submissions.id, id));
+  await logActivity(me, "Updated submission", `#${id} ${before.name} (${TYPE_NAMES[before.type]})`, `Gender: ${before.gender ?? "not set"} to ${gender ?? "not set"}`);
   revalidatePath("/admin", "layout");
   return { ok: "Saved." };
 }

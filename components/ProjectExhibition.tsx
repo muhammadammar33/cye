@@ -1,5 +1,5 @@
 import { Award, Medal, Trophy } from "lucide-react";
-import { PROJECT_PRIZES, VERTICALS } from "@/data/event";
+import { GENDERS, PROJECT_PRIZES, VERTICALS } from "@/data/event";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Card } from "@/components/ui/Card";
 import { ClosedNotice } from "@/components/ui/ClosedNotice";
@@ -79,6 +79,7 @@ export async function ProjectExhibition() {
                   { name: "name", label: "Team lead name", required: true, autoComplete: "name" },
                   { name: "email", label: "Team lead email", type: "email", required: true, autoComplete: "email" },
                   { name: "phone", label: "Team lead phone", type: "tel", required: true, autoComplete: "tel" },
+                  { name: "gender", label: "Team lead gender", type: "select", required: true, options: [...GENDERS], placeholder: "Select gender" },
                   { name: "members", label: "Other team members", placeholder: "Names, comma separated" },
                   { name: "description", label: "Project description", type: "textarea", required: true },
                   { name: "document", label: "Project document link", type: "url", required: true, placeholder: "https://", span: 2 },

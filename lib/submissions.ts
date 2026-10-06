@@ -3,6 +3,7 @@ import { z } from "zod";
 import type { SubmissionType } from "@/lib/db/schema";
 import type { RegistrationKey } from "@/lib/defaults";
 import type { Competition } from "@/lib/content";
+import { GENDERS } from "@/data/event";
 
 const text = (max = 200) => z.string().trim().min(1, "Required").max(max);
 const optional = (max = 500) => z.string().trim().max(max).optional().or(z.literal("")).transform((v) => v || undefined);
@@ -13,8 +14,9 @@ const consent = z.union([z.literal("on"), z.literal(true), z.literal("true")], {
 const longText = (max = 5000) => z.string().trim().min(1, "Required").max(max);
 
 const consents = { consent_accuracy: consent, consent_rules: consent };
+const gender = z.enum(GENDERS, { message: "Select a gender" });
 
-const member = z.object({ name: text(), email, phone, institution: text() });
+const member = z.object({ name: text(), email, phone, institution: text(), gender });
 
 export const SCHEMAS = {
   competition: z.object({
@@ -27,24 +29,24 @@ export const SCHEMAS = {
     ...consents,
   }),
   project: z.object({
-    title: text(), vertical: text(), institution: text(), name: text(), email, phone,
+    title: text(), vertical: text(), institution: text(), name: text(), email, phone, gender,
     members: optional(500), description: longText(), document: url,
     video: url.optional().or(z.literal("")), website: url.optional().or(z.literal("")),
     ...consents,
   }),
   startup: z.object({
-    startup: text(), name: text(), email, phone, sector: text(), stage: text(),
+    startup: text(), name: text(), email, phone, gender, sector: text(), stage: text(),
     team: z.coerce.number().int().min(1).max(500), website: url.optional().or(z.literal("")),
     deck: url, description: longText(), ...consents,
   }),
   visitor: z.object({
-    name: text(), email, phone, age: z.coerce.number().int().min(5).max(120), institution: text(), level: text(), ...consents,
+    name: text(), email, phone, gender, age: z.coerce.number().int().min(5).max(120), institution: text(), level: text(), ...consents,
   }),
   ambassador: z.object({
-    name: text(), email, phone, institution: text(), program: text(), year: text(), city: text(), message: longText(),
+    name: text(), email, phone, gender, institution: text(), program: text(), year: text(), city: text(), message: longText(),
   }),
   volunteer: z.object({
-    name: text(), email, phone, institution: text(), role: text(), availability: text(), message: longText(),
+    name: text(), email, phone, gender, institution: text(), role: text(), availability: text(), message: longText(),
   }),
   sponsor: z.object({ name: text(), organization: text(), email, tier: text(), message: longText() }),
   contact: z.object({ name: text(), email, subject: text(), message: longText() }),
@@ -88,6 +90,7 @@ export type Normalized = {
   email: string;
   phone?: string;
   institution?: string;
+  gender?: string;
   subject?: string;
   data: Record<string, unknown>;
 };
@@ -111,21 +114,21 @@ export function normalize(type: SubmissionType, raw: Record<string, unknown>, co
       if (c.members.length !== c.size) return { error: "members: Add details for every team member" };
       if (c.size > 1 && !c.team) return { error: "team: Team name is required" };
       const lead = c.members[0];
-      return { name: lead.name, email: lead.email, phone: lead.phone, institution: lead.institution, subject: comp.name, data: { ...d, fee: comp.fee } };
+      return { name: lead.name, email: lead.email, phone: lead.phone, institution: lead.institution, gender: lead.gender, subject: comp.name, data: { ...d, fee: comp.fee } };
     }
     case "project":
-      return { name: d.name as string, email: d.email as string, phone: d.phone as string, institution: d.institution as string, subject: d.title as string, data: d };
+      return { name: d.name as string, email: d.email as string, phone: d.phone as string, gender: d.gender as string, institution: d.institution as string, subject: d.title as string, data: d };
     case "startup":
-      return { name: d.name as string, email: d.email as string, phone: d.phone as string, institution: d.startup as string, subject: d.startup as string, data: d };
+      return { name: d.name as string, email: d.email as string, phone: d.phone as string, gender: d.gender as string, institution: d.startup as string, subject: d.startup as string, data: d };
     case "sponsor":
       return { name: d.name as string, email: d.email as string, institution: d.organization as string, subject: d.tier as string, data: d };
     case "contact":
       return { name: d.name as string, email: d.email as string, subject: d.subject as string, data: d };
     case "volunteer":
-      return { name: d.name as string, email: d.email as string, phone: d.phone as string, institution: d.institution as string, subject: d.role as string, data: d };
+      return { name: d.name as string, email: d.email as string, phone: d.phone as string, gender: d.gender as string, institution: d.institution as string, subject: d.role as string, data: d };
     case "ambassador":
-      return { name: d.name as string, email: d.email as string, phone: d.phone as string, institution: d.institution as string, subject: d.program as string, data: d };
+      return { name: d.name as string, email: d.email as string, phone: d.phone as string, gender: d.gender as string, institution: d.institution as string, subject: d.program as string, data: d };
     case "visitor":
-      return { name: d.name as string, email: d.email as string, phone: d.phone as string, institution: d.institution as string, subject: d.level as string, data: d };
+      return { name: d.name as string, email: d.email as string, phone: d.phone as string, gender: d.gender as string, institution: d.institution as string, subject: d.level as string, data: d };
   }
 }

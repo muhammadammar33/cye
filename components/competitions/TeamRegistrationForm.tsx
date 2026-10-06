@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { ImageUp, Loader2, Send } from "lucide-react";
-import { EDUCATION_LEVELS } from "@/data/event";
+import { EDUCATION_LEVELS, GENDERS } from "@/data/event";
 import { teamLabel } from "@/components/competitions/CompetitionCatalog";
 import { Field, fieldClass } from "@/components/ui/Field";
 import { FormError, FormSuccess, Honeypot, type FormState } from "@/components/ui/FormStatus";
@@ -53,6 +53,7 @@ export function TeamRegistrationForm({
         email: get(`member${i}_email`),
         phone: get(`member${i}_phone`),
         institution: get(`member${i}_institution`),
+        gender: get(`member${i}_gender`),
       })),
       ...Object.fromEntries(CONSENT_FIELDS.filter((field) => form.get(field.name)).map((field) => [field.name, "on"])),
     };
@@ -161,6 +162,18 @@ export function TeamRegistrationForm({
               autoComplete={i === 0 ? "organization" : "off"}
               className={fieldClass}
             />
+          </Field>
+          <Field label="Gender">
+            <select name={`member${i}_gender`} required defaultValue="" className={fieldClass}>
+              <option value="" disabled>
+                Select gender
+              </option>
+              {GENDERS.map((gender) => (
+                <option key={gender} value={gender}>
+                  {gender}
+                </option>
+              ))}
+            </select>
           </Field>
         </fieldset>
       ))}
