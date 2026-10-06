@@ -141,6 +141,11 @@ async function readField(field: FieldDef, form: FormData, folder: string): Promi
       if (value && !allowed) throw new Error(`${field.label}: upload the photo here, or use a site path such as /guests/name.webp.`);
       return value || null;
     }
+    case "link": {
+      const value = String(raw ?? "").trim();
+      if (value && !value.startsWith("/") && !value.startsWith("https://")) throw new Error(`${field.label} must start with / or https://`);
+      return value || null;
+    }
     default: {
       const value = String(raw ?? "").trim();
       if (field.required && !value) throw new Error(`${field.label} is required.`);

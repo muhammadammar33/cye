@@ -4,7 +4,7 @@
  * Skips quietly when DATABASE_URL is not set.
  */
 import bcrypt from "bcryptjs";
-import { count } from "drizzle-orm";
+import { count, eq, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import { migrate } from "drizzle-orm/postgres-js/migrator";
 import postgres from "postgres";
@@ -34,7 +34,7 @@ async function main() {
 
   await seed(s.competitions, E.COMPETITIONS.map((c, i) => ({
     name: c.name, vertical: c.vertical, audience: c.audience, fee: c.fee,
-    teamMin: c.teamMin, teamMax: c.teamMax, description: c.desc, sortOrder: i,
+    teamMin: c.teamMin, teamMax: c.teamMax, description: c.desc, rulebook: c.rulebook, sortOrder: i,
   })), "competitions");
   await seed(s.guests, E.GUESTS.map((g, i) => ({
     name: g.name, role: g.role, photo: g.photo ? `/guests/${g.photo}.webp` : null, sortOrder: i,
@@ -55,6 +55,8 @@ async function main() {
     await db.insert(s.settings).values({ key, value }).onConflictDoNothing();
   }
 
+  await applyPatches(db);
+
   const [{ n: adminCount }] = await db.select({ n: count() }).from(s.admins);
   const email = process.env.ADMIN_EMAIL?.trim().toLowerCase();
   const password = process.env.ADMIN_PASSWORD;
@@ -68,6 +70,53 @@ async function main() {
   }
 
   await client.end();
+}
+
+type Db = ReturnType<typeof drizzle<typeof s>>;
+
+/**
+ * One-time content changes for databases that were seeded before the change. Each patch runs once
+ * (recorded in settings.applied_patches) and matches rows by name, so admin edits elsewhere are kept.
+ */
+async function applyPatches(db: Db) {
+  const [row] = await db.select().from(s.settings).where(eq(s.settings.key, "applied_patches"));
+  const applied = new Set((row?.value as string[] | undefined) ?? []);
+  const byName = (name: string) => sql`lower(${s.competitions.name}) = ${name.toLowerCase()}`;
+  const comp = (name: string) => E.COMPETITIONS.find((c) => c.name === name)!;
+
+  if (!applied.has("2026-10-rulebooks")) {
+    // Rule books and official team sizes.
+    for (const c of E.COMPETITIONS) {
+      if (!c.rulebook) continue;
+      await db.update(s.competitions).set({ rulebook: c.rulebook, teamMin: c.teamMin, teamMax: c.teamMax }).where(byName(c.name));
+    }
+    for (const name of ["Speed Programming", "Speech (English / Urdu)"]) {
+      await db.update(s.competitions).set({ description: comp(name).desc }).where(byName(name));
+    }
+    // Capture the Flag and Cyber Security become one competition, per rule book 07.
+    const ctf = comp("Cyber Security (Capture The Flag)");
+    const merged = await db
+      .update(s.competitions)
+      .set({ name: ctf.name, fee: ctf.fee, teamMin: ctf.teamMin, teamMax: ctf.teamMax, description: ctf.desc, rulebook: ctf.rulebook })
+      .where(byName("Capture the Flag"))
+      .returning({ id: s.competitions.id });
+    if (merged.length) await db.update(s.competitions).set({ active: false }).where(byName("Cyber Security"));
+    // New: Debate.
+    const [debate] = await db.select({ id: s.competitions.id }).from(s.competitions).where(byName("Debate"));
+    if (!debate) {
+      const [anchor] = await db.select({ sortOrder: s.competitions.sortOrder }).from(s.competitions).where(byName("Youth Parliament"));
+      const d = comp("Debate");
+      await db.insert(s.competitions).values({
+        name: d.name, vertical: d.vertical, audience: d.audience, fee: d.fee, teamMin: d.teamMin, teamMax: d.teamMax,
+        description: d.desc, rulebook: d.rulebook, sortOrder: anchor?.sortOrder ?? 100,
+      });
+    }
+    applied.add("2026-10-rulebooks");
+    console.log("[db-setup] applied patch 2026-10-rulebooks");
+  }
+
+  const value = [...applied];
+  await db.insert(s.settings).values({ key: "applied_patches", value }).onConflictDoUpdate({ target: s.settings.key, set: { value } });
 }
 
 main().catch((err) => {
