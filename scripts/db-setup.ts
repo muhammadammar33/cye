@@ -4,7 +4,7 @@
  * Skips quietly when DATABASE_URL is not set.
  */
 import bcrypt from "bcryptjs";
-import { count, eq, sql } from "drizzle-orm";
+import { and, count, eq, inArray, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import { migrate } from "drizzle-orm/postgres-js/migrator";
 import postgres from "postgres";
@@ -110,6 +110,16 @@ async function applyPatches(db: Db) {
     await db.update(s.competitions).set({ fee: "PKR 1,500 / 1,800" }).where(eq(s.competitions.fee, "PKR 1,500 early bird, PKR 1,800 regular"));
     applied.add("2026-10-ctf-fee");
     console.log("[db-setup] applied patch 2026-10-ctf-fee");
+  }
+
+  if (!applied.has("2026-10-ctf-website-fee")) {
+    // Fees come from the website, not the rule books: back to Capture the Flag's original PKR 2,000.
+    await db
+      .update(s.competitions)
+      .set({ fee: "PKR 2,000" })
+      .where(and(byName("Cyber Security (Capture The Flag)"), inArray(s.competitions.fee, ["PKR 1,500 / 1,800", "PKR 1,500 early bird, PKR 1,800 regular"])));
+    applied.add("2026-10-ctf-website-fee");
+    console.log("[db-setup] applied patch 2026-10-ctf-website-fee");
   }
 
   if (!applied.has("2026-10-remove-debate")) {

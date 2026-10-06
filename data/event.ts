@@ -224,7 +224,7 @@ export const NAV_LINKS: (NavItem & { children?: NavItem[] })[] = [
   { href: "/contact", label: "Contact" },
 ];
 
-// Registration fees are confirmed. Team sizes and rule books follow the official CYE competition rule books.
+// Registration fees are the website's own (rule book fees are not used). Team sizes and rule books follow the official CYE competition rule books.
 export const COMPETITIONS = [
   { name: "Robo War", vertical: "TechNexus", audience: "University", fee: "PKR 2,500", teamMin: 2, teamMax: 4, rulebook: "/rulebooks/01-robo-war.pdf",
     desc: "Build a combat robot and battle it out in the arena until one bot is left standing." },
@@ -234,7 +234,7 @@ export const COMPETITIONS = [
     desc: "Pilot your drone through a timed obstacle course. Fastest clean run wins." },
   { name: "Hackathon", vertical: "TechNexus", audience: "University", fee: "PKR 2,000", teamMin: 3, teamMax: 5, rulebook: "/rulebooks/04-hackathon.pdf",
     desc: "Build, ship, and pitch a working prototype in a high-energy coding sprint." },
-  { name: "Cyber Security (Capture The Flag)", vertical: "TechNexus", audience: "University", fee: "PKR 1,500 / 1,800", teamMin: 2, teamMax: 4, rulebook: "/rulebooks/07-cyber-security-ctf.pdf",
+  { name: "Cyber Security (Capture The Flag)", vertical: "TechNexus", audience: "University", fee: "PKR 2,000", teamMin: 2, teamMax: 4, rulebook: "/rulebooks/07-cyber-security-ctf.pdf",
     desc: "Solve jeopardy-style security challenges in web exploitation, cryptography, forensics, reverse engineering and OSINT to capture the most flags." },
   { name: "Speed Programming", vertical: "TechNexus", audience: "University", fee: "PKR 1,500", teamMin: 1, teamMax: 2, rulebook: "/rulebooks/05-speed-programming.pdf",
     desc: "Solve algorithmic problems against the clock in an ICPC-style contest, solo or as a pair." },
