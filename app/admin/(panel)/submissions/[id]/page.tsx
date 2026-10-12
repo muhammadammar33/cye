@@ -121,7 +121,7 @@ export default async function SubmissionPage({ params }: { params: Promise<{ id:
 
         <aside className="space-y-4">
           <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <SubmissionForm status={row.status} notes={row.notes ?? ""} gender={row.gender ?? ""} showGender={row.type !== "sponsor" && row.type !== "contact"} action={updateSubmission.bind(null, row.id)} />
+            <SubmissionForm status={row.status} notes={row.notes ?? ""} gender={row.gender ?? ""} showGender={row.type !== "sponsor" && row.type !== "contact"} payment={row.paymentStatus ?? ""} showPayment={row.type === "competition"} action={updateSubmission.bind(null, row.id)} />
           </section>
           <section className="rounded-2xl border border-red-100 bg-white p-5 shadow-sm">
             <ConfirmForm action={deleteSubmission.bind(null, row.id)} message={`Delete ${row.name}'s submission permanently?`}>

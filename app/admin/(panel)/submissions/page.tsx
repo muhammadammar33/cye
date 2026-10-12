@@ -4,9 +4,9 @@ import Link from "next/link";
 import { bulkSetStatus } from "@/app/admin/actions";
 import { formatDate, PageHeader, StatusBadge } from "@/components/admin/StatusBadge";
 import { inputClass, SubmitButton } from "@/components/admin/ui";
-import { STATUS_LABELS, TYPE_NAMES } from "@/lib/admin/labels";
+import { PAYMENT_STATUSES, STATUS_LABELS, TYPE_NAMES } from "@/lib/admin/labels";
 import { filterQuery, institutionOptions, parseFilters, whereFor } from "@/lib/admin/submissionQuery";
-import { GenderSelect, UniversityFilter } from "@/components/admin/SubmissionFilters";
+import { GenderSelect, PaymentSelect, UniversityFilter } from "@/components/admin/SubmissionFilters";
 import { GENDERS } from "@/data/event";
 import { requireDb, schema as s } from "@/lib/db";
 import { SUBMISSION_STATUSES, SUBMISSION_TYPES } from "@/lib/db/schema";
@@ -39,7 +39,7 @@ export default async function SubmissionsPage({ searchParams }: { searchParams: 
         }
       />
 
-      <form className="mb-4 grid gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-[1fr_1fr_0.8fr_1.4fr_1.6fr_auto]">
+      <form className="mb-4 grid gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-[1fr_1fr_0.9fr_1fr_1.3fr_1.4fr_auto]">
         <select name="type" defaultValue={filters.type ?? ""} className={inputClass} aria-label="Form">
           <option value="">All forms</option>
           {SUBMISSION_TYPES.map((t) => (
@@ -65,6 +65,15 @@ export default async function SubmissionsPage({ searchParams }: { searchParams: 
           ))}
           <option value="none">Not set</option>
         </select>
+        <select name="payment" defaultValue={filters.payment ?? ""} className={inputClass} aria-label="Payment verification">
+          <option value="">Any payment</option>
+          {PAYMENT_STATUSES.map((p) => (
+            <option key={p} value={p}>
+              {p}
+            </option>
+          ))}
+          <option value="none">Not checked</option>
+        </select>
         <div>
           <UniversityFilter key={(filters.uni ?? []).join("|")} options={universities} selected={filters.uni ?? []} />
         </div>
@@ -76,12 +85,13 @@ export default async function SubmissionsPage({ searchParams }: { searchParams: 
 
       <form action={bulkSetStatus}>
         <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
-          <table className="w-full min-w-[860px] text-left text-sm">
+          <table className="w-full min-w-[980px] text-left text-sm">
             <thead className="border-b border-slate-200 bg-slate-50 text-xs font-bold uppercase tracking-wider text-slate-500">
               <tr>
                 <th className="w-10 px-4 py-3" />
                 <th className="px-4 py-3">Name</th>
                 <th className="px-4 py-3">Gender</th>
+                <th className="px-4 py-3">Payment</th>
                 <th className="px-4 py-3">Form</th>
                 <th className="px-4 py-3">About</th>
                 <th className="px-4 py-3">Status</th>
@@ -91,7 +101,7 @@ export default async function SubmissionsPage({ searchParams }: { searchParams: 
             <tbody className="divide-y divide-slate-100">
               {rows.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-4 py-10 text-center text-slate-500">
+                  <td colSpan={8} className="px-4 py-10 text-center text-slate-500">
                     No submissions match these filters.
                   </td>
                 </tr>
@@ -112,6 +122,9 @@ export default async function SubmissionsPage({ searchParams }: { searchParams: 
                     </td>
                     <td className="px-4 py-3">
                       {row.type === "sponsor" || row.type === "contact" ? <span className="text-xs text-slate-300">n/a</span> : <GenderSelect id={row.id} value={row.gender} name={row.name} />}
+                    </td>
+                    <td className="px-4 py-3">
+                      {row.type === "competition" ? <PaymentSelect id={row.id} value={row.paymentStatus} name={row.name} /> : <span className="text-xs text-slate-300">n/a</span>}
                     </td>
                     <td className="px-4 py-3 text-slate-600">{TYPE_NAMES[row.type]}</td>
                     <td className="px-4 py-3 text-slate-600">

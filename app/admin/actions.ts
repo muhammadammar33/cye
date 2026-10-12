@@ -11,7 +11,7 @@ import { db, requireDb, schema as s } from "@/lib/db";
 import { SUBMISSION_STATUSES, type SubmissionStatus } from "@/lib/db/schema";
 import { DEFAULT_SETTINGS } from "@/lib/defaults";
 import { ENTITIES, isEntity, type FieldDef } from "@/lib/admin/entities";
-import { STATUS_LABELS, TYPE_NAMES } from "@/lib/admin/labels";
+import { PAYMENT_STATUSES, STATUS_LABELS, TYPE_NAMES } from "@/lib/admin/labels";
 import { GENDERS } from "@/data/event";
 import { logActivity } from "@/lib/admin/log";
 
@@ -76,11 +76,17 @@ export async function updateSubmission(id: number, _prev: ActionState, form: For
   const notes = String(form.get("notes") ?? "").slice(0, 10_000);
   const genderRaw = String(form.get("gender") ?? "");
   const gender = (GENDERS as readonly string[]).includes(genderRaw) ? genderRaw : null;
+  const paymentRaw = form.get("payment");
   const database = requireDb();
   const [before] = await database.select().from(s.submissions).where(eq(s.submissions.id, id)).limit(1);
   if (!before) return { error: "This submission no longer exists." };
-  await database.update(s.submissions).set({ status, notes: notes || null, gender }).where(eq(s.submissions.id, id));
+  const paymentStatus =
+    before.type === "competition" && paymentRaw !== null
+      ? ((PAYMENT_STATUSES as readonly string[]).includes(String(paymentRaw)) ? String(paymentRaw) : null)
+      : before.paymentStatus;
+  await database.update(s.submissions).set({ status, notes: notes || null, gender, paymentStatus }).where(eq(s.submissions.id, id));
   const changes = [
+    (before.paymentStatus ?? null) !== (paymentStatus ?? null) ? `Payment: ${before.paymentStatus ?? "not checked"} to ${paymentStatus ?? "not checked"}` : "",
     (before.gender ?? null) !== gender ? `Gender: ${before.gender ?? "not set"} to ${gender ?? "not set"}` : "",
     before.status !== status ? `Status: ${STATUS_LABELS[before.status]} to ${STATUS_LABELS[status]}` : "",
     (before.notes ?? "") !== notes ? "Notes updated" : "",
@@ -90,16 +96,26 @@ export async function updateSubmission(id: number, _prev: ActionState, form: For
   return { ok: "Saved." };
 }
 
-/** Inline gender picker in the submissions table. */
-export async function setSubmissionGender(id: number, value: string): Promise<ActionState> {
+const INLINE_FIELDS = {
+  gender: { column: "gender", label: "Gender", empty: "not set", allowed: GENDERS as readonly string[], competitionOnly: false },
+  payment: { column: "paymentStatus", label: "Payment", empty: "not checked", allowed: PAYMENT_STATUSES as readonly string[], competitionOnly: true },
+} as const;
+export type InlineField = keyof typeof INLINE_FIELDS;
+
+/** Inline pickers in the submissions table (gender, payment verification); saves immediately. */
+export async function setSubmissionField(id: number, field: InlineField, value: string): Promise<ActionState> {
   const me = await requireAdmin();
-  const gender = (GENDERS as readonly string[]).includes(value) ? value : null;
+  const def = INLINE_FIELDS[field];
+  if (!def) return { error: "Unknown field." };
+  const next = def.allowed.includes(value) ? value : null;
   const database = requireDb();
   const [before] = await database.select().from(s.submissions).where(eq(s.submissions.id, id)).limit(1);
   if (!before) return { error: "This submission no longer exists." };
-  if ((before.gender ?? null) === gender) return { ok: "Saved." };
-  await database.update(s.submissions).set({ gender }).where(eq(s.submissions.id, id));
-  await logActivity(me, "Updated submission", `#${id} ${before.name} (${TYPE_NAMES[before.type]})`, `Gender: ${before.gender ?? "not set"} to ${gender ?? "not set"}`);
+  if (def.competitionOnly && before.type !== "competition") return { error: `${def.label} only applies to competition registrations.` };
+  const prev = (before[def.column] as string | null) ?? null;
+  if (prev === next) return { ok: "Saved." };
+  await database.update(s.submissions).set({ [def.column]: next }).where(eq(s.submissions.id, id));
+  await logActivity(me, "Updated submission", `#${id} ${before.name} (${TYPE_NAMES[before.type]})`, `${def.label}: ${prev ?? def.empty} to ${next ?? def.empty}`);
   revalidatePath("/admin", "layout");
   return { ok: "Saved." };
 }
