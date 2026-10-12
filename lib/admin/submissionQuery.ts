@@ -3,11 +3,15 @@ import { and, asc, eq, ilike, inArray, isNull, or, sql, type SQL } from "drizzle
 import { requireDb, schema as s } from "@/lib/db";
 import { SUBMISSION_STATUSES, SUBMISSION_TYPES, type SubmissionStatus, type SubmissionType } from "@/lib/db/schema";
 import { GENDERS } from "@/data/event";
+import { PAYMENT_STATUSES } from "@/lib/admin/labels";
 
 export const GENDER_FILTERS = [...GENDERS, "none"] as const;
 export type GenderFilter = (typeof GENDER_FILTERS)[number];
 
-export type SubmissionFilters = { type?: SubmissionType; status?: SubmissionStatus; gender?: GenderFilter; q?: string; uni?: string[] };
+export const PAYMENT_FILTERS = [...PAYMENT_STATUSES, "none"] as const;
+export type PaymentFilter = (typeof PAYMENT_FILTERS)[number];
+
+export type SubmissionFilters = { type?: SubmissionType; status?: SubmissionStatus; gender?: GenderFilter; payment?: PaymentFilter; q?: string; uni?: string[] };
 
 /**
  * Institution names as typed by applicants, folded so "COMSATS", " comsats " and "Comsats." count as one.
@@ -21,12 +25,14 @@ export function parseFilters(params: Record<string, string | string[] | undefine
   const type = one(params.type);
   const status = one(params.status);
   const gender = one(params.gender);
+  const payment = one(params.payment);
   const q = one(params.q)?.trim();
   const uni = [...new Set(many(params.uni).map((u) => u.trim().toLowerCase()).filter(Boolean))].slice(0, 200);
   return {
     type: SUBMISSION_TYPES.includes(type as SubmissionType) ? (type as SubmissionType) : undefined,
     status: SUBMISSION_STATUSES.includes(status as SubmissionStatus) ? (status as SubmissionStatus) : undefined,
     gender: GENDER_FILTERS.includes(gender as GenderFilter) ? (gender as GenderFilter) : undefined,
+    payment: PAYMENT_FILTERS.includes(payment as PaymentFilter) ? (payment as PaymentFilter) : undefined,
     q: q || undefined,
     uni: uni.length ? uni : undefined,
   };
@@ -47,6 +53,11 @@ export function whereFor(f: SubmissionFilters): SQL | undefined {
   if (f.type) parts.push(eq(s.submissions.type, f.type));
   if (f.status) parts.push(eq(s.submissions.status, f.status));
   if (f.gender) parts.push(f.gender === "none" ? isNull(s.submissions.gender) : eq(s.submissions.gender, f.gender));
+  if (f.payment) {
+    // Payment only applies to competition registrations.
+    parts.push(eq(s.submissions.type, "competition"));
+    parts.push(f.payment === "none" ? isNull(s.submissions.paymentStatus) : eq(s.submissions.paymentStatus, f.payment));
+  }
   if (f.uni?.length) parts.push(inArray(institutionKey, f.uni));
   if (f.q) {
     const like = `%${f.q.replace(/[%_]/g, "\\$&")}%`;

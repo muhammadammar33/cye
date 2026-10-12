@@ -28,3 +28,14 @@ export const TYPE_NAMES: Record<SubmissionType, string> = {
   sponsor: "Sponsors & stalls",
   contact: "Contact messages",
 };
+
+/** Payment verification for competition registrations (empty = not checked yet). */
+export const PAYMENT_STATUSES = ["Confirmed", "Unpaid", "Fake"] as const;
+export type PaymentStatus = (typeof PAYMENT_STATUSES)[number];
+
+export const PAYMENT_STYLES: Record<PaymentStatus | "", string> = {
+  Confirmed: "border-emerald-300 bg-emerald-50 text-emerald-700",
+  Unpaid: "border-amber-300 bg-amber-50 text-amber-700",
+  Fake: "border-red-300 bg-red-50 text-red-700",
+  "": "border-dashed border-slate-300 bg-white text-slate-400",
+};

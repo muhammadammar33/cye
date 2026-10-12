@@ -18,13 +18,13 @@ export async function GET(req: NextRequest) {
 
   const dataKeys = [...new Set(rows.flatMap((row) => Object.keys(row.data)))].filter((k) => k !== "members" && k !== "gender");
   const hasMembers = rows.some((row) => Array.isArray(row.data.members));
-  const header = ["id", "received", "form", "status", "name", "email", "phone", "gender", "institution", "about", ...dataKeys, ...(hasMembers ? ["members"] : []), "notes"];
+  const header = ["id", "received", "form", "status", "name", "email", "phone", "gender", "institution", "about", "payment verification", ...dataKeys, ...(hasMembers ? ["members"] : []), "notes"];
   const lines = rows.map((row) => {
     const members = Array.isArray(row.data.members)
       ? (row.data.members as Record<string, string>[]).map((m) => `${m.name} <${m.email}> ${m.phone} (${m.institution}${m.gender ? `, ${m.gender}` : ""})`).join("; ")
       : "";
     return [
-      row.id, row.createdAt.toISOString(), row.type, row.status, row.name, row.email, row.phone, row.gender, row.institution, row.subject,
+      row.id, row.createdAt.toISOString(), row.type, row.status, row.name, row.email, row.phone, row.gender, row.institution, row.subject, row.type === "competition" ? (row.paymentStatus ?? "Not checked") : "",
       ...dataKeys.map((k) => row.data[k]),
       ...(hasMembers ? [members] : []),
       row.notes,

@@ -5,8 +5,9 @@ import { FormMessage, inputClass, SubmitButton, useFormAction } from "@/componen
 import { STATUS_LABELS } from "@/lib/admin/labels";
 import { SUBMISSION_STATUSES } from "@/lib/db/schema";
 import { GENDERS } from "@/data/event";
+import { PAYMENT_STATUSES } from "@/lib/admin/labels";
 
-export function SubmissionForm({ status, notes, gender, showGender, action }: { status: string; notes: string; gender: string; showGender: boolean; action: (state: ActionState, form: FormData) => Promise<ActionState> }) {
+export function SubmissionForm({ status, notes, gender, showGender, payment, showPayment, action }: { status: string; notes: string; gender: string; showGender: boolean; payment: string; showPayment: boolean; action: (state: ActionState, form: FormData) => Promise<ActionState> }) {
   const { state, onSubmit, pending } = useFormAction(action);
   return (
     <form onSubmit={onSubmit} className="space-y-4">
@@ -35,6 +36,19 @@ export function SubmissionForm({ status, notes, gender, showGender, action }: { 
       ) : (
         <input type="hidden" name="gender" value={gender} />
       )}
+      {showPayment ? (
+        <label className="block text-sm font-semibold text-slate-700">
+          Payment verification
+          <select name="payment" defaultValue={payment} className={inputClass}>
+            <option value="">Not checked</option>
+            {PAYMENT_STATUSES.map((p) => (
+              <option key={p} value={p}>
+                {p}
+              </option>
+            ))}
+          </select>
+        </label>
+      ) : null}
       <label className="block text-sm font-semibold text-slate-700">
         Internal notes
         <textarea name="notes" rows={6} defaultValue={notes} placeholder="Calls made, payment received, follow-ups..." className={inputClass} />

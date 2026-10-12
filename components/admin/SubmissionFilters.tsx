@@ -2,9 +2,10 @@
 
 import { Check, ChevronDown, Search, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
-import { setSubmissionGender } from "@/app/admin/actions";
+import { setSubmissionField, type InlineField } from "@/app/admin/actions";
 import { inputClass } from "@/components/admin/ui";
 import { GENDERS } from "@/data/event";
+import { PAYMENT_STATUSES, PAYMENT_STYLES, type PaymentStatus } from "@/lib/admin/labels";
 import { cn } from "@/lib/cn";
 
 type Option = { key: string; label: string; count: number };
@@ -128,8 +129,24 @@ export function UniversityFilter({ options, selected }: { options: Option[]; sel
   );
 }
 
-/** Gender picker inside the submissions table; saves as soon as it changes. */
-export function GenderSelect({ id, value, name }: { id: number; value: string | null; name: string }) {
+/** Picker inside the submissions table; saves as soon as it changes. */
+function InlineSelect({
+  id,
+  field,
+  value,
+  label,
+  emptyLabel,
+  options,
+  styleFor,
+}: {
+  id: number;
+  field: InlineField;
+  value: string | null;
+  label: string;
+  emptyLabel: string;
+  options: readonly string[];
+  styleFor: (value: string) => string;
+}) {
   const [current, setCurrent] = useState(value ?? "");
   const [error, setError] = useState(false);
   const [pending, startTransition] = useTransition();
@@ -138,32 +155,57 @@ export function GenderSelect({ id, value, name }: { id: number; value: string | 
     <select
       value={current}
       disabled={pending}
-      aria-label={`Gender of ${name}`}
+      aria-label={label}
       onChange={(e) => {
         const next = e.target.value;
         const prev = current;
         setCurrent(next);
         setError(false);
         startTransition(async () => {
-          const result = await setSubmissionGender(id, next);
+          const result = await setSubmissionField(id, field, next);
           if (result?.error) {
             setCurrent(prev);
             setError(true);
           }
         });
       }}
-      className={cn(
-        "rounded-lg border bg-white px-2 py-1 text-xs font-semibold",
-        error ? "border-red-400 text-red-600" : current ? "border-slate-200 text-slate-700" : "border-dashed border-slate-300 text-slate-400",
-        pending && "opacity-60",
-      )}
+      className={cn("rounded-lg border px-2 py-1 text-xs font-semibold", error ? "border-red-400 bg-white text-red-600" : styleFor(current), pending && "opacity-60")}
     >
-      <option value="">Not set</option>
-      {GENDERS.map((g) => (
-        <option key={g} value={g}>
-          {g}
+      <option value="">{emptyLabel}</option>
+      {options.map((o) => (
+        <option key={o} value={o}>
+          {o}
         </option>
       ))}
     </select>
+  );
+}
+
+export function GenderSelect({ id, value, name }: { id: number; value: string | null; name: string }) {
+  return (
+    <InlineSelect
+      id={id}
+      field="gender"
+      value={value}
+      label={`Gender of ${name}`}
+      emptyLabel="Not set"
+      options={GENDERS}
+      styleFor={(v) => (v ? "border-slate-200 bg-white text-slate-700" : "border-dashed border-slate-300 bg-white text-slate-400")}
+    />
+  );
+}
+
+/** Competition payment verification: Confirmed / Unpaid / Fake. */
+export function PaymentSelect({ id, value, name }: { id: number; value: string | null; name: string }) {
+  return (
+    <InlineSelect
+      id={id}
+      field="payment"
+      value={value}
+      label={`Payment verification for ${name}`}
+      emptyLabel="Not checked"
+      options={PAYMENT_STATUSES}
+      styleFor={(v) => PAYMENT_STYLES[v as PaymentStatus | ""] ?? PAYMENT_STYLES[""]}
+    />
   );
 }

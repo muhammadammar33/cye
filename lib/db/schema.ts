@@ -47,6 +47,8 @@ export const submissions = pgTable(
     institution: text("institution"),
     /** "Male" | "Female"; empty for older submissions until an admin sets it. */
     gender: text("gender"),
+    /** Competition payment check: "Confirmed" | "Unpaid" | "Fake"; empty until an admin checks it. */
+    paymentStatus: text("payment_status"),
     // What the submission is about: competition name, project title, sponsor tier, subject line...
     subject: text("subject"),
     data: jsonb("data").$type<Record<string, unknown>>().notNull(),
