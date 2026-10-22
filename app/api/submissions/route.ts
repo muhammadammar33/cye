@@ -1,14 +1,7 @@
-import { and, eq, gt } from "drizzle-orm";
-import { after, type NextRequest } from "next/server";
-import { uploadImage } from "@/lib/blob";
-import { getCompetitions, getSettings } from "@/lib/content";
-import { db, schema as s } from "@/lib/db";
+import type { NextRequest } from "next/server";
+import { createSubmission } from "@/lib/createSubmission";
+import { db } from "@/lib/db";
 import { SUBMISSION_TYPES, type SubmissionType } from "@/lib/db/schema";
-import { confirmationEmail, sendEmail, teamEmail } from "@/lib/email";
-import { slipModeFor } from "@/lib/payment";
-import { GATE, INBOX, normalize, TYPE_LABELS } from "@/lib/submissions";
-
-const MAX_SLIP_BYTES = 4 * 1024 * 1024;
 
 const json = (body: unknown, status = 200) => Response.json(body, { status });
 
@@ -46,61 +39,9 @@ export async function POST(req: NextRequest) {
   // Honeypot: bots fill the hidden field; pretend success.
   if (body.hp) return json({ ok: true });
 
-  const settings = await getSettings();
-  const gate = GATE[type];
-  if (gate && !settings.registration_open[gate]) return json({ ok: false, error: "This registration is closed." }, 403);
-
-  const result = normalize(type, body.data, await getCompetitions());
-  if ("error" in result) return json({ ok: false, error: result.error }, 422);
-
-  // Basic flood guard: one submission per email and form per minute.
-  const recent = await db
-    .select({ id: s.submissions.id })
-    .from(s.submissions)
-    .where(and(eq(s.submissions.type, type), eq(s.submissions.email, result.email), gt(s.submissions.createdAt, new Date(Date.now() - 60_000))))
-    .limit(1);
-  if (recent.length) return json({ ok: false, error: "You just submitted this form. Please wait a minute before trying again." }, 429);
-
-  if (type === "competition") {
-    const mode = slipModeFor(settings);
-    if (mode === "required" && !slip) return json({ ok: false, error: "Please upload a photo or screenshot of your payment slip." }, 422);
-    if (slip && mode !== "off") {
-      try {
-        result.data.paymentSlip = await uploadImage(slip, "payment-slips", { maxBytes: MAX_SLIP_BYTES, unguessable: true });
-      } catch (err) {
-        return json({ ok: false, error: err instanceof Error ? err.message : "Could not upload the payment slip." }, 422);
-      }
-    }
-  } else if (slip) {
-    return json({ ok: false, error: "Invalid request." }, 400);
-  }
-
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || null;
-  const [row] = await db
-    .insert(s.submissions)
-    .values({ type, name: result.name, email: result.email, phone: result.phone, institution: result.institution, gender: result.gender, subject: result.subject, data: result.data, ip })
-    .returning({ id: s.submissions.id });
-
-  const kind = TYPE_LABELS[type];
   const origin = process.env.SITE_URL?.replace(/\/$/, "") || req.nextUrl.origin;
-  const adminUrl = `${origin}/admin/submissions/${row.id}`;
-  const ctx = { origin, social: settings.social_links };
-  after(async () => {
-    await Promise.all([
-      sendEmail({
-        to: settings.inboxes[INBOX[type]],
-        subject: `New ${kind}: ${result.subject ?? result.name}`,
-        html: teamEmail(ctx, kind, row.id, adminUrl, { name: result.name, email: result.email, ...result.data }),
-        replyTo: result.email,
-      }),
-      sendEmail({
-        to: result.email,
-        subject: `${kind} received | Capital Youth Expo 2026`,
-        html: confirmationEmail(ctx, type, result.name, kind, result.subject ?? "", type === "competition" ? { payment: settings.payment, fee: String(result.data.fee ?? ""), slipReceived: Boolean(result.data.paymentSlip) } : undefined),
-        replyTo: settings.inboxes[INBOX[type]],
-      }),
-    ]);
-  });
-
-  return json({ ok: true, id: row.id });
+  const result = await createSubmission({ type, data: body.data, slip, ip, origin });
+  if (!result.ok) return json({ ok: false, error: result.error }, result.status);
+  return json({ ok: true, id: result.id });
 }
