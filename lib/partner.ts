@@ -56,6 +56,9 @@ export function logPartnerCall(partner: Partner, endpoint: string, details: stri
   return logActivity({ id: null, name: `${partner.name} (API)`, email: `partner:${partner.id}` }, "Partner API call", endpoint, details);
 }
 
+/** Stored on registrations a partner submits, and shown in admin. */
+export const sourceLabel = (partner: Partner) => `${partner.name} API`;
+
 export function siteOrigin(req: NextRequest) {
   return process.env.SITE_URL?.replace(/\/$/, "") || req.nextUrl.origin;
 }
