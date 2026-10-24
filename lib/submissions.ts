@@ -5,6 +5,7 @@ import type { RegistrationKey } from "@/lib/defaults";
 import type { Competition } from "@/lib/content";
 import { GENDERS, TALENT_LEVELS } from "@/data/event";
 import { checkResult, ELIGIBLE_PERCENT, RESULT_TYPES } from "@/lib/eligibility";
+import { needsLanguage, SPEECH_LANGUAGES } from "@/lib/competitionOptions";
 
 const text = (max = 200) => z.string().trim().min(1, "Required").max(max);
 const optional = (max = 500) => z.string().trim().max(max).optional().or(z.literal("")).transform((v) => v || undefined);
@@ -26,6 +27,7 @@ export const SCHEMAS = {
     team: optional(120),
     level: text(),
     idNumber: text(40),
+    language: optional(20),
     members: z.array(member).min(1).max(10),
     ...consents,
   }),
@@ -125,6 +127,8 @@ export function normalize(type: SubmissionType, raw: Record<string, unknown>, co
       if (c.size < comp.teamMin || c.size > comp.teamMax) return { error: `size: ${comp.name} allows ${comp.teamMin} to ${comp.teamMax} members` };
       if (c.members.length !== c.size) return { error: "members: Add details for every team member" };
       if (c.size > 1 && !c.team) return { error: "team: Team name is required" };
+      if (needsLanguage(comp.name) && !(SPEECH_LANGUAGES as readonly string[]).includes(c.language ?? "")) return { error: "language: Choose English or Urdu for the speech" };
+      if (!needsLanguage(comp.name)) delete d.language;
       const lead = c.members[0];
       return { name: lead.name, email: lead.email, phone: lead.phone, institution: lead.institution, gender: lead.gender, subject: comp.name, data: { ...d, fee: comp.fee } };
     }

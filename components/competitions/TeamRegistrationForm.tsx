@@ -10,6 +10,7 @@ import type { Competition } from "@/lib/content";
 import { compressImage } from "@/lib/compressImage";
 import { CONSENT_FIELDS } from "@/lib/consent";
 import { submitForm } from "@/lib/submit";
+import { needsLanguage, SPEECH_LANGUAGES } from "@/lib/competitionOptions";
 
 /** How the payment slip field behaves: hidden, optional or required. */
 export type SlipMode = "off" | "optional" | "required";
@@ -48,6 +49,7 @@ export function TeamRegistrationForm({
       team: get("team"),
       level: get("level"),
       idNumber: get("idNumber"),
+      ...(needsLanguage(selected) ? { language: get("language") } : {}),
       members: Array.from({ length: size }, (_, i) => ({
         name: get(`member${i}_name`),
         email: get(`member${i}_email`),
@@ -116,6 +118,20 @@ export function TeamRegistrationForm({
           ))}
         </select>
       </Field>
+      {needsLanguage(selected) ? (
+        <Field label="Speech language" className="sm:col-span-2">
+          <select name="language" required defaultValue="" className={fieldClass}>
+            <option value="" disabled>
+              Choose English or Urdu
+            </option>
+            {SPEECH_LANGUAGES.map((lang) => (
+              <option key={lang} value={lang}>
+                {lang}
+              </option>
+            ))}
+          </select>
+        </Field>
+      ) : null}
       <Field label={size > 1 ? "Team name" : "Team name (optional)"}>
         <input name="team" required={size > 1} className={fieldClass} placeholder={size > 1 ? "" : "Solo entry"} />
       </Field>
