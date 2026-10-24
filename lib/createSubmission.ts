@@ -54,6 +54,14 @@ export async function createSubmission(opts: {
         return { ok: false, error: err instanceof Error ? err.message : "Could not upload the payment slip.", status: 422 };
       }
     }
+  } else if (type === "talent") {
+    // The result card is required: it is how the team verifies the marks or GPA.
+    if (!slip) return { ok: false, error: "Please upload your result card (photo, screenshot or PDF).", status: 422 };
+    try {
+      result.data.resultCard = await uploadImage(slip, "result-cards", { maxBytes: MAX_SLIP_BYTES, unguessable: true, allowPdf: true });
+    } catch (err) {
+      return { ok: false, error: err instanceof Error ? err.message : "Could not upload the result card.", status: 422 };
+    }
   } else if (slip) {
     return { ok: false, error: "Invalid request.", status: 400 };
   }

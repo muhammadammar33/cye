@@ -27,6 +27,7 @@ export const TYPE_NAMES: Record<SubmissionType, string> = {
   volunteer: "Volunteers",
   sponsor: "Sponsors & stalls",
   contact: "Contact messages",
+  talent: "Talent Tribute",
 };
 
 /** Payment verification for competition registrations (empty = not checked yet). */
