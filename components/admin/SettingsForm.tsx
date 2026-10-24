@@ -11,6 +11,7 @@ const REG_LABELS: Record<string, string> = {
   visitors: "Visitor passes",
   volunteers: "Volunteer applications",
   ambassadors: "Campus Ambassador applications",
+  talent: "Talent Tribute applications",
 };
 
 export function SettingsForm({ settings }: { settings: SiteSettings }) {

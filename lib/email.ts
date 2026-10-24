@@ -32,7 +32,7 @@ export function dataTable(data: Record<string, unknown>): string {
         )
         .join("");
     } else if (typeof value === "string" && /^https:\/\//.test(value)) {
-      cell = `<a href="${esc(value)}" style="color:${ORANGE};font-weight:bold;word-break:break-all">${key === "paymentSlip" ? "View payment slip" : esc(value)}</a>`;
+      cell = `<a href="${esc(value)}" style="color:${ORANGE};font-weight:bold;word-break:break-all">${key === "paymentSlip" ? "View payment slip" : key === "resultCard" ? "View result card" : esc(value)}</a>`;
     } else {
       cell = esc(value).replace(/\n/g, "<br>");
     }
@@ -139,6 +139,7 @@ const NEXT_STEPS: Record<SubmissionType, string> = {
   volunteer: "Our team will review your application and invite you to a short briefing before expo day.",
   sponsor: "Our partnerships team will contact you shortly with the sponsorship deck and to discuss the package that suits you best.",
   contact: "Our team will get back to you as soon as possible, usually within two working days.",
+  talent: "Our team will verify your result card. Students who qualify will be contacted with details of the Talent Tribute ceremony at the expo.",
 };
 
 export function teamEmail(ctx: EmailContext, kind: string, id: number, adminUrl: string, data: Record<string, unknown>) {

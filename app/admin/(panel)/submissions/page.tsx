@@ -132,6 +132,9 @@ export default async function SubmissionsPage({ searchParams }: { searchParams: 
                       {row.data.paymentSlip ? (
                         <span className="ml-2 rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-bold text-emerald-700">Slip</span>
                       ) : null}
+                      {row.data.resultCard ? (
+                        <span className="ml-2 rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-bold text-emerald-700">Result card</span>
+                      ) : null}
                       {typeof row.data.source === "string" ? (
                         <span className="ml-2 rounded-full bg-blue-100 px-2 py-0.5 text-[11px] font-bold text-blue-700">via {row.data.source}</span>
                       ) : null}

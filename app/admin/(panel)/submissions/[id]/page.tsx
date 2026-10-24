@@ -29,7 +29,7 @@ export default async function SubmissionPage({ params }: { params: Promise<{ id:
   if (!row) notFound();
 
   // Gender is edited in the sidebar form (the column is the source of truth), so it is not repeated here.
-  const { members, paymentSlip, gender: _gender, ...data } = row.data as Record<string, unknown> & { members?: Record<string, string>[]; paymentSlip?: string };
+  const { members, paymentSlip, resultCard, gender: _gender, ...data } = row.data as Record<string, unknown> & { members?: Record<string, string>[]; paymentSlip?: string; resultCard?: string };
   void _gender;
   const phone = row.phone?.replace(/[^\d+]/g, "");
   const whatsapp = phone ? phone.replace(/^0/, "92").replace(/^\+/, "") : null;
@@ -85,6 +85,30 @@ export default async function SubmissionPage({ params }: { params: Promise<{ id:
                 <img src={paymentSlip} alt={`Payment slip from ${row.name}`} className="max-h-[420px] rounded-xl border border-slate-200 object-contain" />
               </a>
               <p className="mt-2 text-xs text-slate-500">Check the amount and reference, then set the status to Approved.</p>
+            </section>
+          ) : null}
+
+          {resultCard ? (
+            <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div className="flex items-center justify-between gap-3">
+                <h2 className="font-heading text-base font-bold text-cye-blue">Result card</h2>
+                <a href={resultCard} target="_blank" rel="noreferrer" className="text-sm font-semibold text-cye-orange hover:underline">
+                  Open full size
+                </a>
+              </div>
+              {/\.pdf($|\?)/i.test(resultCard) ? (
+                <a href={resultCard} target="_blank" rel="noreferrer" className="mt-3 inline-flex rounded-xl bg-cye-mist px-4 py-3 text-sm font-semibold text-cye-blue">
+                  Open the PDF result card
+                </a>
+              ) : (
+                <a href={resultCard} target="_blank" rel="noreferrer" className="mt-3 block">
+                  {/* eslint-disable-next-line @next/next/no-img-element -- uploaded result card from Vercel Blob */}
+                  <img src={resultCard} alt={`Result card from ${row.name}`} className="max-h-[520px] rounded-xl border border-slate-200 object-contain" />
+                </a>
+              )}
+              <p className="mt-2 text-xs text-slate-500">
+                Check the marks or GPA on the card against the claimed {typeof data.percentage === "number" ? `${data.percentage}%` : "result"}, then set the status to Approved or Rejected.
+              </p>
             </section>
           ) : null}
 

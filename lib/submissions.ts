@@ -3,7 +3,8 @@ import { z } from "zod";
 import type { SubmissionType } from "@/lib/db/schema";
 import type { RegistrationKey } from "@/lib/defaults";
 import type { Competition } from "@/lib/content";
-import { GENDERS } from "@/data/event";
+import { GENDERS, TALENT_LEVELS } from "@/data/event";
+import { checkResult, ELIGIBLE_PERCENT, RESULT_TYPES } from "@/lib/eligibility";
 
 const text = (max = 200) => z.string().trim().min(1, "Required").max(max);
 const optional = (max = 500) => z.string().trim().max(max).optional().or(z.literal("")).transform((v) => v || undefined);
@@ -50,6 +51,14 @@ export const SCHEMAS = {
   }),
   sponsor: z.object({ name: text(), organization: text(), email, tier: text(), message: longText() }),
   contact: z.object({ name: text(), email, subject: text(), message: longText() }),
+  talent: z.object({
+    name: text(), email, phone, gender, institution: text(), city: text(),
+    level: z.enum(TALENT_LEVELS as [string, ...string[]], { message: "Choose your class or level" }),
+    resultType: z.enum(RESULT_TYPES, { message: "Choose marks or GPA" }),
+    obtained: z.coerce.number().optional(), total: z.coerce.number().optional(),
+    gpa: z.coerce.number().optional(), scale: z.coerce.number().optional(),
+    ...consents,
+  }),
 } satisfies Record<SubmissionType, z.ZodType>;
 
 /** Which registration switch in settings gates each form (sponsor/contact are always open). */
@@ -60,10 +69,11 @@ export const GATE: Partial<Record<SubmissionType, RegistrationKey>> = {
   visitor: "visitors",
   ambassador: "ambassadors",
   volunteer: "volunteers",
+  talent: "talent",
 };
 
 /** Settings inbox that receives the team notification for each form. */
-export const INBOX: Record<SubmissionType, "competitions" | "projects" | "startups" | "visitors" | "ambassadors" | "volunteers" | "sponsors" | "info"> = {
+export const INBOX: Record<SubmissionType, "competitions" | "projects" | "startups" | "visitors" | "ambassadors" | "volunteers" | "sponsors" | "info" | "talent"> = {
   competition: "competitions",
   project: "projects",
   startup: "startups",
@@ -72,6 +82,7 @@ export const INBOX: Record<SubmissionType, "competitions" | "projects" | "startu
   volunteer: "volunteers",
   sponsor: "sponsors",
   contact: "info",
+  talent: "talent",
 };
 
 export const TYPE_LABELS: Record<SubmissionType, string> = {
@@ -83,6 +94,7 @@ export const TYPE_LABELS: Record<SubmissionType, string> = {
   volunteer: "Volunteer application",
   sponsor: "Sponsor / stall enquiry",
   contact: "Contact message",
+  talent: "Talent Tribute application",
 };
 
 export type Normalized = {
@@ -128,6 +140,20 @@ export function normalize(type: SubmissionType, raw: Record<string, unknown>, co
       return { name: d.name as string, email: d.email as string, phone: d.phone as string, gender: d.gender as string, institution: d.institution as string, subject: d.role as string, data: d };
     case "ambassador":
       return { name: d.name as string, email: d.email as string, phone: d.phone as string, gender: d.gender as string, institution: d.institution as string, subject: d.program as string, data: d };
+    case "talent": {
+      // Recompute eligibility here; the browser's check is only a convenience.
+      const check = checkResult(d as { resultType: string });
+      if (!check.ok) return { error: `result: ${check.error}` };
+      if (!check.eligible) return { error: `result: Talent Tribute needs ${ELIGIBLE_PERCENT}% or above. Your result works out to ${check.percent}%.` };
+      const kept = d.resultType === "Marks" ? { obtained: d.obtained, total: d.total } : { gpa: d.gpa, scale: d.scale };
+      const { obtained: _o, total: _t, gpa: _g, scale: _s, ...rest } = d;
+      void _o; void _t; void _g; void _s;
+      return {
+        name: d.name as string, email: d.email as string, phone: d.phone as string, gender: d.gender as string,
+        institution: d.institution as string, subject: `${d.level} · ${check.percent}%`,
+        data: { ...rest, ...kept, percentage: check.percent },
+      };
+    }
     case "visitor":
       return { name: d.name as string, email: d.email as string, phone: d.phone as string, gender: d.gender as string, institution: d.institution as string, subject: d.level as string, data: d };
   }

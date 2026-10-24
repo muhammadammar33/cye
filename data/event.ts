@@ -185,6 +185,7 @@ export const EMAILS = {
   projects: "competitions@capitalyouthexpo.com",
   startups: "startups@capitalyouthexpo.com",
   visitors: "info@capitalyouthexpo.com",
+  talent: "info@capitalyouthexpo.com",
 };
 
 // Flip a flag to false to close that form and show a "registration closed" notice instead.
@@ -195,6 +196,7 @@ export const REGISTRATION_OPEN = {
   visitors: true,
   volunteers: true,
   ambassadors: true,
+  talent: true,
 };
 
 export type NavItem = {
@@ -208,6 +210,7 @@ export const REGISTER_LINKS: NavItem[] = [
   { href: "/article-writing", label: "Article Writing", desc: "National Article Writing Competition 2026" },
   { href: "/projects", label: "Project Exhibition", desc: "Showcase your project for the prize pool" },
   { href: "/startups", label: "Startup Arena", desc: "Pitch your startup to investors" },
+  { href: "/talent-tribute", label: "Talent Tribute", desc: "Honouring students with 80% or above" },
   { href: "/visitors", label: "Visitor Pass", desc: "Register to attend the expo" },
   { href: "/ambassadors", label: "Campus Ambassador", desc: "Represent CYE at your institution" },
   { href: "/volunteers", label: "Volunteer", desc: "Join the team behind the expo" },
@@ -318,6 +321,11 @@ export const ARTICLE_COMPETITION = {
 };
 
 export const GENDERS = ["Male", "Female"] as const;
+
+/** Who can apply for Talent Tribute: Class 9 to BS. */
+export const TALENT_LEVELS = [
+  "Class 9", "Class 10 (Matric)", "Class 11 (1st Year)", "Class 12 (2nd Year)", "BS / Undergraduate",
+];
 
 export const EDUCATION_LEVELS = [
   "Grade 9", "Grade 10", "Grade 11 (Intermediate Part 1)", "Grade 12 (Intermediate Part 2)",
