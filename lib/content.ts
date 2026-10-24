@@ -96,18 +96,22 @@ export const getContacts = cached(
   fallback.contacts,
 );
 
-export const getSettings = cached(
-  "settings",
-  async (): Promise<SiteSettings> => {
-    const rows = await need().select().from(s.settings);
-    const out = structuredClone(DEFAULT_SETTINGS) as SiteSettings;
-    for (const row of rows) {
-      if (row.key in out) {
-        const key = row.key as keyof SiteSettings;
-        (out as Record<string, unknown>)[key] = { ...out[key], ...(row.value as object) };
-      }
-    }
-    return out;
-  },
-  () => structuredClone(DEFAULT_SETTINGS),
+// Only the saved rows are cached. Defaults are merged on every read, so a setting added in code
+// (e.g. a new registration switch or inbox) works straight after a deploy instead of being
+// missing until the cached copy expires.
+const getSettingRows = cached(
+  "settings-rows",
+  async () => (await need().select({ key: s.settings.key, value: s.settings.value }).from(s.settings)) as { key: string; value: unknown }[],
+  () => [],
 );
+
+export async function getSettings(): Promise<SiteSettings> {
+  const out = structuredClone(DEFAULT_SETTINGS) as SiteSettings;
+  for (const row of await getSettingRows()) {
+    if (row.key in out && row.value && typeof row.value === "object") {
+      const key = row.key as keyof SiteSettings;
+      (out as Record<string, unknown>)[key] = { ...out[key], ...(row.value as object) };
+    }
+  }
+  return out;
+}
