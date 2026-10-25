@@ -166,7 +166,7 @@ function paymentBlock(info: PaymentInfo) {
   const rows = info.payment.accounts
     .map(
       (a) =>
-        `<tr><td style="padding:8px 12px;border-bottom:1px solid #eef1f6;font:14px ${FONT}"><strong style="color:${BLUE}">${esc(a.method)}</strong>${a.title ? `<br><span style="color:#6b7280;font-size:12px">${esc(a.title)}</span>` : ""}</td><td style="padding:8px 12px;border-bottom:1px solid #eef1f6;font:bold 14px monospace;color:#1a1a1a">${esc(a.number)}</td></tr>`,
+        `<tr><td style="padding:8px 12px;border-bottom:1px solid #eef1f6;font:14px ${FONT}"><strong style="color:${BLUE}">${esc(a.method)}</strong>${a.title ? `<br><span style="color:#6b7280;font-size:12px">${esc(a.title)}</span>` : ""}</td><td style="padding:8px 12px;border-bottom:1px solid #eef1f6;font:bold 14px monospace;color:#1a1a1a">${a.number.split(/\s*[/|,]\s*/).filter(Boolean).map((n) => esc(n)).join("<br>")}</td></tr>`,
     )
     .join("");
   return `<p style="margin:0 0 8px;font-weight:bold;color:${BLUE}">Payment details${info.fee ? `: ${esc(info.fee)}` : ""}</p>

@@ -27,6 +27,16 @@ function CopyButton({ value }: { value: string }) {
   );
 }
 
+/** "03001234567 / PK19JCMA..." holds several numbers; split on "/", "|" or "," into separate lines. */
+function splitNumbers(value: string) {
+  return value.split(/\s*[/|,]\s*/).map((part) => part.trim()).filter(Boolean);
+}
+
+const isIban = (value: string) => /^[A-Z]{2}\d{2}[A-Z0-9]{8,}$/i.test(value.replace(/\s+/g, ""));
+
+/** IBANs read and wrap better in groups of four: PK19 JCMA 0810 ... */
+const display = (value: string) => (isIban(value) ? value.replace(/\s+/g, "").replace(/(.{4})(?=.)/g, "$1 ") : value);
+
 export function PaymentDetails({ payment, fee }: { payment: PaymentSettings; fee?: string }) {
   if (payment.accounts.length === 0) return null;
   return (
@@ -46,9 +56,16 @@ export function PaymentDetails({ payment, fee }: { payment: PaymentSettings; fee
           <li key={`${account.method}-${account.number}`} className="rounded-xl border border-white bg-white p-4 shadow-card">
             <p className="font-heading text-sm font-extrabold text-cye-blue">{account.method}</p>
             {account.title ? <p className="mt-0.5 text-xs text-cye-ink/60">{account.title}</p> : null}
-            <div className="mt-2 flex items-center justify-between gap-2">
-              <span className="break-all font-mono text-sm font-semibold text-cye-ink">{account.number}</span>
-              <CopyButton value={account.number} />
+            <div className="mt-2 space-y-2">
+              {splitNumbers(account.number).map((part) => (
+                <div key={part} className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
+                  <span className="min-w-0">
+                    {isIban(part) ? <span className="block text-[10px] font-bold uppercase tracking-wider text-cye-ink/45">IBAN</span> : null}
+                    <span className="font-mono text-sm font-semibold text-cye-ink [overflow-wrap:anywhere]">{display(part)}</span>
+                  </span>
+                  <CopyButton value={part.replace(/\s+/g, "")} />
+                </div>
+              ))}
             </div>
           </li>
         ))}
