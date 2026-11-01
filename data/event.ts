@@ -269,7 +269,7 @@ export const ARTICLE_COMPETITION = {
   organizer: "Policy Research Initiative for Zakat-Based, Interest-Free Economy (PRIZE)",
   organizerShort: "PRIZE",
   source: "https://prize.org.pk/national-article-writing-competition",
-  registerUrl: "https://forms.gle/dmaYepw2r2KNk8G67",
+  registerUrl: "https://prize.org.pk/national-article-writing-competition",
   submitUrl: "https://forms.gle/dExtBZyYuj2DZFZM9",
   overview: [
     "The National Article Writing Competition 2026 is a flagship youth initiative of PRIZE, designed to empower the next generation of thinkers, researchers, and leaders. This competition provides a platform for young minds to critically examine today's exploitative financial structures and present innovative, Islamic economic alternatives rooted in justice, equity, and sustainability.",
