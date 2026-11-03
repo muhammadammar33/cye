@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { EVENT, NAV_LINKS, REGISTER_LINKS } from "@/data/event";
 import { Container } from "@/components/ui/Container";
+import { MaczacCredit } from "@/components/ui/MaczacCredit";
 import { SocialLinks } from "@/components/ui/SocialLinks";
 import { getSettings } from "@/lib/content";
 
@@ -78,10 +79,13 @@ export async function Footer() {
           <SocialLinks className="mt-4" />
         </div>
       </Container>
-      <Container className="mt-10 border-t border-cye-blue/10 pt-6">
+      {/* Copyright stays centred; the MACZAC credit sits to its right on the same line (stacked on phones). */}
+      <Container className="mt-10 grid items-center gap-3 border-t border-cye-blue/10 pt-6 md:grid-cols-[1fr_auto_1fr]">
+        <span aria-hidden className="hidden md:block" />
         <p className="text-center text-xs text-cye-ink/50">
           © {new Date().getFullYear()} {EVENT.name}. All rights reserved.
         </p>
+        <MaczacCredit className="justify-self-center md:justify-self-end" />
       </Container>
     </footer>
   );
