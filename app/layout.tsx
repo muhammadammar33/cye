@@ -38,7 +38,9 @@ export const metadata: Metadata = {
     "competitions",
     "Pak-China Friendship Center",
   ],
-  authors: [{ name: "Capital Youth Expo" }],
+  authors: [{ name: "MACZAC", url: "https://maczac.com" }],
+  creator: "MACZAC",
+  publisher: "MACZAC",
   openGraph: {
     type: "website",
     url: "https://capitalyouthexpo.com",
