@@ -2,7 +2,7 @@
 
 Marketing site for **Capital Youth Expo (CYE) 2026**, Islamabad’s largest youth engagement expo. The site sells sponsorships and stalls, and drives competition, campus ambassador, and volunteer registrations.
 
-**18 November 2026 · Pak-China Friendship Center, Islamabad**  
+**2 December 2026 · Pak-China Friendship Center, Islamabad**  
 Organized by SAFE in collaboration with Youth Insight (YI)
 
 Live domain: [capitalyouthexpo.com](https://capitalyouthexpo.com)
