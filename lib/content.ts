@@ -25,9 +25,15 @@ const fallback = {
   contacts: (): Contact[] => E.CONTACTS.map((c) => ({ ...c })),
 };
 
+/**
+ * Changes with every deploy, so a deploy starts with a fresh content cache. Without it the cache
+ * survives deploys and changes made by db-setup patches only show up after the hourly refresh.
+ */
+const DEPLOY_ID = process.env.VERCEL_DEPLOYMENT_ID || process.env.VERCEL_GIT_COMMIT_SHA || "local";
+
 /** Runs a cached DB read; without a database, or if the read fails, serves the defaults in data/event.ts. */
 function cached<T>(key: string, read: () => Promise<T>, fallbackValue: () => T): () => Promise<T> {
-  const load = unstable_cache(read, ["cye", key], { tags: [CONTENT_TAG], revalidate: 3600 });
+  const load = unstable_cache(read, ["cye", DEPLOY_ID, key], { tags: [CONTENT_TAG], revalidate: 3600 });
   return async () => {
     if (!db) return fallbackValue();
     try {
