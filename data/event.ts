@@ -235,7 +235,7 @@ export const COMPETITIONS = [
     desc: "Design an autonomous robot that tracks the line and races the course against the clock." },
   { name: "Drone Race", vertical: "TechNexus", audience: "University", fee: "PKR 2,500", teamMin: 1, teamMax: 4, rulebook: "/rulebooks/03-drone-race.pdf",
     desc: "Pilot your drone through a timed obstacle course. Fastest clean run wins." },
-  { name: "Hackathon", vertical: "TechNexus", audience: "University", fee: "PKR 2,000", teamMin: 3, teamMax: 5, rulebook: "/rulebooks/04-hackathon.pdf",
+  { name: "Hackathon", vertical: "TechNexus", audience: "University", fee: "PKR 2,000", teamMin: 1, teamMax: 5, rulebook: "/rulebooks/04-hackathon.pdf",
     desc: "Build, ship, and pitch a working prototype in a high-energy coding sprint." },
   { name: "Cyber Security (Capture The Flag)", vertical: "TechNexus", audience: "University", fee: "PKR 2,000", teamMin: 2, teamMax: 4, rulebook: "/rulebooks/07-cyber-security-ctf.pdf",
     desc: "Solve jeopardy-style security challenges in web exploitation, cryptography, forensics, reverse engineering and OSINT to capture the most flags." },

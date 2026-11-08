@@ -122,6 +122,13 @@ async function applyPatches(db: Db) {
     console.log("[db-setup] applied patch 2026-10-ctf-website-fee");
   }
 
+  if (!applied.has("2026-11-hackathon-team-size")) {
+    // Updated rule book 04 allows 1 to 5 members. Only changes the row if it still has the old 3 to 5.
+    await db.update(s.competitions).set({ teamMin: 1 }).where(and(byName("Hackathon"), eq(s.competitions.teamMin, 3), eq(s.competitions.teamMax, 5)));
+    applied.add("2026-11-hackathon-team-size");
+    console.log("[db-setup] applied patch 2026-11-hackathon-team-size");
+  }
+
   if (!applied.has("2026-10-remove-debate")) {
     await db.delete(s.competitions).where(byName("Debate"));
     applied.add("2026-10-remove-debate");
