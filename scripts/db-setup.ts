@@ -4,7 +4,7 @@
  * Skips quietly when DATABASE_URL is not set.
  */
 import bcrypt from "bcryptjs";
-import { and, count, eq, inArray, sql } from "drizzle-orm";
+import { and, count, eq, inArray, isNull, or, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import { migrate } from "drizzle-orm/postgres-js/migrator";
 import postgres from "postgres";
@@ -127,6 +127,13 @@ async function applyPatches(db: Db) {
     await db.update(s.competitions).set({ teamMin: 1 }).where(and(byName("Hackathon"), eq(s.competitions.teamMin, 3), eq(s.competitions.teamMax, 5)));
     applied.add("2026-11-hackathon-team-size");
     console.log("[db-setup] applied patch 2026-11-hackathon-team-size");
+  }
+
+  if (!applied.has("2026-11-arts-rulebook")) {
+    // Arts had no rule book. Only fills it in if the row still has none, so an admin-set link is kept.
+    await db.update(s.competitions).set({ rulebook: "/rulebooks/19-arts.pdf" }).where(and(byName("Arts"), or(isNull(s.competitions.rulebook), eq(s.competitions.rulebook, ""))));
+    applied.add("2026-11-arts-rulebook");
+    console.log("[db-setup] applied patch 2026-11-arts-rulebook");
   }
 
   if (!applied.has("2026-10-remove-debate")) {
