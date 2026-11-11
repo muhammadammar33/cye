@@ -53,7 +53,7 @@ export async function GET(req: NextRequest) {
 
   const matches = (m: Member) => (m.institution ?? "").toLowerCase().includes(partner.institutionMatch);
   const registrations = rows.map((row) => {
-    const data = row.data as { team?: string; size?: number; level?: string; fee?: string; language?: string; members?: Member[]; source?: string };
+    const data = row.data as { team?: string; size?: number; level?: string; fee?: string; language?: string; artCategory?: string; members?: Member[]; source?: string };
     const own = data.source === sourceLabel(partner);
     const members = (data.members ?? []).map((m, i) => ({ ...m, isTeamLead: i === 0 })).filter((m) => own || matches(m));
     return {
@@ -64,6 +64,7 @@ export async function GET(req: NextRequest) {
       teamSize: data.size ?? data.members?.length ?? null,
       level: data.level ?? null,
       language: data.language ?? null,
+      artCategory: data.artCategory ?? null,
       fee: data.fee ?? null,
       status: row.status,
       paymentStatus: row.paymentStatus ?? "Not checked",
@@ -91,6 +92,7 @@ type NewRegistration = {
   level?: unknown;
   idNumber?: unknown;
   language?: unknown;
+  artCategory?: unknown;
   members?: unknown;
   consent?: unknown;
 };
@@ -150,6 +152,7 @@ export async function POST(req: NextRequest) {
     level: body.level,
     idNumber: body.idNumber,
     language: typeof body.language === "string" ? body.language : undefined,
+    artCategory: typeof body.artCategory === "string" ? body.artCategory : undefined,
     members: body.members,
     consent_accuracy: "on",
     consent_rules: "on",
