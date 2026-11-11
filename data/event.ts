@@ -259,7 +259,7 @@ export const COMPETITIONS = [
     desc: "Recite the Holy Quran with tajweed, judged on precision and melody." },
   { name: "Speech (English / Urdu)", vertical: "Literary", audience: "Schools & University", fee: "PKR 500", teamMin: 1, teamMax: 1, rulebook: "/rulebooks/18-speech-declamation.pdf",
     desc: "A declamation contest: deliver a persuasive, prepared speech of up to 5 minutes in English or Urdu, with each language judged separately." },
-  { name: "Arts", vertical: "Literary", audience: "Schools & University", fee: "PKR 500", teamMin: 1, teamMax: 1, rulebook: null as string | null,
+  { name: "Arts", vertical: "Literary", audience: "Schools & University", fee: "PKR 500", teamMin: 1, teamMax: 1, rulebook: "/rulebooks/19-arts.pdf" as string | null,
     desc: "Create an original artwork on the spot around the expo theme." },
 ];
 
