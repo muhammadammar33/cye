@@ -3,7 +3,7 @@ import { resendPass, revokePass, sendMissingPasses } from "@/app/admin/actions";
 import { ManualPassForm } from "@/components/admin/PassForms";
 import { formatDate, PageHeader } from "@/components/admin/StatusBadge";
 import { ConfirmForm, inputClass } from "@/components/admin/ui";
-import { FOCAL_PERSONS } from "@/data/event";
+import { FOCAL_PERSONS, PASS_ONLY_FOCAL_PERSONS } from "@/data/event";
 import { getCompetitions, getTeam } from "@/lib/content";
 import { requireDb, schema as s } from "@/lib/db";
 import { isPassCategory, PASS_CATEGORIES, PASS_CATEGORY_KEYS, PASS_FOR_TYPE, type PassCategory } from "@/lib/passCategories";
@@ -70,7 +70,7 @@ export default async function PassesPage({ searchParams }: { searchParams: Promi
   // Known names for the manual pass form: focal persons and the event team (Admin > Team).
   const suggestions = [
     ...competitions.filter((c) => c.focalName).map((c) => ({ name: c.focalName!, detail: `Focal person, ${c.name}`, category: "focal" as const })),
-    ...Object.values(FOCAL_PERSONS).map((f) => ({ name: f.name, detail: f.title, category: "focal" as const })),
+    ...[...Object.values(FOCAL_PERSONS), ...PASS_ONLY_FOCAL_PERSONS].map((f) => ({ name: f.name, detail: f.title, category: "focal" as const })),
     ...team.map((m) => ({ name: m.name, detail: m.role, category: "team" as const })),
   ];
 
