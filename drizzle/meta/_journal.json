@@ -64,6 +64,13 @@
       "when": 1794493408562,
       "tag": "0008_admin_roles",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1794494608566,
+      "tag": "0009_pass_companions",
+      "breakpoints": true
     }
   ]
 }

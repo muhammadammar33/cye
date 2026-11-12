@@ -19,6 +19,12 @@ export const PASS_CATEGORY_KEYS = Object.keys(PASS_CATEGORIES) as PassCategory[]
 /** Pass categories an admin issues by hand (no form submission behind them). */
 export const MANUAL_PASS_CATEGORIES = ["focal", "team"] as const satisfies readonly PassCategory[];
 
+/**
+ * Passes held by a team lead whose team members have no passes of their own (the project and startup forms
+ * don't collect them). The gate asks how many came with the lead and records the number.
+ */
+export const TEAM_COUNT_CATEGORIES: readonly PassCategory[] = ["project", "startup"];
+
 /** Submission types whose approval sends passes. Sponsor and contact messages get none. */
 export const PASS_FOR_TYPE: Partial<Record<SubmissionType, PassCategory>> = {
   competition: "competition",

@@ -185,7 +185,10 @@ export default async function PassesPage({ searchParams }: { searchParams: Promi
                       {p.revokedAt ? (
                         <span className="font-semibold text-red-600">Cancelled</span>
                       ) : p.checkedInAt ? (
-                        <span className="font-semibold text-emerald-700">Checked in {formatDate(p.checkedInAt)}</span>
+                        <span className="font-semibold text-emerald-700">
+                          Checked in {formatDate(p.checkedInAt)}
+                          {p.companions ? ` with ${p.companions} team member${p.companions === 1 ? "" : "s"}` : ""}
+                        </span>
                       ) : (
                         <span className="font-semibold text-slate-700">Valid</span>
                       )}

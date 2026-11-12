@@ -1,9 +1,9 @@
 "use client";
 
-import { Camera, CameraOff, LayoutDashboard, LogOut, Search, Undo2 } from "lucide-react";
+import { Camera, CameraOff, LayoutDashboard, LogOut, Minus, Plus, Search, Undo2 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { logout } from "@/app/admin/actions";
-import { gateCheckIn, gateSearch, gateStats, gateUndo, type GatePass, type GateResult, type GateStats } from "@/app/admin/gate/actions";
+import { gateCheckIn, gateSearch, gateSetCompanions, gateStats, gateUndo, type GatePass, type GateResult, type GateStats } from "@/app/admin/gate/actions";
 import { PASS_CATEGORIES, type PassCategory } from "@/lib/passCategories";
 
 const TIME = new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", day: "numeric", month: "short", timeZone: "Asia/Karachi" });
@@ -64,7 +64,7 @@ export function GateScanner({ name, isAdmin, initialStats }: { name: string; isA
       signal(r.result === "checked_in");
       if (timer.current) clearTimeout(timer.current);
       // A good scan clears itself; a problem stays until staff tap it, so it isn't missed.
-      if (r.result === "checked_in") timer.current = setTimeout(dismiss, 3500);
+      if (r.result === "checked_in" && !r.pass?.askTeam) timer.current = setTimeout(dismiss, 3500);
     },
     [dismiss],
   );
@@ -178,6 +178,12 @@ export function GateScanner({ name, isAdmin, initialStats }: { name: string; isA
               {stats.checkedIn.toLocaleString()} <span className="text-base font-semibold text-white/50">/ {stats.total.toLocaleString()}</span>
             </p>
           </div>
+          {stats.companions ? (
+            <p className="mt-1 text-right text-xs text-white/60">
+              + {stats.companions.toLocaleString()} team member{stats.companions === 1 ? "" : "s"} with project and startup leads ={" "}
+              <span className="font-bold text-white">{(stats.checkedIn + stats.companions).toLocaleString()} people in</span>
+            </p>
+          ) : null}
           <div className="mt-2 h-2 overflow-hidden rounded-full bg-white/10">
             <div className="h-full rounded-full bg-emerald-400" style={{ width: `${pct}%` }} />
           </div>
@@ -257,7 +263,10 @@ export function GateScanner({ name, isAdmin, initialStats }: { name: string; isA
                     {p.cancelled ? (
                       <span className="shrink-0 text-xs font-bold text-red-400">Cancelled</span>
                     ) : p.checkedInAt ? (
-                      <span className="shrink-0 text-xs font-bold text-amber-300">In {TIME.format(new Date(p.checkedInAt))}</span>
+                      <span className="shrink-0 text-xs font-bold text-amber-300">
+                        In {TIME.format(new Date(p.checkedInAt))}
+                        {p.companions ? ` +${p.companions}` : ""}
+                      </span>
                     ) : (
                       <button type="button" onClick={() => checkIn({ id: p.id })} className="shrink-0 rounded-lg bg-emerald-500 px-3 py-1.5 text-xs font-bold text-slate-950 hover:bg-emerald-400">
                         Check in
@@ -271,7 +280,14 @@ export function GateScanner({ name, isAdmin, initialStats }: { name: string; isA
         </section>
       </div>
 
-      {shown ? <ResultScreen shown={shown} onDone={dismiss} onUndo={(id) => gateUndo(id).then((s) => (setStats(s), dismiss()))} /> : null}
+      {shown ? (
+        <ResultScreen
+          shown={shown}
+          onDone={dismiss}
+          onUndo={(id) => gateUndo(id).then((s) => (setStats(s), dismiss()))}
+          onTeam={(id, n) => gateSetCompanions(id, n).then((s) => (setStats(s), dismiss()))}
+        />
+      ) : null}
     </main>
   );
 }
@@ -280,18 +296,25 @@ export function GateScanner({ name, isAdmin, initialStats }: { name: string; isA
  * Full-screen result, readable from arm's length: always green when admitted (the pass colour shows as a band on
  * the card, so a red-orange Visitor pass never looks like an error), amber when already used, red when invalid.
  */
-function ResultScreen({ shown, onDone, onUndo }: { shown: Shown; onDone: () => void; onUndo: (id: number) => void }) {
+function ResultScreen({ shown, onDone, onUndo, onTeam }: { shown: Shown; onDone: () => void; onUndo: (id: number) => void; onTeam: (id: number, people: number) => void }) {
   const pass = "pass" in shown ? shown.pass : undefined;
+  const askTeam = shown.result === "checked_in" && pass?.askTeam;
   const cat = pass ? catOf(pass.category) : null;
   const look = {
     checked_in: { bg: "#15803d", title: "Checked in", note: "Check their CNIC, student card or B-Form." },
-    already: { bg: "#b45309", title: "Already checked in", note: pass?.checkedInAt ? `This pass was used at ${TIME.format(new Date(pass.checkedInAt))}. Do not admit again without checking with the gate lead.` : "" },
+    already: {
+      bg: "#b45309",
+      title: "Already checked in",
+      note: pass?.checkedInAt
+        ? `This pass was used at ${TIME.format(new Date(pass.checkedInAt))}${pass.companions ? ` with ${pass.companions} team member${pass.companions === 1 ? "" : "s"}` : ""}. Do not admit again without checking with the gate lead.`
+        : "",
+    },
     cancelled: { bg: "#b91c1c", title: "Pass cancelled", note: "This pass is no longer valid. Send the person to the help desk." },
     not_found: { bg: "#b91c1c", title: "Not a valid pass", note: "This QR code doesn't match any CYE pass. Try searching by name." },
     not_cye: { bg: "#b91c1c", title: "Not a CYE pass", note: "This QR code isn't a Capital Youth Expo pass." },
   }[shown.result];
   return (
-    <div role="alertdialog" aria-live="assertive" aria-label={look.title} className="fixed inset-0 z-50 flex flex-col items-center justify-center p-6 text-center text-white" style={{ background: look.bg }} onClick={onDone}>
+    <div role="alertdialog" aria-live="assertive" aria-label={look.title} className="fixed inset-0 z-50 flex flex-col items-center justify-center overflow-y-auto p-6 text-center text-white" style={{ background: look.bg }} onClick={askTeam ? undefined : onDone}>
       <p className="font-heading text-4xl font-black uppercase leading-tight">{look.title}</p>
       {pass ? (
         <div className="mt-6 w-full max-w-sm overflow-hidden rounded-3xl bg-white text-slate-900 shadow-2xl">
@@ -309,6 +332,9 @@ function ResultScreen({ shown, onDone, onUndo }: { shown: Shown; onDone: () => v
         </div>
       ) : null}
       <p className="mt-6 max-w-sm text-base font-semibold text-white/90">{look.note}</p>
+      {askTeam && pass ? (
+        <TeamCount pass={pass} onSave={(n) => onTeam(pass.id, n)} onUndo={() => onUndo(pass.id)} />
+      ) : (
       <div className="mt-8 flex gap-3">
         {shown.result === "checked_in" && pass ? (
           <button
@@ -324,6 +350,56 @@ function ResultScreen({ shown, onDone, onUndo }: { shown: Shown; onDone: () => v
         ) : null}
         <button type="button" onClick={onDone} className="rounded-full bg-white px-7 py-2.5 text-sm font-black text-slate-900">
           Next
+        </button>
+      </div>
+      )}
+    </div>
+  );
+}
+
+/** Project and startup leads: ask how many team members came with them, then save. */
+function TeamCount({ pass, onSave, onUndo }: { pass: GatePass; onSave: (people: number) => void; onUndo: () => void }) {
+  const [n, setN] = useState(0);
+  const [saving, setSaving] = useState(false);
+  const save = () => {
+    setSaving(true);
+    onSave(n);
+  };
+  return (
+    <div className="mt-6 w-full max-w-sm rounded-3xl bg-black/20 p-5">
+      <p className="text-lg font-black">How many team members are with them?</p>
+      <p className="mt-1 text-sm text-white/80">
+        Not counting {pass.name.split(" ")[0]}.{pass.registeredTeam ? ` Registered team: ${pass.registeredTeam} people, so up to ${Math.max(0, pass.registeredTeam - 1)} more.` : ""}
+      </p>
+      <div className="mt-4 flex items-center justify-center gap-5">
+        <button type="button" aria-label="One fewer" onClick={() => setN((v) => Math.max(0, v - 1))} className="flex h-14 w-14 items-center justify-center rounded-full bg-white/20 hover:bg-white/30">
+          <Minus className="h-6 w-6" aria-hidden />
+        </button>
+        <output aria-live="polite" className="w-16 font-heading text-5xl font-black tabular-nums">
+          {n}
+        </output>
+        <button type="button" aria-label="One more" onClick={() => setN((v) => Math.min(100, v + 1))} className="flex h-14 w-14 items-center justify-center rounded-full bg-white/20 hover:bg-white/30">
+          <Plus className="h-6 w-6" aria-hidden />
+        </button>
+      </div>
+      <div className="mt-4 flex flex-wrap justify-center gap-2">
+        {[0, 1, 2, 3, 4, 5, 6].map((v) => (
+          <button
+            key={v}
+            type="button"
+            onClick={() => setN(v)}
+            className={`h-10 w-10 rounded-full text-sm font-bold ${n === v ? "bg-white text-slate-900" : "bg-white/15 hover:bg-white/25"}`}
+          >
+            {v}
+          </button>
+        ))}
+      </div>
+      <div className="mt-5 flex justify-center gap-3">
+        <button type="button" onClick={onUndo} disabled={saving} className="inline-flex items-center gap-1.5 rounded-full border border-white/60 px-5 py-2.5 text-sm font-bold disabled:opacity-60">
+          <Undo2 className="h-4 w-4" aria-hidden /> Undo
+        </button>
+        <button type="button" onClick={save} disabled={saving} className="rounded-full bg-white px-6 py-2.5 text-sm font-black text-slate-900 disabled:opacity-60">
+          {saving ? "Saving..." : `Save ${n + 1} ${n === 0 ? "person" : "people"} & next`}
         </button>
       </div>
     </div>

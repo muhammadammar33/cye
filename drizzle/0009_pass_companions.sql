@@ -1,0 +1,1 @@
+ALTER TABLE "passes" ADD COLUMN "companions" integer DEFAULT 0 NOT NULL;

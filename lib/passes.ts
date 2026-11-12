@@ -40,7 +40,8 @@ export function holdersFor(sub: Submission): Holder[] {
     case "project":
       return one(sub.subject ? `Project: ${sub.subject}` : null);
     case "startup":
-      return one(sub.subject);
+      // The startup's name is both the subject and the "institution"; show it once.
+      return [{ name: sub.name, email: sub.email, detail: sub.subject, institution: null }];
     case "talent":
       return one(str(d.level));
     case "volunteer":
