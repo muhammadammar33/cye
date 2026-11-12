@@ -179,7 +179,7 @@ function paymentBlock(info: PaymentInfo) {
 type FocalInfo = { name: string; phone: string | null; topic: string };
 
 function focalBlock(f: FocalInfo) {
-  const phone = f.phone ? ` on <a href="${esc(whatsappLink(f.phone))}" style="color:${ORANGE};font-weight:bold;text-decoration:none;white-space:nowrap">${esc(f.phone)}</a> (WhatsApp)` : "";
+  const phone = f.phone ? ` on <a href="${esc(whatsappLink(f.phone))}" style="color:${ORANGE};font-weight:bold;text-decoration:none;white-space:nowrap">${esc(f.phone)}</a>` : "";
   return `<p style="margin:0 0 12px">For questions about ${esc(f.topic)}, contact the focal person <strong>${esc(f.name)}</strong>${phone}.</p>`;
 }
 
