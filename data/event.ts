@@ -376,6 +376,12 @@ export const FOCAL_PERSONS = {
   medicalColleges: { title: "Medical colleges", name: "Gohar Ayub", phone: "+92 306 9152593" },
 };
 
+/**
+ * Focal persons who still need event passes but are not shown on the website (Talent Fiesta was removed from
+ * the site at the organizers' request). Only used for the name list in Admin > Passes.
+ */
+export const PASS_ONLY_FOCAL_PERSONS = [{ title: "Talent Fiesta", name: "Raja Dihyah", phone: "+92 331 5096645" }];
+
 export const CONTACTS = [
   { label: "General queries", phones: ["+92 300 0000000"], email: "info@capitalyouthexpo.com" },
   { label: "Competitions & projects", phones: ["+92 300 0000001"], email: "competitions@capitalyouthexpo.com" },
