@@ -1,6 +1,6 @@
 "use client";
 
-import { ExternalLink, FileText, Gauge, History, Inbox, LogOut, ScanLine, Settings, Ticket, Users } from "lucide-react";
+import { ExternalLink, FileText, Gauge, History, Inbox, LogOut, Monitor, ScanLine, Settings, Ticket, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { logout } from "@/app/admin/actions";
@@ -11,6 +11,7 @@ const MAIN = [
   { href: "/admin/submissions", label: "Submissions", icon: Inbox },
   { href: "/admin/passes", label: "Passes", icon: Ticket },
   { href: "/admin/gate", label: "Gate scanner", icon: ScanLine },
+  { href: "/admin/attendance", label: "Live attendance", icon: Monitor },
 ];
 
 export function AdminNav({ content, name, newCount }: { content: { key: string; label: string }[]; name: string; newCount: number }) {
