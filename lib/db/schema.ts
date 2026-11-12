@@ -157,6 +157,8 @@ export const passes = pgTable(
     emailedAt: timestamp("emailed_at", { withTimezone: true }),
     revokedAt: timestamp("revoked_at", { withTimezone: true }),
     checkedInAt: timestamp("checked_in_at", { withTimezone: true }),
+    /** Team members who came in with the holder, counted at the gate (project and startup teams). */
+    companions: integer("companions").default(0).notNull(),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   },
   (t) => [index("passes_submission_idx").on(t.submissionId), index("passes_category_idx").on(t.category)],
