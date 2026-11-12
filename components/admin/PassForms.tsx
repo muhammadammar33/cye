@@ -5,9 +5,9 @@ import { createManualPass } from "@/app/admin/actions";
 import { FormMessage, inputClass, SubmitButton, useFormAction } from "@/components/admin/ui";
 import { MANUAL_PASS_CATEGORIES, PASS_CATEGORIES } from "@/lib/passCategories";
 
-type Suggestion = { name: string; detail: string };
+type Suggestion = { name: string; detail: string; category: "focal" | "team" };
 
-/** Issue a pass to a focal person or event team member. Picking a known focal person fills in what they cover. */
+/** Issue a pass to a focal person or event team member. Picking a known name fills in their pass type and role. */
 export function ManualPassForm({ suggestions }: { suggestions: Suggestion[] }) {
   const { state, onSubmit, pending } = useFormAction(createManualPass);
   const detail = useRef<HTMLInputElement>(null);
@@ -33,14 +33,14 @@ export function ManualPassForm({ suggestions }: { suggestions: Suggestion[] }) {
           className={inputClass}
           onChange={(e) => {
             const hit = suggestions.find((s) => s.name.toLowerCase() === e.target.value.trim().toLowerCase());
-            if (hit && detail.current && !detail.current.value) detail.current.value = hit.detail;
-            if (hit && category.current) category.current.value = "focal";
+            if (hit && detail.current) detail.current.value = hit.detail;
+            if (hit && category.current) category.current.value = hit.category;
           }}
         />
         <datalist id="focal-suggestions">
           {suggestions.map((s) => (
             <option key={`${s.name}-${s.detail}`} value={s.name}>
-              {s.detail}
+              {s.category === "team" ? `Event Team: ${s.detail}` : s.detail}
             </option>
           ))}
         </datalist>

@@ -23,7 +23,15 @@ export type GatePass = {
   registeredTeam: number | null;
 };
 export type GateResult = { result: "checked_in" | "already" | "cancelled" | "not_found"; pass?: GatePass };
-export type GateStats = { total: number; checkedIn: number; companions: number; byCategory: { category: string; total: number; checkedIn: number }[] };
+export type GateStats = {
+  total: number;
+  checkedIn: number;
+  companions: number;
+  /** Pass holders checked in during the last 15 minutes. */
+  recent: number;
+  lastAt: string | null;
+  byCategory: { category: string; total: number; checkedIn: number }[];
+};
 
 type Row = typeof s.passes.$inferSelect;
 const view = (p: Row, registeredTeam: number | null = null): GatePass => ({
@@ -120,6 +128,8 @@ export async function gateStats(): Promise<GateStats> {
       total: count(),
       checkedIn: sql<number>`count(${s.passes.checkedInAt})::int`,
       companions: sql<number>`coalesce(sum(${s.passes.companions}) filter (where ${s.passes.checkedInAt} is not null), 0)::int`,
+      recent: sql<number>`count(*) filter (where ${s.passes.checkedInAt} > now() - interval '15 minutes')::int`,
+      lastAt: sql<string | null>`max(${s.passes.checkedInAt})`,
     })
     .from(s.passes)
     .where(isNull(s.passes.revokedAt))
@@ -128,6 +138,11 @@ export async function gateStats(): Promise<GateStats> {
     total: rows.reduce((n, r) => n + r.total, 0),
     checkedIn: rows.reduce((n, r) => n + r.checkedIn, 0),
     companions: rows.reduce((n, r) => n + r.companions, 0),
+    recent: rows.reduce((n, r) => n + r.recent, 0),
+    lastAt: rows.reduce<string | null>((max, r) => {
+      const at = r.lastAt ? new Date(r.lastAt).toISOString() : null;
+      return at && (!max || at > max) ? at : max;
+    }, null),
     byCategory: rows.map(({ category, total, checkedIn }) => ({ category, total, checkedIn })),
   };
 }

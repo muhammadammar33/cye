@@ -1,5 +1,7 @@
 import { count, desc, gt, sql } from "drizzle-orm";
 import Link from "next/link";
+import { gateStats } from "@/app/admin/gate/actions";
+import { AttendanceDisplay } from "@/components/admin/AttendanceDisplay";
 import { formatDate, PageHeader, StatusBadge } from "@/components/admin/StatusBadge";
 import { TYPE_NAMES } from "@/lib/admin/labels";
 import { requireDb, schema as s } from "@/lib/db";
@@ -7,13 +9,14 @@ import { SUBMISSION_TYPES, type SubmissionType } from "@/lib/db/schema";
 
 export default async function AdminHome() {
   const db = requireDb();
-  const [byType, [{ week }], recent] = await Promise.all([
+  const [byType, [{ week }], recent, attendance] = await Promise.all([
     db
       .select({ type: s.submissions.type, total: count(), fresh: sql<number>`count(*) filter (where ${s.submissions.status} = 'new')`.mapWith(Number) })
       .from(s.submissions)
       .groupBy(s.submissions.type),
     db.select({ week: count() }).from(s.submissions).where(gt(s.submissions.createdAt, sql`now() - interval '7 days'`)),
     db.select().from(s.submissions).orderBy(desc(s.submissions.createdAt)).limit(8),
+    gateStats(),
   ]);
   const stats = new Map(byType.map((row) => [row.type, row]));
   const total = byType.reduce((sum, row) => sum + row.total, 0);
@@ -22,6 +25,11 @@ export default async function AdminHome() {
   return (
     <>
       <PageHeader title="Overview" description="Everything coming in through the website." />
+      {attendance.total > 0 ? (
+        <div className="mb-6">
+          <AttendanceDisplay initial={attendance} variant="card" />
+        </div>
+      ) : null}
       <div className="grid gap-4 sm:grid-cols-3">
         {[
           { label: "Total submissions", value: total },

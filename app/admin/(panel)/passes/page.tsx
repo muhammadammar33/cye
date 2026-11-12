@@ -4,7 +4,7 @@ import { ManualPassForm } from "@/components/admin/PassForms";
 import { formatDate, PageHeader } from "@/components/admin/StatusBadge";
 import { ConfirmForm, inputClass } from "@/components/admin/ui";
 import { FOCAL_PERSONS } from "@/data/event";
-import { getCompetitions } from "@/lib/content";
+import { getCompetitions, getTeam } from "@/lib/content";
 import { requireDb, schema as s } from "@/lib/db";
 import { isPassCategory, PASS_CATEGORIES, PASS_CATEGORY_KEYS, PASS_FOR_TYPE, type PassCategory } from "@/lib/passCategories";
 
@@ -34,7 +34,7 @@ export default async function PassesPage({ searchParams }: { searchParams: Promi
 
   const db = requireDb();
   const passTypes = Object.keys(PASS_FOR_TYPE) as (keyof typeof PASS_FOR_TYPE)[];
-  const [rows, [{ total }], stats, [{ missing }], competitions] = await Promise.all([
+  const [rows, [{ total }], stats, [{ missing }], competitions, team] = await Promise.all([
     db.select().from(s.passes).where(where).orderBy(desc(s.passes.createdAt), desc(s.passes.id)).limit(PAGE_SIZE).offset((page - 1) * PAGE_SIZE),
     db.select({ total: count() }).from(s.passes).where(where),
     db
@@ -57,6 +57,7 @@ export default async function PassesPage({ searchParams }: { searchParams: Promi
         ),
       ),
     getCompetitions(),
+    getTeam(),
   ]);
   const byCat = new Map(stats.map((r) => [r.category, r]));
   const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
@@ -66,9 +67,11 @@ export default async function PassesPage({ searchParams }: { searchParams: Promi
     const str = sp.toString();
     return `/admin/passes${str ? `?${str}` : ""}`;
   };
+  // Known names for the manual pass form: focal persons and the event team (Admin > Team).
   const suggestions = [
-    ...competitions.filter((c) => c.focalName).map((c) => ({ name: c.focalName!, detail: `Focal person, ${c.name}` })),
-    ...Object.values(FOCAL_PERSONS).map((f) => ({ name: f.name, detail: f.title })),
+    ...competitions.filter((c) => c.focalName).map((c) => ({ name: c.focalName!, detail: `Focal person, ${c.name}`, category: "focal" as const })),
+    ...Object.values(FOCAL_PERSONS).map((f) => ({ name: f.name, detail: f.title, category: "focal" as const })),
+    ...team.map((m) => ({ name: m.name, detail: m.role, category: "team" as const })),
   ];
 
   return (
@@ -111,7 +114,7 @@ export default async function PassesPage({ searchParams }: { searchParams: Promi
 
       <section className="mb-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <h2 className="font-heading text-lg font-extrabold text-cye-blue">Issue a pass by hand</h2>
-        <p className="mb-4 mt-1 text-sm text-slate-500">For focal persons and the event team. The pass is emailed straight away.</p>
+        <p className="mb-4 mt-1 text-sm text-slate-500">For focal persons and the event team. Start typing a name to pick from the list; pass type and role fill in. The pass is emailed straight away.</p>
         <ManualPassForm suggestions={suggestions} />
       </section>
 

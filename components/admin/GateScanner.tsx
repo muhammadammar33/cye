@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, CameraOff, LayoutDashboard, LogOut, Minus, Plus, Search, Undo2 } from "lucide-react";
+import { Camera, CameraOff, LayoutDashboard, LogOut, Minus, Monitor, Plus, Search, Undo2 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { logout } from "@/app/admin/actions";
 import { gateCheckIn, gateSearch, gateSetCompanions, gateStats, gateUndo, type GatePass, type GateResult, type GateStats } from "@/app/admin/gate/actions";
@@ -157,6 +157,9 @@ export function GateScanner({ name, isAdmin, initialStats }: { name: string; isA
           <p className="truncate text-xs text-white/60">{name}</p>
         </div>
         <div className="flex items-center gap-2">
+          <a href="/admin/attendance" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-lg bg-white/10 px-3 py-1.5 text-xs font-semibold hover:bg-white/20">
+            <Monitor className="h-3.5 w-3.5" aria-hidden /> Big screen
+          </a>
           {isAdmin ? (
             <a href="/admin/passes" className="inline-flex items-center gap-1.5 rounded-lg bg-white/10 px-3 py-1.5 text-xs font-semibold hover:bg-white/20">
               <LayoutDashboard className="h-3.5 w-3.5" aria-hidden /> Dashboard

@@ -16,6 +16,12 @@ export const PASS_CATEGORIES = {
 export type PassCategory = keyof typeof PASS_CATEGORIES;
 export const PASS_CATEGORY_KEYS = Object.keys(PASS_CATEGORIES) as PassCategory[];
 
+/**
+ * Row order on the attendance display. Neighbouring rows are clearly different colours (checked with the
+ * dataviz palette validator); every row is also labelled, so the type never depends on colour alone.
+ */
+export const DISPLAY_ORDER: PassCategory[] = ["competition", "visitor", "talent", "volunteer", "startup", "ambassador", "focal", "project", "team"];
+
 /** Pass categories an admin issues by hand (no form submission behind them). */
 export const MANUAL_PASS_CATEGORIES = ["focal", "team"] as const satisfies readonly PassCategory[];
 
