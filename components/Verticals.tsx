@@ -1,11 +1,10 @@
 import { Cpu, Leaf, Palette, Sparkles, TrendingUp } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { ACTIVITIES, FOCAL_PERSONS, VERTICALS } from "@/data/event";
+import { ACTIVITIES, VERTICALS } from "@/data/event";
 import { ArcDecoration } from "@/components/ui/ArcDecoration";
 import { Card } from "@/components/ui/Card";
 import { Container } from "@/components/ui/Container";
 import { FadeIn } from "@/components/ui/FadeIn";
-import { FocalPerson } from "@/components/ui/FocalPerson";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 
 const META: Record<string, { icon: LucideIcon; accent: string }> = {
@@ -52,9 +51,6 @@ export function Verticals() {
                   <p className="mt-3 text-sm leading-relaxed text-cye-ink/70 sm:text-base">
                     {vertical.desc}
                   </p>
-                  {vertical.name === "Talent Fiesta" ? (
-                    <FocalPerson className="mt-4" title="Focal person" name={FOCAL_PERSONS.talentFiesta.name} phone={FOCAL_PERSONS.talentFiesta.phone} />
-                  ) : null}
                 </Card>
               </FadeIn>
             );

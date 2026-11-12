@@ -370,7 +370,6 @@ export const VISITOR_PERKS = [
 // PLACEHOLDER: phone numbers are dummy values; replace with confirmed contacts.
 /** Focal persons outside the competition list (each competition's focal person is stored on the competition). */
 export const FOCAL_PERSONS = {
-  talentFiesta: { title: "Talent Fiesta", name: "Raja Dihyah", phone: "+92 331 5096645" },
   talentTribute: { title: "Incharge Talent Tribute", name: "Ahmad Yaseen", phone: "+92 332 2442925" },
   mootCourt: { title: "Moot Court / Lawyers Conference", name: "Haris Abdul Rehman", phone: "+92 313 5237249" },
   govtColleges: { title: "Government colleges", name: "Raja Yahya", phone: "+92 332 3791577" },
