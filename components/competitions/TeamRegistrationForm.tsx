@@ -1,17 +1,17 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { ImageUp, Loader2, Phone, Send } from "lucide-react";
+import { ImageUp, Loader2, Send } from "lucide-react";
 import { EDUCATION_LEVELS, GENDERS } from "@/data/event";
 import { teamLabel } from "@/components/competitions/CompetitionCatalog";
 import { Field, fieldClass } from "@/components/ui/Field";
+import { FocalPerson } from "@/components/ui/FocalPerson";
 import { FormError, FormSuccess, Honeypot, type FormState } from "@/components/ui/FormStatus";
 import type { Competition } from "@/lib/content";
 import { compressImage } from "@/lib/compressImage";
 import { CONSENT_FIELDS } from "@/lib/consent";
 import { submitForm } from "@/lib/submit";
 import { choiceFor } from "@/lib/competitionOptions";
-import { whatsappLink } from "@/lib/phone";
 
 /** How the payment slip field behaves: hidden, optional or required. */
 export type SlipMode = "off" | "optional" | "required";
@@ -111,7 +111,7 @@ export function TeamRegistrationForm({
           ))}
         </select>
       </Field>
-      {competition?.focalName ? <FocalPerson name={competition.focalName} phone={competition.focalPhone} competition={competition.name} /> : null}
+      {competition?.focalName ? <FocalPerson className="sm:col-span-2" title={`Focal person for ${competition.name}`} name={competition.focalName} phone={competition.focalPhone} /> : null}
       <Field label="Team size">
         <select
           name="size"
@@ -247,29 +247,5 @@ export function TeamRegistrationForm({
         {state.status === "sending" ? "Submitting..." : "Submit registration"}
       </button>
     </form>
-  );
-}
-
-/** Who to contact about the chosen competition; the number opens WhatsApp. */
-function FocalPerson({ name, phone, competition }: { name: string; phone: string | null; competition: string }) {
-  return (
-    <div className="flex items-start gap-3 rounded-2xl border border-cye-orange/20 bg-cye-orange/5 px-4 py-3 text-sm sm:col-span-2">
-      <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white text-cye-orange shadow-sm">
-        <Phone className="h-4 w-4" aria-hidden />
-      </span>
-      <p className="leading-relaxed text-cye-ink/75">
-        <span className="block text-xs font-semibold uppercase tracking-wide text-cye-ink/45">Focal person for {competition}</span>
-        <span className="font-semibold text-cye-blue">{name}</span>
-        {phone ? (
-          <>
-            {" · "}
-            <a href={whatsappLink(phone)} target="_blank" rel="noopener noreferrer" className="whitespace-nowrap font-semibold text-cye-orange hover:text-cye-orange-lt">
-              {phone}
-            </a>
-            <span className="text-cye-ink/50"> (WhatsApp)</span>
-          </>
-        ) : null}
-      </p>
-    </div>
   );
 }

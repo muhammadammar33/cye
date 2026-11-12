@@ -1,6 +1,7 @@
 import "server-only";
 import { and, eq, gt } from "drizzle-orm";
 import { after } from "next/server";
+import { FOCAL_PERSONS } from "@/data/event";
 import { uploadImage } from "@/lib/blob";
 import { getCompetitions, getSettings } from "@/lib/content";
 import { db, schema as s } from "@/lib/db";
@@ -37,7 +38,11 @@ export async function createSubmission(opts: {
   const result = normalize(type, opts.data, competitions);
   if ("error" in result) return { ok: false, error: result.error, status: 422 };
   const chosen = type === "competition" ? competitions.find((c) => c.name === result.subject) : undefined;
-  const focal = chosen?.focalName ? { name: chosen.focalName, phone: chosen.focalPhone, competition: chosen.name } : undefined;
+  const focal = chosen?.focalName
+    ? { name: chosen.focalName, phone: chosen.focalPhone, topic: chosen.name }
+    : type === "talent"
+      ? { name: FOCAL_PERSONS.talentTribute.name, phone: FOCAL_PERSONS.talentTribute.phone, topic: "Talent Tribute" }
+      : undefined;
 
   // Basic flood guard: one submission per email and form per minute.
   const recent = await db

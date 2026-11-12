@@ -368,6 +368,14 @@ export const VISITOR_PERKS = [
 ];
 
 // PLACEHOLDER: phone numbers are dummy values; replace with confirmed contacts.
+/** Focal persons outside the competition list (each competition's focal person is stored on the competition). */
+export const FOCAL_PERSONS = {
+  talentTribute: { title: "Incharge Talent Tribute", name: "Ahmad Yaseen", phone: "+92 332 2442925" },
+  mootCourt: { title: "Moot Court / Lawyers Conference", name: "Haris Abdul Rehman", phone: "+92 313 5237249" },
+  govtColleges: { title: "Government colleges", name: "Raja Yahya", phone: "+92 332 3791577" },
+  medicalColleges: { title: "Medical colleges", name: "Gohar Ayub", phone: "+92 306 9152593" },
+};
+
 export const CONTACTS = [
   { label: "General queries", phones: ["+92 300 0000000"], email: "info@capitalyouthexpo.com" },
   { label: "Competitions & projects", phones: ["+92 300 0000001"], email: "competitions@capitalyouthexpo.com" },
