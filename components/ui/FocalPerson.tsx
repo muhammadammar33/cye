@@ -18,7 +18,6 @@ export function FocalPerson({ title, name, phone, className }: { title: string; 
             <a href={whatsappLink(phone)} target="_blank" rel="noopener noreferrer" className="whitespace-nowrap font-semibold text-cye-orange hover:text-cye-orange-lt">
               {phone}
             </a>
-            <span className="text-cye-ink/50"> (WhatsApp)</span>
           </>
         ) : null}
       </p>
