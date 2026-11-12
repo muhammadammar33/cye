@@ -5,7 +5,7 @@ import { and, count, eq, inArray, isNull } from "drizzle-orm";
 import { revalidatePath, updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { after } from "next/server";
-import { endSession, requireAdmin, startSession } from "@/lib/auth";
+import { endSession, requireAdmin, requireGateAccess, startSession } from "@/lib/auth";
 import { uploadImage } from "@/lib/blob";
 import { CONTENT_TAG } from "@/lib/content";
 import { db, requireDb, schema as s } from "@/lib/db";
@@ -61,6 +61,7 @@ export async function login(_prev: ActionState, form: FormData): Promise<ActionS
   await db.update(s.admins).set({ lastLoginAt: new Date() }).where(eq(s.admins.id, admin.id));
   await startSession(admin);
   const next = String(form.get("next") ?? "");
+  if (admin.role === "gate") redirect("/admin/gate");
   redirect(next.startsWith("/admin") ? next : "/admin");
 }
 
@@ -326,13 +327,14 @@ export async function createAdmin(_prev: ActionState, form: FormData): Promise<A
   const name = String(form.get("name") ?? "").trim();
   const email = String(form.get("email") ?? "").trim().toLowerCase();
   const password = String(form.get("password") ?? "");
+  const role = form.get("role") === "gate" ? "gate" : "admin";
   if (!name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { error: "Enter a name and a valid email." };
   if (password.length < 10) return { error: "Password must be at least 10 characters." };
   const database = requireDb();
   const [existing] = await database.select({ id: s.admins.id }).from(s.admins).where(eq(s.admins.email, email)).limit(1);
   if (existing) return { error: "An admin with that email already exists." };
-  await database.insert(s.admins).values({ name, email, passwordHash: await bcrypt.hash(password, 12) });
-  await logActivity(me, "Added admin", `${name} (${email})`);
+  await database.insert(s.admins).values({ name, email, role, passwordHash: await bcrypt.hash(password, 12) });
+  await logActivity(me, role === "gate" ? "Added gate staff" : "Added admin", `${name} (${email})`);
   revalidatePath("/admin/admins");
   return { ok: `Added ${email}.` };
 }
@@ -417,7 +419,7 @@ export async function sendMissingPasses() {
 
 /** Gate check-in from the pass page (admins only). */
 export async function checkInPass(token: string) {
-  const me = await requireAdmin();
+  const me = await requireGateAccess();
   const pass = await passByToken(token);
   if (!pass || pass.revokedAt || pass.checkedInAt) return;
   await requireDb().update(s.passes).set({ checkedInAt: new Date() }).where(eq(s.passes.id, pass.id));

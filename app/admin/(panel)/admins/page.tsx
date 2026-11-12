@@ -12,7 +12,7 @@ export default async function AdminsPage() {
 
   return (
     <>
-      <PageHeader title="Admins" description="People who can sign in to this dashboard." />
+      <PageHeader title="Admins" description="People who can sign in. Gate staff can only use the gate scanner (check people in on event day)." />
       <div className="max-w-4xl space-y-6">
         <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
           <table className="w-full min-w-[520px] text-left text-sm">
@@ -20,6 +20,7 @@ export default async function AdminsPage() {
               <tr>
                 <th className="px-4 py-3">Name</th>
                 <th className="px-4 py-3">Email</th>
+                <th className="px-4 py-3">Access</th>
                 <th className="px-4 py-3">Last sign-in</th>
                 <th className="px-4 py-3" />
               </tr>
@@ -29,6 +30,7 @@ export default async function AdminsPage() {
                 <tr key={admin.id}>
                   <td className="px-4 py-3 font-semibold">{admin.name}</td>
                   <td className="px-4 py-3">{admin.email}</td>
+                  <td className="px-4 py-3 text-xs font-semibold">{admin.role === "gate" ? <span className="text-amber-700">Gate staff</span> : <span className="text-cye-blue">Admin</span>}</td>
                   <td className="px-4 py-3 text-xs text-slate-500">{admin.lastLoginAt ? formatDate(admin.lastLoginAt) : "Never"}</td>
                   <td className="px-4 py-3 text-right">
                     {admin.id === me.id ? (
@@ -45,7 +47,7 @@ export default async function AdminsPage() {
           </table>
         </div>
         <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="mb-4 font-heading text-base font-bold text-cye-blue">Add an admin</h2>
+          <h2 className="mb-4 font-heading text-base font-bold text-cye-blue">Add an admin or gate staff</h2>
           <CreateAdminForm />
         </section>
         <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">

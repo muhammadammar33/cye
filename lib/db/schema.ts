@@ -32,6 +32,8 @@ export const admins = pgTable("admins", {
   email: text("email").notNull().unique(),
   name: text("name").notNull(),
   passwordHash: text("password_hash").notNull(),
+  /** "admin": the whole dashboard. "gate": only the event-day gate scanner. */
+  role: text("role").default("admin").notNull(),
   lastLoginAt: timestamp("last_login_at", { withTimezone: true }),
   ...timestamps,
 });

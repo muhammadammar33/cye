@@ -57,6 +57,13 @@
       "when": 1794491870493,
       "tag": "0007_event_passes",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1794493408562,
+      "tag": "0008_admin_roles",
+      "breakpoints": true
     }
   ]
 }

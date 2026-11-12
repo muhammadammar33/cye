@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import { CalendarDays, CheckCircle2, MapPin, XCircle } from "lucide-react";
 import { checkInPass } from "@/app/admin/actions";
@@ -8,7 +7,7 @@ import { PrintButton } from "@/components/PrintButton";
 import { EVENT } from "@/data/event";
 import { PASS_CATEGORIES, type PassCategory } from "@/lib/passCategories";
 import { passByToken } from "@/lib/passes";
-import { SESSION_COOKIE, verifySession } from "@/lib/session";
+import { currentAccount } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Event pass | CYE 2026", robots: { index: false, follow: false } };
@@ -21,7 +20,7 @@ export default async function PassPage({ params }: { params: Promise<{ token: st
   const pass = await passByToken(token);
   if (!pass) notFound();
   const cat = PASS_CATEGORIES[pass.category as PassCategory] ?? PASS_CATEGORIES.visitor;
-  const admin = await verifySession((await cookies()).get(SESSION_COOKIE)?.value);
+  const admin = await currentAccount();
   const valid = !pass.revokedAt;
 
   return (
@@ -82,7 +81,7 @@ export default async function PassPage({ params }: { params: Promise<{ token: st
               </button>
             </form>
           ) : null}
-          {admin ? <p className="text-xs text-cye-ink/50">Signed in as admin ({admin.name}). Holder email: {pass.email}</p> : null}
+          {admin ? <p className="text-xs text-cye-ink/50">Signed in as {admin.name} ({admin.role === "gate" ? "gate staff" : "admin"}). Holder email: {pass.email}</p> : null}
         </div>
       </div>
     </main>
