@@ -2,6 +2,7 @@ import "server-only";
 import { AUDIENCE, EVENT, VERTICALS } from "@/data/event";
 import type { SubmissionType } from "@/lib/db/schema";
 import type { PaymentSettings } from "@/lib/defaults";
+import { whatsappLink } from "@/lib/phone";
 
 type Mail = { to: string | string[]; subject: string; html: string; replyTo?: string };
 
@@ -175,7 +176,14 @@ function paymentBlock(info: PaymentInfo) {
 <p style="margin:0 0 12px;font-size:14px;color:#374151">After paying, reply to this email with a photo of your payment slip.</p>`;
 }
 
-export function confirmationEmail(ctx: EmailContext, type: SubmissionType, name: string, kind: string, summary: string, payment?: PaymentInfo) {
+type FocalInfo = { name: string; phone: string | null; competition: string };
+
+function focalBlock(f: FocalInfo) {
+  const phone = f.phone ? ` on <a href="${esc(whatsappLink(f.phone))}" style="color:${ORANGE};font-weight:bold;text-decoration:none;white-space:nowrap">${esc(f.phone)}</a> (WhatsApp)` : "";
+  return `<p style="margin:0 0 12px">For questions about ${esc(f.competition)}, contact the focal person <strong>${esc(f.name)}</strong>${phone}.</p>`;
+}
+
+export function confirmationEmail(ctx: EmailContext, type: SubmissionType, name: string, kind: string, summary: string, payment?: PaymentInfo, focal?: FocalInfo) {
   return layout(ctx, {
     preheader: `Thank you, ${name}. We received your ${kind.toLowerCase()}.`,
     eyebrow: "SUBMISSION RECEIVED",
@@ -187,7 +195,8 @@ export function confirmationEmail(ctx: EmailContext, type: SubmissionType, name:
   <tr><td style="padding:14px 16px;font:14px/1.6 ${FONT};color:#374151"><strong style="color:${BLUE}">What happens next</strong><br>${esc(NEXT_STEPS[type])}</td></tr>
 </table>
 ${payment ? paymentBlock(payment) : ""}
-<p style="margin:0 0 4px">Questions? Simply reply to this email.</p>
+${focal ? focalBlock(focal) : ""}
+<p style="margin:0 0 4px">${focal ? "You can also reply to this email." : "Questions? Simply reply to this email."}</p>
 <p style="margin:16px 0 0">Regards,<br><strong>Team ${esc(EVENT.name)}</strong></p>`,
   });
 }
