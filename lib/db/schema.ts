@@ -77,6 +77,9 @@ export const competitions = pgTable("competitions", {
   description: text("description").notNull(),
   /** Link to the competition's rule book PDF, e.g. /rulebooks/01-robo-war.pdf */
   rulebook: text("rulebook"),
+  /** Competition focal person shown to participants, e.g. "Syed Hamza Ali" and "+92 349 9181998". */
+  focalName: text("focal_name"),
+  focalPhone: text("focal_phone"),
   ...content,
 });
 

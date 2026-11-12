@@ -43,6 +43,13 @@
       "when": 1792822888240,
       "tag": "0005_talent_tribute",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1794447320171,
+      "tag": "0006_competition_focal_person",
+      "breakpoints": true
     }
   ]
 }

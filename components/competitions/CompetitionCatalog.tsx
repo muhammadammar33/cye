@@ -1,6 +1,6 @@
 "use client";
 
-import { FileText, Users, Wallet } from "lucide-react";
+import { FileText, Phone, Users, Wallet } from "lucide-react";
 import { useState } from "react";
 import { VERTICALS } from "@/data/event";
 import type { Competition } from "@/lib/content";
@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { FadeIn } from "@/components/ui/FadeIn";
 import { cn } from "@/lib/cn";
+import { whatsappLink } from "@/lib/phone";
 
 export const VERTICAL_ACCENT: Record<string, string> = {
   TechNexus: "text-cye-blue bg-cye-blue/10",
@@ -86,6 +87,28 @@ export function CompetitionCatalog({ competitions, onSelect }: { competitions: C
                     {teamLabel(item.teamMin, item.teamMax)}
                   </dd>
                 </div>
+                {item.focalName ? (
+                  <div className="col-span-2 rounded-2xl bg-cye-mist px-3 py-2">
+                    <dt className="flex items-center gap-1 font-semibold uppercase tracking-wide text-cye-ink/45">
+                      <Phone className="h-3.5 w-3.5 text-cye-orange" aria-hidden />
+                      Focal person
+                    </dt>
+                    <dd className="mt-0.5 font-heading font-bold leading-snug text-cye-blue">
+                      {item.focalName}
+                      {item.focalPhone ? (
+                        <a
+                          href={whatsappLink(item.focalPhone)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={`WhatsApp ${item.focalName} on ${item.focalPhone}`}
+                          className="block whitespace-nowrap font-sans font-semibold text-cye-orange hover:text-cye-orange-lt"
+                        >
+                          {item.focalPhone}
+                        </a>
+                      ) : null}
+                    </dd>
+                  </div>
+                ) : null}
               </dl>
               <Button
                 href="#competition-register"

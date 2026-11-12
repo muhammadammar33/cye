@@ -33,8 +33,11 @@ export async function createSubmission(opts: {
   const gate = GATE[type];
   if (gate && !settings.registration_open[gate]) return { ok: false, error: "This registration is closed.", status: 403 };
 
-  const result = normalize(type, opts.data, await getCompetitions());
+  const competitions = await getCompetitions();
+  const result = normalize(type, opts.data, competitions);
   if ("error" in result) return { ok: false, error: result.error, status: 422 };
+  const chosen = type === "competition" ? competitions.find((c) => c.name === result.subject) : undefined;
+  const focal = chosen?.focalName ? { name: chosen.focalName, phone: chosen.focalPhone, competition: chosen.name } : undefined;
 
   // Basic flood guard: one submission per email and form per minute.
   const recent = await db
@@ -86,7 +89,7 @@ export async function createSubmission(opts: {
       sendEmail({
         to: result.email,
         subject: `${kind} received | Capital Youth Expo 2026`,
-        html: confirmationEmail(ctx, type, result.name, kind, result.subject ?? "", type === "competition" ? { payment: settings.payment, fee: String(result.data.fee ?? ""), slipReceived: Boolean(result.data.paymentSlip) } : undefined),
+        html: confirmationEmail(ctx, type, result.name, kind, result.subject ?? "", type === "competition" ? { payment: settings.payment, fee: String(result.data.fee ?? ""), slipReceived: Boolean(result.data.paymentSlip) } : undefined, focal),
         replyTo: settings.inboxes[INBOX[type]],
       }),
     ]);

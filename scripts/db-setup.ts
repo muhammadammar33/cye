@@ -34,7 +34,7 @@ async function main() {
 
   await seed(s.competitions, E.COMPETITIONS.map((c, i) => ({
     name: c.name, vertical: c.vertical, audience: c.audience, fee: c.fee,
-    teamMin: c.teamMin, teamMax: c.teamMax, description: c.desc, rulebook: c.rulebook, sortOrder: i,
+    teamMin: c.teamMin, teamMax: c.teamMax, description: c.desc, rulebook: c.rulebook, focalName: c.focalName, focalPhone: c.focalPhone, sortOrder: i,
   })), "competitions");
   await seed(s.guests, E.GUESTS.map((g, i) => ({
     name: g.name, role: g.role, photo: g.photo ? `/guests/${g.photo}.webp` : null, sortOrder: i,
@@ -134,6 +134,15 @@ async function applyPatches(db: Db) {
     await db.update(s.competitions).set({ rulebook: "/rulebooks/19-arts.pdf" }).where(and(byName("Arts"), or(isNull(s.competitions.rulebook), eq(s.competitions.rulebook, ""))));
     applied.add("2026-11-arts-rulebook");
     console.log("[db-setup] applied patch 2026-11-arts-rulebook");
+  }
+
+  if (!applied.has("2026-11-focal-persons")) {
+    // Focal person per competition. Only fills rows that have none yet, so admin edits are kept.
+    for (const c of E.COMPETITIONS) {
+      await db.update(s.competitions).set({ focalName: c.focalName, focalPhone: c.focalPhone }).where(and(byName(c.name), isNull(s.competitions.focalName)));
+    }
+    applied.add("2026-11-focal-persons");
+    console.log("[db-setup] applied patch 2026-11-focal-persons");
   }
 
   if (!applied.has("2026-10-remove-debate")) {
