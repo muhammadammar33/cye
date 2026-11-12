@@ -6,7 +6,7 @@ import { FormMessage, inputClass, SubmitButton, useFormAction } from "@/componen
 export function CreateAdminForm() {
   const { state, onSubmit, pending } = useFormAction(createAdmin);
   return (
-    <form key={state?.ok} onSubmit={onSubmit} className="grid gap-4 sm:grid-cols-3">
+    <form key={state?.ok} onSubmit={onSubmit} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
       <label className="block text-sm font-semibold text-slate-700">
         Name
         <input name="name" required className={inputClass} />
@@ -19,7 +19,14 @@ export function CreateAdminForm() {
         Temporary password
         <input name="password" type="password" required minLength={10} autoComplete="new-password" className={inputClass} />
       </label>
-      <div className="space-y-3 sm:col-span-3">
+      <label className="block text-sm font-semibold text-slate-700">
+        Access
+        <select name="role" defaultValue="admin" className={inputClass}>
+          <option value="admin">Admin (whole dashboard)</option>
+          <option value="gate">Gate staff (scanner only)</option>
+        </select>
+      </label>
+      <div className="space-y-3 sm:col-span-2 lg:col-span-4">
         <FormMessage state={state} />
         <SubmitButton pending={pending}>Add admin</SubmitButton>
       </div>

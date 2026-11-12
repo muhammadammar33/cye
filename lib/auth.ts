@@ -21,15 +21,31 @@ export async function endSession() {
   (await cookies()).delete(SESSION_COOKIE);
 }
 
-/** The signed-in admin (re-checked against the database), or a redirect to the login page. */
-export const requireAdmin = cache(async () => {
+/** The signed-in account, re-checked against the database; null when nobody (valid) is signed in. */
+export const currentAccount = cache(async () => {
   const session = await verifySession((await cookies()).get(SESSION_COOKIE)?.value);
-  if (!session || !db) redirect("/admin/login");
+  if (!session || !db) return null;
   const [admin] = await db
-    .select({ id: s.admins.id, email: s.admins.email, name: s.admins.name })
+    .select({ id: s.admins.id, email: s.admins.email, name: s.admins.name, role: s.admins.role })
     .from(s.admins)
     .where(eq(s.admins.id, Number(session.sub)))
     .limit(1);
+  return admin ?? null;
+});
+
+/** The signed-in account, or a redirect to the login page. */
+const signedIn = cache(async () => {
+  const admin = await currentAccount();
   if (!admin) redirect("/admin/login");
   return admin;
 });
+
+/** A full admin. Gate staff are sent to the gate scanner, the only page they may use. */
+export const requireAdmin = cache(async () => {
+  const admin = await signedIn();
+  if (admin.role !== "admin") redirect("/admin/gate");
+  return admin;
+});
+
+/** Anyone who may check people in at the gate: full admins and gate staff. */
+export const requireGateAccess = cache(async () => signedIn());

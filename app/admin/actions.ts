@@ -1,10 +1,11 @@
 "use server";
 
 import bcrypt from "bcryptjs";
-import { count, eq, inArray } from "drizzle-orm";
+import { and, count, eq, inArray, isNull } from "drizzle-orm";
 import { revalidatePath, updateTag } from "next/cache";
 import { redirect } from "next/navigation";
-import { endSession, requireAdmin, startSession } from "@/lib/auth";
+import { after } from "next/server";
+import { endSession, requireAdmin, requireGateAccess, startSession } from "@/lib/auth";
 import { uploadImage } from "@/lib/blob";
 import { CONTENT_TAG } from "@/lib/content";
 import { db, requireDb, schema as s } from "@/lib/db";
@@ -14,6 +15,8 @@ import { ENTITIES, isEntity, type FieldDef } from "@/lib/admin/entities";
 import { PAYMENT_STATUSES, STATUS_LABELS, TYPE_NAMES } from "@/lib/admin/labels";
 import { GENDERS } from "@/data/event";
 import { logActivity } from "@/lib/admin/log";
+import { emailPasses, issueForSubmissions, issueManualPass, passByToken, passOrigin, revokeForSubmissions } from "@/lib/passes";
+import { MANUAL_PASS_CATEGORIES, PASS_CATEGORIES, PASS_FOR_TYPE, type PassCategory } from "@/lib/passCategories";
 
 export type ActionState = { error?: string; ok?: string } | undefined;
 
@@ -58,6 +61,7 @@ export async function login(_prev: ActionState, form: FormData): Promise<ActionS
   await db.update(s.admins).set({ lastLoginAt: new Date() }).where(eq(s.admins.id, admin.id));
   await startSession(admin);
   const next = String(form.get("next") ?? "");
+  if (admin.role === "gate") redirect("/admin/gate");
   redirect(next.startsWith("/admin") ? next : "/admin");
 }
 
@@ -92,8 +96,27 @@ export async function updateSubmission(id: number, _prev: ActionState, form: For
     (before.notes ?? "") !== notes ? "Notes updated" : "",
   ].filter(Boolean);
   if (changes.length) await logActivity(me, "Updated submission", `#${id} ${before.name} (${TYPE_NAMES[before.type]})`, changes.join("; "));
+  const passNote = before.status !== status ? await syncPasses(me, [id], status) : "";
   revalidatePath("/admin", "layout");
-  return { ok: "Saved." };
+  return { ok: `Saved.${passNote}` };
+}
+
+/**
+ * Keeps passes in step with a status change: approving issues and emails the missing passes,
+ * any other status cancels the valid ones. Returns a short note for the admin.
+ */
+async function syncPasses(me: { id: number; name: string; email: string }, ids: number[], status: SubmissionStatus) {
+  if (status !== "approved") {
+    const revoked = await revokeForSubmissions(ids);
+    if (revoked) await logActivity(me, "Cancelled passes", `${revoked} pass${revoked === 1 ? "" : "es"}`, `Submissions ${ids.map((n) => `#${n}`).join(", ")} no longer approved`);
+    return revoked ? ` ${revoked} pass${revoked === 1 ? "" : "es"} cancelled.` : "";
+  }
+  const created = await issueForSubmissions(ids, me.name);
+  if (!created.length) return "";
+  const origin = await passOrigin();
+  await logActivity(me, "Issued passes", `${created.length} pass${created.length === 1 ? "" : "es"}`, created.map((p) => `${p.code} ${p.name}`).join(", ").slice(0, 2000));
+  after(() => emailPasses(created, origin));
+  return ` ${created.length} pass${created.length === 1 ? "" : "es"} issued and being emailed.`;
 }
 
 const INLINE_FIELDS = {
@@ -132,6 +155,7 @@ export async function bulkSetStatus(form: FormData) {
     `${ids.length} submission${ids.length === 1 ? "" : "s"}: ${ids.map((n) => `#${n}`).join(", ")}`,
     `Marked as ${STATUS_LABELS[status]}`,
   );
+  await syncPasses(me, ids, status);
   revalidatePath("/admin", "layout");
 }
 
@@ -303,13 +327,14 @@ export async function createAdmin(_prev: ActionState, form: FormData): Promise<A
   const name = String(form.get("name") ?? "").trim();
   const email = String(form.get("email") ?? "").trim().toLowerCase();
   const password = String(form.get("password") ?? "");
+  const role = form.get("role") === "gate" ? "gate" : "admin";
   if (!name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { error: "Enter a name and a valid email." };
   if (password.length < 10) return { error: "Password must be at least 10 characters." };
   const database = requireDb();
   const [existing] = await database.select({ id: s.admins.id }).from(s.admins).where(eq(s.admins.email, email)).limit(1);
   if (existing) return { error: "An admin with that email already exists." };
-  await database.insert(s.admins).values({ name, email, passwordHash: await bcrypt.hash(password, 12) });
-  await logActivity(me, "Added admin", `${name} (${email})`);
+  await database.insert(s.admins).values({ name, email, role, passwordHash: await bcrypt.hash(password, 12) });
+  await logActivity(me, role === "gate" ? "Added gate staff" : "Added admin", `${name} (${email})`);
   revalidatePath("/admin/admins");
   return { ok: `Added ${email}.` };
 }
@@ -336,4 +361,68 @@ export async function changePassword(_prev: ActionState, form: FormData): Promis
   await database.update(s.admins).set({ passwordHash: await bcrypt.hash(next, 12) }).where(eq(s.admins.id, me.id));
   await logActivity(me, "Changed own password");
   return { ok: "Password updated." };
+}
+
+/* ----------------------------- passes ----------------------------- */
+
+/** A pass for someone without a form submission: focal persons and the event team. */
+export async function createManualPass(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const me = await requireAdmin();
+  const category = String(form.get("category")) as PassCategory;
+  const name = String(form.get("name") ?? "").trim().slice(0, 120);
+  const email = String(form.get("email") ?? "").trim().toLowerCase().slice(0, 200);
+  const detail = String(form.get("detail") ?? "").trim().slice(0, 200) || null;
+  const institution = String(form.get("institution") ?? "").trim().slice(0, 200) || null;
+  if (!(MANUAL_PASS_CATEGORIES as readonly string[]).includes(category)) return { error: "Choose Focal Person or Event Team." };
+  if (!name) return { error: "Name is required." };
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { error: "Enter a valid email address." };
+  const pass = await issueManualPass({ category, name, email, detail, institution }, me.name);
+  const sent = await emailPasses([pass], await passOrigin());
+  await logActivity(me, "Issued pass", `${pass.code} ${name} (${PASS_CATEGORIES[category].label})`, sent ? `Emailed to ${email}` : `Not emailed (${email})`);
+  revalidatePath("/admin/passes");
+  return sent ? { ok: `Pass ${pass.code} emailed to ${email}.` } : { error: `Pass ${pass.code} created, but the email could not be sent. Use Resend from the list.` };
+}
+
+/** Emails a pass again (lost email, changed address is not supported: cancel and issue a new one). */
+export async function resendPass(id: number) {
+  const me = await requireAdmin();
+  const [pass] = await requireDb().select().from(s.passes).where(eq(s.passes.id, id)).limit(1);
+  if (!pass || pass.revokedAt) return;
+  const sent = await emailPasses([pass], await passOrigin());
+  await logActivity(me, "Resent pass", `${pass.code} ${pass.name}`, sent ? `Emailed to ${pass.email}` : "Email failed");
+  revalidatePath("/admin", "layout");
+}
+
+export async function revokePass(id: number) {
+  const me = await requireAdmin();
+  const [pass] = await requireDb().update(s.passes).set({ revokedAt: new Date() }).where(and(eq(s.passes.id, id), isNull(s.passes.revokedAt))).returning();
+  if (pass) await logActivity(me, "Cancelled pass", `${pass.code} ${pass.name}`);
+  revalidatePath("/admin", "layout");
+}
+
+/** Issues and emails passes for approved submissions that don't have one yet (e.g. approved before passes existed). */
+export async function sendMissingPasses() {
+  const me = await requireAdmin();
+  const types = Object.keys(PASS_FOR_TYPE) as (keyof typeof PASS_FOR_TYPE)[];
+  const approved = await requireDb()
+    .select({ id: s.submissions.id })
+    .from(s.submissions)
+    .where(and(eq(s.submissions.status, "approved"), inArray(s.submissions.type, types)));
+  const created = await issueForSubmissions(approved.map((r) => r.id), me.name);
+  if (created.length) {
+    const origin = await passOrigin();
+    await logActivity(me, "Issued passes", `${created.length} missing pass${created.length === 1 ? "" : "es"}`, created.map((p) => `${p.code} ${p.name}`).join(", ").slice(0, 2000));
+    after(() => emailPasses(created, origin));
+  }
+  revalidatePath("/admin", "layout");
+}
+
+/** Gate check-in from the pass page (admins only). */
+export async function checkInPass(token: string) {
+  const me = await requireGateAccess();
+  const pass = await passByToken(token);
+  if (!pass || pass.revokedAt || pass.checkedInAt) return;
+  await requireDb().update(s.passes).set({ checkedInAt: new Date() }).where(eq(s.passes.id, pass.id));
+  await logActivity(me, "Checked in", `${pass.code} ${pass.name}`);
+  revalidatePath(`/pass/${token}`);
 }
