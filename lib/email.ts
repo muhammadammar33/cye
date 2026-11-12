@@ -176,11 +176,11 @@ function paymentBlock(info: PaymentInfo) {
 <p style="margin:0 0 12px;font-size:14px;color:#374151">After paying, reply to this email with a photo of your payment slip.</p>`;
 }
 
-type FocalInfo = { name: string; phone: string | null; competition: string };
+type FocalInfo = { name: string; phone: string | null; topic: string };
 
 function focalBlock(f: FocalInfo) {
   const phone = f.phone ? ` on <a href="${esc(whatsappLink(f.phone))}" style="color:${ORANGE};font-weight:bold;text-decoration:none;white-space:nowrap">${esc(f.phone)}</a> (WhatsApp)` : "";
-  return `<p style="margin:0 0 12px">For questions about ${esc(f.competition)}, contact the focal person <strong>${esc(f.name)}</strong>${phone}.</p>`;
+  return `<p style="margin:0 0 12px">For questions about ${esc(f.topic)}, contact the focal person <strong>${esc(f.name)}</strong>${phone}.</p>`;
 }
 
 export function confirmationEmail(ctx: EmailContext, type: SubmissionType, name: string, kind: string, summary: string, payment?: PaymentInfo, focal?: FocalInfo) {

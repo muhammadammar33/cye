@@ -1,16 +1,21 @@
 import { CalendarDays, Mail, MapPin, Phone } from "lucide-react";
-import { EVENT, VENUE } from "@/data/event";
+import { EVENT, FOCAL_PERSONS, VENUE } from "@/data/event";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Card } from "@/components/ui/Card";
 import { Container } from "@/components/ui/Container";
 import { FadeIn } from "@/components/ui/FadeIn";
+import { FocalPerson } from "@/components/ui/FocalPerson";
 import { InterestForm } from "@/components/ui/InterestForm";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { SocialLinks } from "@/components/ui/SocialLinks";
-import { getContacts, getSettings } from "@/lib/content";
+import { getCompetitions, getContacts, getSettings } from "@/lib/content";
 
 export async function ContactPage() {
-  const [CONTACTS, { inboxes: EMAILS }] = await Promise.all([getContacts(), getSettings()]);
+  const [CONTACTS, { inboxes: EMAILS }, competitions] = await Promise.all([getContacts(), getSettings(), getCompetitions()]);
+  const focal = [
+    ...competitions.filter((c) => c.focalName).map((c) => ({ title: c.name, name: c.focalName!, phone: c.focalPhone })),
+    ...Object.values(FOCAL_PERSONS),
+  ];
   return (
     <section className="bg-wash pt-32 pb-20 sm:pt-36 sm:pb-24">
       <Container>
@@ -47,6 +52,15 @@ export async function ContactPage() {
             </FadeIn>
           ))}
         </div>
+        <FadeIn className="mt-12">
+          <h3 className="font-heading text-xl font-extrabold text-cye-blue">Focal persons</h3>
+          <p className="mt-1 text-sm text-cye-ink/65">Questions about a competition or program? Message its focal person on WhatsApp.</p>
+          <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {focal.map((f) => (
+              <FocalPerson key={f.title} title={f.title} name={f.name} phone={f.phone} className="bg-white" />
+            ))}
+          </div>
+        </FadeIn>
         <div className="mt-12 grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
           <FadeIn className="rounded-3xl bg-grad-blue p-6 text-white sm:p-8">
             <h3 className="font-heading text-sm font-bold uppercase tracking-wider text-cye-orange-lt">Event venue</h3>

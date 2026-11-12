@@ -1,10 +1,11 @@
 import { Award, CalendarDays, Check, MapPin } from "lucide-react";
-import { EVENT } from "@/data/event";
+import { EVENT, FOCAL_PERSONS } from "@/data/event";
 import { TalentForm } from "@/components/talent/TalentForm";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { ClosedNotice } from "@/components/ui/ClosedNotice";
 import { Container } from "@/components/ui/Container";
 import { FadeIn } from "@/components/ui/FadeIn";
+import { FocalPerson } from "@/components/ui/FocalPerson";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { getSettings } from "@/lib/content";
 import { ELIGIBLE_PERCENT, minGpa } from "@/lib/eligibility";
@@ -56,6 +57,7 @@ export async function TalentTribute() {
                 {EVENT.venue}, {EVENT.city}
               </p>
             </div>
+            <FocalPerson title={FOCAL_PERSONS.talentTribute.title} name={FOCAL_PERSONS.talentTribute.name} phone={FOCAL_PERSONS.talentTribute.phone} />
           </FadeIn>
           <FadeIn delay={0.08} className="rounded-3xl border border-white/80 bg-white p-6 shadow-card sm:p-8">
             <h3 className="font-heading text-xl font-extrabold text-cye-blue">Apply for Talent Tribute</h3>

@@ -1,6 +1,7 @@
 "use client";
 
 import { CalendarClock } from "lucide-react";
+import { FOCAL_PERSONS } from "@/data/event";
 import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
@@ -10,6 +11,7 @@ import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { ClosedNotice } from "@/components/ui/ClosedNotice";
 import { Container } from "@/components/ui/Container";
 import { FadeIn } from "@/components/ui/FadeIn";
+import { FocalPerson } from "@/components/ui/FocalPerson";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { PaymentDetails } from "@/components/competitions/PaymentDetails";
 import type { SlipMode } from "@/components/competitions/TeamRegistrationForm";
@@ -65,6 +67,10 @@ export function Competitions({
                 ? "Pay the registration fee using the details below and attach your payment slip."
                 : "Fee payment details are shared after your registration is confirmed."}
             </p>
+            <div className="mt-4 grid gap-2 sm:grid-cols-2">
+              <FocalPerson title="From a government college?" name={FOCAL_PERSONS.govtColleges.name} phone={FOCAL_PERSONS.govtColleges.phone} />
+              <FocalPerson title="From a medical college?" name={FOCAL_PERSONS.medicalColleges.name} phone={FOCAL_PERSONS.medicalColleges.phone} />
+            </div>
             {open && payment.accounts.length ? (
               <div className="mt-5">
                 <PaymentDetails payment={payment} fee={competitions.find((item) => item.name === selected)?.fee} />
