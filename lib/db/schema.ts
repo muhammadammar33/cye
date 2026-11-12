@@ -133,6 +133,33 @@ export const settings = pgTable("settings", {
   ...timestamps,
 });
 
+/**
+ * Event passes. Issued when an admin approves a submission (one per person: every competition team member
+ * gets their own), or by hand for focal persons and the event team. The token is the secret in the pass link
+ * and QR code; the code (e.g. CYE-V-00042) is what people read out at the gate.
+ */
+export const passes = pgTable(
+  "passes",
+  {
+    id: serial("id").primaryKey(),
+    token: text("token").notNull().unique(),
+    code: text("code").unique(),
+    category: text("category").notNull(),
+    submissionId: integer("submission_id").references(() => submissions.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    email: text("email").notNull(),
+    /** What the pass is for, e.g. "Robo War · Team Steel Hawks" or "Focal person, Robo War". */
+    detail: text("detail"),
+    institution: text("institution"),
+    issuedBy: text("issued_by"),
+    emailedAt: timestamp("emailed_at", { withTimezone: true }),
+    revokedAt: timestamp("revoked_at", { withTimezone: true }),
+    checkedInAt: timestamp("checked_in_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [index("passes_submission_idx").on(t.submissionId), index("passes_category_idx").on(t.category)],
+);
+
 /** Who did what in the admin dashboard. Name and email are copied in so entries survive an admin's removal. */
 export const adminLogs = pgTable(
   "admin_logs",

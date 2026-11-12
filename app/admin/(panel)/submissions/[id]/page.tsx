@@ -1,13 +1,14 @@
-import { eq } from "drizzle-orm";
-import { ArrowLeft, Mail, MessageCircle, Phone, Trash2 } from "lucide-react";
+import { asc, eq } from "drizzle-orm";
+import { ArrowLeft, Mail, MessageCircle, Phone, Ticket, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { deleteSubmission, updateSubmission } from "@/app/admin/actions";
+import { deleteSubmission, resendPass, updateSubmission } from "@/app/admin/actions";
 import { SubmissionForm } from "@/components/admin/SubmissionForm";
 import { formatDate, PageHeader, StatusBadge } from "@/components/admin/StatusBadge";
 import { ConfirmForm, SubmitButton } from "@/components/admin/ui";
 import { TYPE_NAMES } from "@/lib/admin/labels";
 import { requireDb, schema as s } from "@/lib/db";
+import { PASS_CATEGORIES, PASS_FOR_TYPE, type PassCategory } from "@/lib/passCategories";
 
 const label = (key: string) => key.replace(/_/g, " ").replace(/([a-z])([A-Z])/g, "$1 $2").replace(/^\w/, (c) => c.toUpperCase());
 
@@ -27,6 +28,7 @@ export default async function SubmissionPage({ params }: { params: Promise<{ id:
   if (!Number.isInteger(id)) notFound();
   const [row] = await requireDb().select().from(s.submissions).where(eq(s.submissions.id, id)).limit(1);
   if (!row) notFound();
+  const passes = PASS_FOR_TYPE[row.type] ? await requireDb().select().from(s.passes).where(eq(s.passes.submissionId, id)).orderBy(asc(s.passes.id)) : [];
 
   // Gender is edited in the sidebar form (the column is the source of truth), so it is not repeated here.
   const { members, paymentSlip, resultCard, gender: _gender, ...data } = row.data as Record<string, unknown> & { members?: Record<string, string>[]; paymentSlip?: string; resultCard?: string };
@@ -147,6 +149,44 @@ export default async function SubmissionPage({ params }: { params: Promise<{ id:
           <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
             <SubmissionForm status={row.status} notes={row.notes ?? ""} gender={row.gender ?? ""} showGender={row.type !== "sponsor" && row.type !== "contact"} payment={row.paymentStatus ?? ""} showPayment={row.type === "competition"} action={updateSubmission.bind(null, row.id)} />
           </section>
+          {PASS_FOR_TYPE[row.type] ? (
+            <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+              <h2 className="flex items-center gap-2 font-heading text-sm font-bold uppercase tracking-wide text-cye-blue">
+                <Ticket className="h-4 w-4" aria-hidden />
+                Passes
+              </h2>
+              {passes.length === 0 ? (
+                <p className="mt-2 text-sm text-slate-500">
+                  {row.status === "approved" ? "Approved before passes existed. Send them from the Passes page." : "Set the status to Approved to email a pass to each person."}
+                </p>
+              ) : (
+                <ul className="mt-3 space-y-2">
+                  {passes.map((p) => {
+                    const cat = PASS_CATEGORIES[p.category as PassCategory] ?? PASS_CATEGORIES.visitor;
+                    return (
+                      <li key={p.id} className={`rounded-xl border border-slate-200 p-3 text-sm ${p.revokedAt ? "opacity-50" : ""}`}>
+                        <div className="flex items-center justify-between gap-2">
+                          <a href={`/pass/${p.token}`} target="_blank" rel="noreferrer" className="font-mono text-xs font-bold hover:underline" style={{ color: cat.color }}>
+                            {p.code}
+                          </a>
+                          <span className="text-xs font-semibold text-slate-500">{p.revokedAt ? "Cancelled" : p.checkedInAt ? "Checked in" : p.emailedAt ? "Emailed" : "Not emailed"}</span>
+                        </div>
+                        <p className="mt-1 font-semibold text-cye-ink">{p.name}</p>
+                        <p className="text-xs text-slate-500">{p.email}</p>
+                        {!p.revokedAt ? (
+                          <form action={resendPass.bind(null, p.id)} className="mt-2">
+                            <button type="submit" className="rounded-lg border border-slate-300 px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50">
+                              {p.emailedAt ? "Resend email" : "Send email"}
+                            </button>
+                          </form>
+                        ) : null}
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </section>
+          ) : null}
           <section className="rounded-2xl border border-red-100 bg-white p-5 shadow-sm">
             <ConfirmForm action={deleteSubmission.bind(null, row.id)} message={`Delete ${row.name}'s submission permanently?`}>
               <SubmitButton variant="danger" className="w-full">
