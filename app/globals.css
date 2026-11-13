@@ -60,3 +60,10 @@ body {
 .bg-grad-blue {
   background-image: linear-gradient(135deg, var(--color-cye-blue), var(--color-cye-blue-lt));
 }
+
+/* Printing (e.g. an event pass): don't stretch the page to the screen height, which adds a blank page. */
+@media print {
+  body {
+    min-height: 0;
+  }
+}

@@ -66,8 +66,9 @@ function socialLinks(social: Record<string, string>) {
   return links.length ? `<p style="margin:0 0 10px">${links.join(' &nbsp;·&nbsp; ')}</p>` : "";
 }
 
-function layout(ctx: EmailContext, opts: { preheader: string; eyebrow: string; title: string; body: string; marketing?: boolean }) {
+function layout(ctx: EmailContext, opts: { preheader: string; eyebrow: string; title: string; body: string; marketing?: boolean; logoWidth?: number }) {
   const { origin } = ctx;
+  const logo = opts.logoWidth ?? 120;
   const stats = [
     { value: "40,000+", label: "Attendees" },
     { value: AUDIENCE[1]?.value ?? "700+", label: "Institutions" },
@@ -111,7 +112,7 @@ function layout(ctx: EmailContext, opts: { preheader: string; eyebrow: string; t
 <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:100%;max-width:600px;background:#ffffff;border-radius:20px;overflow:hidden">
   <tr><td style="height:6px;background:${ORANGE};background-image:linear-gradient(90deg,${ORANGE},${ORANGE_LT},${BLUE_LT},${BLUE})"></td></tr>
   <tr><td align="center" style="padding:28px 32px 8px">
-    <a href="${esc(origin)}"><img src="${esc(origin)}/brand/email-logo.png" width="120" alt="Capital Youth Expo" style="display:block;width:120px;height:auto;border:0"></a>
+    <a href="${esc(origin)}"><img src="${esc(origin)}/brand/email-logo.png" width="${logo}" alt="Capital Youth Expo" style="display:block;width:${logo}px;height:auto;border:0"></a>
   </td></tr>
   <tr><td style="padding:8px 32px 0;text-align:center;font-family:${FONT}">
     <p style="margin:0;font-size:11px;letter-spacing:3px;font-weight:bold;color:${ORANGE}">${esc(opts.eyebrow)}</p>
@@ -202,36 +203,54 @@ ${focal ? focalBlock(focal) : ""}
   });
 }
 
-type PassForEmail = { token: string; code: string | null; category: string; name: string; detail: string | null; institution: string | null };
+type PassForEmail = { token: string; code: string | null; category: string; name: string; detail: string | null; institution: string | null; createdAt?: Date };
 
-/** The event pass: a card in the category colour with the holder, pass number and QR code. */
+const ISSUED = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric", hour: "numeric", minute: "2-digit", timeZone: "Asia/Karachi" });
+
+/**
+ * The event pass, styled like the printable pass page: a ribbon in the pass type's colour, labelled fields,
+ * a modest QR code and the venue along the bottom. Built from tables and hosted images so email apps show it.
+ */
 export function passEmail(ctx: EmailContext, pass: PassForEmail) {
   const cat = PASS_CATEGORIES[pass.category as PassCategory] ?? PASS_CATEGORIES.visitor;
   const link = `${ctx.origin}/pass/${pass.token}`;
   const qr = `${ctx.origin}/api/passes/${pass.token}/qr`;
-  const line = (text: string | null, style: string) => (text ? `<p style="margin:6px 0 0;${style}">${esc(text)}</p>` : "");
-  const card = `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:8px 0 20px;border:2px solid ${cat.color};border-radius:16px;overflow:hidden;border-collapse:separate">
-  <tr><td style="background:${cat.color};padding:14px 20px;font-family:${FONT};color:#ffffff">
-    <p style="margin:0;font-size:11px;letter-spacing:3px;font-weight:bold;opacity:.85">CAPITAL YOUTH EXPO 2026</p>
-    <p style="margin:4px 0 0;font-size:22px;font-weight:bold;letter-spacing:1px">${esc(cat.label.toUpperCase())}</p>
+  const diamonds = (c: string) =>
+    ["#ef432c", c, "#f4782a"].map((d) => `<span style="display:inline-block;width:7px;height:7px;background:${d};transform:rotate(45deg);margin:0 2px"></span>`).join("");
+  const field = (label: string, value: string, color = "#111827") =>
+    `<p style="margin:0 0 2px;font:bold 10px ${FONT};letter-spacing:1.5px;text-transform:uppercase;color:#6b7280">${esc(label)}</p>
+     <p style="margin:0 0 12px;padding-bottom:6px;border-bottom:1px solid #d6dbe4;font:bold 16px ${FONT};color:${color}">${esc(value)}</p>`;
+  const fields = [
+    field("Name", pass.name),
+    pass.detail ? field(pass.category === "competition" ? "Competition" : "Role / for", pass.detail) : "",
+    pass.institution ? field("Institution", pass.institution) : "",
+    field("Pass type", cat.label, cat.color),
+  ].join("");
+  const card = `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:8px 0 20px;background:#fffdf8;border:1px solid #e5e7eb;border-radius:20px;overflow:hidden;border-collapse:separate">
+  <tr><td style="padding:16px 16px 0">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${cat.color};border-radius:12px"><tr><td align="center" style="padding:12px 10px;font-family:${FONT};color:#ffffff">
+      <p style="margin:0;font-size:19px;font-weight:bold;letter-spacing:1px;white-space:nowrap">${diamonds("#ffffff")}&nbsp; OFFICIAL ENTRY PASS &nbsp;${diamonds("#ffffff")}</p>
+      <p style="margin:4px 0 0;font-size:11px;font-weight:bold;letter-spacing:3px;opacity:.9">${esc(cat.label.toUpperCase())}</p>
+    </td></tr></table>
   </td></tr>
-  <tr><td align="center" style="padding:20px 20px 8px;font-family:${FONT}">
-    <p style="margin:0;font-size:22px;font-weight:bold;color:#111827">${esc(pass.name)}</p>
-    ${line(pass.detail, "font-size:14px;color:#374151")}
-    ${line(pass.institution, "font-size:13px;color:#6b7280")}
-    <img src="${esc(qr)}" width="180" height="180" alt="QR code for pass ${esc(pass.code ?? "")}" style="display:block;width:180px;height:180px;margin:16px auto 8px;border:0">
-    <p style="margin:0;font:bold 16px monospace;letter-spacing:2px;color:${cat.color}">${esc(pass.code ?? "")}</p>
+  <tr><td style="padding:18px 24px 4px">${fields}</td></tr>
+  <tr><td align="center" style="padding:4px 20px 0;font-family:${FONT}">
+    <img src="${esc(qr)}" width="140" height="140" alt="QR code for pass ${esc(pass.code ?? "")}" style="display:block;width:140px;height:140px;margin:0 auto;border:6px solid #ffffff;border-radius:10px">
+    <p style="margin:8px 0 0;font:bold 16px monospace;letter-spacing:3px;color:${cat.color}">${esc(pass.code ?? "")}</p>
+    <p style="margin:6px 0 0">${diamonds(cat.color)}</p>
+    ${pass.createdAt ? `<p style="margin:4px 0 0;font-size:11px;color:#6b7280">Issued ${esc(ISSUED.format(pass.createdAt))}</p>` : ""}
+    <p style="margin:12px 0 0;font-size:13px;color:#1b4694"><strong>${esc(EVENT.date)}</strong> · ${esc(EVENT.venue)}, ${esc(EVENT.city)}</p>
+    <p style="margin:8px 0 10px;font-size:12px;font-weight:bold;color:#1b4694">Original CNIC, student card or B-Form required for entry</p>
   </td></tr>
-  <tr><td align="center" style="padding:12px 20px 18px;font-family:${FONT};font-size:13px;color:#374151;border-top:1px dashed #d1d5db">
-    <strong>${esc(EVENT.date)}</strong> · ${esc(EVENT.venue)}, ${esc(EVENT.city)}
-  </td></tr>
+  <tr><td style="padding:0;line-height:0"><img src="${esc(ctx.origin)}/brand/email-pass-venue.jpg" width="600" alt="${esc(EVENT.venue)}, ${esc(EVENT.city)}" style="display:block;width:100%;height:auto;border:0"></td></tr>
 </table>`;
   return layout(ctx, {
     preheader: `Your ${cat.label} pass for Capital Youth Expo 2026, ${EVENT.date}.`,
     eyebrow: "YOUR EVENT PASS",
     title: "You're in! Here is your pass",
+    logoWidth: 170,
     body: `<p style="margin:0 0 12px">Dear ${esc(pass.name)},</p>
-<p style="margin:0 0 12px">Your place at <strong>${esc(EVENT.name)}</strong> is confirmed. This is your personal pass.</p>
+<p style="margin:0 0 12px">Your place at <strong>${esc(EVENT.name)}</strong> is confirmed. This is your personal entry pass.</p>
 ${card}
 <p style="margin:0 0 8px"><strong style="color:${BLUE}">At the entrance</strong></p>
 <ul style="margin:0 0 16px;padding-left:20px;font-size:14px;color:#374151">
@@ -240,7 +259,7 @@ ${card}
   <li>This pass is for you only and can't be shared.</li>
 </ul>
 <p style="margin:0 0 16px;text-align:center">${button(link, "Open my pass", cat.color)}</p>
-<p style="margin:0 0 4px;font-size:13px;color:#6b7280">If the QR code doesn't show, open the pass with the button above.</p>
+<p style="margin:0 0 4px;font-size:13px;color:#6b7280">If the QR code doesn't show, open the pass with the button above. You can print it or save it as a PDF from there.</p>
 <p style="margin:16px 0 0">See you there,<br><strong>Team ${esc(EVENT.name)}</strong></p>`,
   });
 }
