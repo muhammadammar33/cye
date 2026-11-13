@@ -24,7 +24,7 @@ const DOODLES: [LucideIcon, number, number, number, number, boolean][] = [
  * Background art for the entry pass, in SVG so it prints crisply:
  * - warm paper with CYE orange and blue washes, a light geometric star pattern and painted brush swashes;
  * - 3D shapes: glossy spheres, a ring and isometric cubes in CYE colours and the pass colour;
- * - Faisal Mosque, drawn to its real form (tent-shaped prayer hall, four pencil minarets) and shaded in 3D;
+ * - a real photo of Faisal Mosque as a tilted print with a drop shadow;
  * - competition icons on glossy bubbles, and a few birds.
  * Artwork near the top is laid out from the card's top edge and artwork near the bottom from its bottom edge, so
  * nothing drifts onto the text when a pass has more or fewer fields. `accent` is the pass type's colour.
@@ -141,20 +141,6 @@ export function PassBackground({ accent, id }: { accent: string; id: string }) {
             <stop offset="0.5" stopColor="#f4782a" />
             <stop offset="1" stopColor="#b8410f" />
           </linearGradient>
-          {/* Faisal Mosque shading: lit from the left */}
-          <linearGradient id={`${id}-hall-lit`} x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stopColor="#ffffff" />
-            <stop offset="1" stopColor="#d3ddf0" />
-          </linearGradient>
-          <linearGradient id={`${id}-hall-shade`} x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stopColor="#b7c7e6" />
-            <stop offset="1" stopColor="#7d95c4" />
-          </linearGradient>
-          <linearGradient id={`${id}-minaret`} x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0" stopColor="#ffffff" />
-            <stop offset="0.45" stopColor="#dbe4f4" />
-            <stop offset="1" stopColor="#8ea3cd" />
-          </linearGradient>
         </defs>
         <rect width="420" height="1000" fill={u("paper")} />
         <rect width="420" height="1000" fill={u("orange")} />
@@ -208,31 +194,14 @@ export function PassBackground({ accent, id }: { accent: string; id: string }) {
             </g>
           </g>
 
-          {/* Faisal Mosque: tent-shaped prayer hall with four pencil minarets, shaded in 3D */}
-          <g transform="translate(292 642) scale(0.78)" opacity="0.85">
-            <ellipse cx="75" cy="166" rx="80" ry="6" fill="#0b1b3a" opacity="0.15" filter={u("soft")} />
-            {[30, 114].map((x) => (
-              <g key={x} opacity="0.75">
-                <rect x={x} y="46" width="5" height="114" fill={u("minaret")} />
-                <polygon points={`${x - 0.5},46 ${x + 2.5},22 ${x + 5.5},46`} fill={u("minaret")} />
-                <rect x={x - 1.5} y="80" width="8" height="3" fill="#b8c7e4" />
-              </g>
-            ))}
-            <path d="M22 160 Q 50 112 75 54 L 75 160 Z" fill={u("hall-lit")} />
-            <path d="M75 54 Q 100 112 128 160 L 75 160 Z" fill={u("hall-shade")} />
-            <path d="M22 160 Q 50 112 75 54 Q 100 112 128 160" fill="none" stroke="#6f87b8" strokeWidth="1" />
-            <path d="M75 54 L 48 160 M75 54 L 102 160" stroke="#8ea3cd" strokeWidth="0.8" opacity="0.7" />
-            <path d="M64 160 L 75 126 L 86 160 Z" fill="#4f6aa3" opacity="0.75" />
-            {[4, 140].map((x) => (
-              <g key={x}>
-                <rect x={x} y="22" width="7" height="138" fill={u("minaret")} />
-                <polygon points={`${x - 0.5},22 ${x + 3.5},-8 ${x + 7.5},22`} fill={u("minaret")} />
-                <rect x={x - 2} y="58" width="11" height="3.5" rx="1" fill="#c6d3ec" />
-                <rect x={x - 2} y="98" width="11" height="3.5" rx="1" fill="#c6d3ec" />
-                <rect x={x} y="22" width="7" height="138" fill="none" stroke="#8ea3cd" strokeWidth="0.6" />
-              </g>
-            ))}
-            <rect x="-2" y="160" width="153" height="6" rx="1" fill={u("hall-lit")} stroke="#a9badc" strokeWidth="0.6" />
+          {/* Faisal Mosque: a real photo (CC0, Wikimedia Commons "Near Faisal Mosque Ii") as a tilted print */}
+          <g transform="rotate(6 352 700)">
+            <rect x="298" y="646" width="112" height="100" rx="3" fill="#0b1b3a" opacity="0.28" filter={u("soft")} transform="translate(3 6)" />
+            <rect x="298" y="646" width="112" height="100" rx="3" fill="#ffffff" />
+            <image href="/brand/pass-faisal-mosque.jpg" x="304" y="652" width="100" height="70" preserveAspectRatio="xMidYMid slice" />
+            <text x="354" y="738" textAnchor="middle" fontSize="7.5" fontWeight="700" fill={ink} fontFamily="var(--font-sans), sans-serif" letterSpacing="0.6">
+              FAISAL MOSQUE
+            </text>
           </g>
 
           {DOODLES.filter((d) => d[2] >= 430).map(bubble)}
