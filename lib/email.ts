@@ -215,8 +215,8 @@ export function passEmail(ctx: EmailContext, pass: PassForEmail) {
   const cat = PASS_CATEGORIES[pass.category as PassCategory] ?? PASS_CATEGORIES.visitor;
   const link = `${ctx.origin}/pass/${pass.token}`;
   const qr = `${ctx.origin}/api/passes/${pass.token}/qr`;
-  const diamonds = (c: string) =>
-    ["#ef432c", c, "#f4782a"].map((d) => `<span style="display:inline-block;width:7px;height:7px;background:${d};transform:rotate(45deg);margin:0 2px"></span>`).join("");
+  const diamonds = (c: string, onRibbon = false) =>
+    (onRibbon ? ["#ffffff", "#ffffff99", "#ffffff"] : ["#ef432c", c, "#f4782a"]).map((d) => `<span style="display:inline-block;width:7px;height:7px;background:${d};transform:rotate(45deg);margin:0 2px"></span>`).join("");
   const field = (label: string, value: string, color = "#111827") =>
     `<p style="margin:0 0 2px;font:bold 10px ${FONT};letter-spacing:1.5px;text-transform:uppercase;color:#6b7280">${esc(label)}</p>
      <p style="margin:0 0 12px;padding-bottom:6px;border-bottom:1px solid #d6dbe4;font:bold 16px ${FONT};color:${color}">${esc(value)}</p>`;
@@ -226,10 +226,10 @@ export function passEmail(ctx: EmailContext, pass: PassForEmail) {
     pass.institution ? field("Institution", pass.institution) : "",
     field("Pass type", cat.label, cat.color),
   ].join("");
-  const card = `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:8px 0 20px;background:#fffdf8;border:1px solid #e5e7eb;border-radius:20px;overflow:hidden;border-collapse:separate">
+  const card = `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:8px 0 20px;background-color:#fff4e6;background-image:linear-gradient(180deg,#ffe9d2 0%,#fff7ee 45%,#eef3fb 100%);border:1px solid #f1dcc4;border-radius:20px;overflow:hidden;border-collapse:separate">
   <tr><td style="padding:16px 16px 0">
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${cat.color};border-radius:12px"><tr><td align="center" style="padding:12px 10px;font-family:${FONT};color:#ffffff">
-      <p style="margin:0;font-size:19px;font-weight:bold;letter-spacing:1px;white-space:nowrap">${diamonds("#ffffff")}&nbsp; OFFICIAL ENTRY PASS &nbsp;${diamonds("#ffffff")}</p>
+      <p style="margin:0;font-size:19px;font-weight:bold;letter-spacing:1px;white-space:nowrap">${diamonds("#ffffff", true)}&nbsp; OFFICIAL ENTRY PASS &nbsp;${diamonds("#ffffff", true)}</p>
       <p style="margin:4px 0 0;font-size:11px;font-weight:bold;letter-spacing:3px;opacity:.9">${esc(cat.label.toUpperCase())}</p>
     </td></tr></table>
   </td></tr>

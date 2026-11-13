@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { CalendarDays, MapPin } from "lucide-react";
+import { PassBackground } from "@/components/PassBackground";
 import { EVENT } from "@/data/event";
 import { PASS_CATEGORIES, type PassCategory } from "@/lib/passCategories";
 
@@ -7,11 +8,12 @@ type PassForCard = { token: string; code: string | null; category: string; name:
 
 const ISSUED = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric", hour: "numeric", minute: "2-digit", timeZone: "Asia/Karachi" });
 
-/** Three small diamonds, as on printed entry passes. */
-function Diamonds({ color }: { color: string }) {
+/** Three small diamonds, as on printed entry passes. On a coloured ribbon they are white, so none disappear. */
+function Diamonds({ color, onRibbon }: { color: string; onRibbon?: boolean }) {
+  const colors = onRibbon ? ["#ffffff", "rgba(255,255,255,0.6)", "#ffffff"] : ["#ef432c", color, "#f4782a"];
   return (
     <span className="flex items-center gap-1" aria-hidden>
-      {["#ef432c", color, "#f4782a"].map((c, i) => (
+      {colors.map((c, i) => (
         <span key={i} className="h-1.5 w-1.5 rotate-45" style={{ background: c }} />
       ))}
     </span>
@@ -36,25 +38,12 @@ function Field({ label, value, color, wide }: { label: string; value: string; co
  */
 export function PassCard({ pass, valid }: { pass: PassForCard; valid: boolean }) {
   const cat = PASS_CATEGORIES[pass.category as PassCategory] ?? PASS_CATEGORIES.visitor;
-  const patternId = `stars-${pass.token.slice(0, 6)}`;
   return (
     <article
-      className={`relative break-inside-avoid overflow-hidden rounded-[28px] border border-slate-200 bg-[#fffdf8] shadow-card [print-color-adjust:exact] [-webkit-print-color-adjust:exact] ${valid ? "" : "opacity-60 grayscale"}`}
+      className={`relative break-inside-avoid overflow-hidden rounded-[28px] border border-slate-200 bg-[#fffaf2] shadow-card [print-color-adjust:exact] [-webkit-print-color-adjust:exact] ${valid ? "" : "opacity-60 grayscale"}`}
     >
       {/* Background graphics */}
-      <svg className="pointer-events-none absolute inset-0 h-full w-full" aria-hidden>
-        <defs>
-          <pattern id={patternId} width="44" height="44" patternUnits="userSpaceOnUse">
-            <path
-              d="M22 6 L26 18 L38 22 L26 26 L22 38 L18 26 L6 22 L18 18 Z M22 12 L24.5 19.5 L32 22 L24.5 24.5 L22 32 L19.5 24.5 L12 22 L19.5 19.5 Z"
-              fill="none"
-              stroke="#1b4694"
-              strokeWidth="0.8"
-            />
-          </pattern>
-        </defs>
-        <rect width="100%" height="100%" fill={`url(#${patternId})`} opacity="0.07" />
-      </svg>
+      <PassBackground accent={cat.color} id={`pass-${pass.token.slice(0, 6)}`} />
       {/* eslint-disable-next-line @next/next/no-img-element -- decorative SVG */}
       <img src="/hero-arcs.svg" alt="" aria-hidden className="pointer-events-none absolute -right-16 -top-16 w-56 opacity-40" />
       {/* eslint-disable-next-line @next/next/no-img-element -- decorative SVG */}
@@ -80,9 +69,9 @@ export function PassCard({ pass, valid }: { pass: PassForCard; valid: boolean })
         {/* Ribbon in the pass type's colour */}
         <div className="relative mx-3 mt-4 rounded-xl px-4 py-3 text-center text-white shadow-md" style={{ background: `linear-gradient(135deg, ${cat.color}, ${cat.color}d9)` }}>
           <div className="flex items-center justify-center gap-3">
-            <Diamonds color="#ffffff" />
+            <Diamonds color="#ffffff" onRibbon />
             <p className="whitespace-nowrap font-heading text-[clamp(1rem,5vw,1.25rem)] font-black uppercase tracking-wide">Official Entry Pass</p>
-            <Diamonds color="#ffffff" />
+            <Diamonds color="#ffffff" onRibbon />
           </div>
           <p className="mt-0.5 text-[11px] font-bold uppercase tracking-[0.25em] text-white/85">{cat.label}</p>
         </div>
