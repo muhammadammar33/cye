@@ -107,7 +107,7 @@ export function PassCard({ pass, valid }: { pass: PassForCard; valid: boolean })
             Original CNIC, student card or B-Form required for entry
           </p>
           <div className="relative -mt-1 h-24 [mask-image:linear-gradient(to_bottom,transparent,black_45%)]">
-            <Image src="/brand/pass-venue-building.webp" alt={`${EVENT.venue}, ${EVENT.city}`} fill sizes="420px" className="object-cover object-center" />
+            <Image src="/brand/pass-venue-building.webp" alt={`${EVENT.venue}, ${EVENT.city}`} fill sizes="380px" className="object-cover object-center" />
           </div>
         </footer>
       </div>

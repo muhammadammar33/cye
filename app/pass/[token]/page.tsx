@@ -22,7 +22,7 @@ export default async function PassPage({ params }: { params: Promise<{ token: st
 
   return (
     <main className="min-h-screen bg-cye-mist px-4 py-8 print:min-h-0 print:bg-white print:py-0">
-      <div className="mx-auto max-w-[420px]">
+      <div className="mx-auto max-w-[380px]">
         <div
           className={`rounded-full px-4 py-2 text-center text-sm font-bold print:hidden ${valid ? "bg-emerald-100 text-emerald-800" : "bg-red-100 text-red-700"}`}
           role="status"
