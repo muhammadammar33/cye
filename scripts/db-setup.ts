@@ -145,6 +145,16 @@ async function applyPatches(db: Db) {
     console.log("[db-setup] applied patch 2026-11-focal-persons");
   }
 
+  if (!applied.has("2026-11-arts-focal-person")) {
+    // New Arts focal person. Only replaces the previous one, so a different name set in admin is kept.
+    await db
+      .update(s.competitions)
+      .set({ focalName: "Kaleem Ul Haq", focalPhone: "+92 344 0442365" })
+      .where(and(byName("Arts"), or(isNull(s.competitions.focalName), eq(s.competitions.focalName, "Anas Mehmood"))));
+    applied.add("2026-11-arts-focal-person");
+    console.log("[db-setup] applied patch 2026-11-arts-focal-person");
+  }
+
   if (!applied.has("2026-10-remove-debate")) {
     await db.delete(s.competitions).where(byName("Debate"));
     applied.add("2026-10-remove-debate");
