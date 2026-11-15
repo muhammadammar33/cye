@@ -3,12 +3,14 @@ import { ArrowLeft, Mail, MessageCircle, Phone, Ticket, Trash2 } from "lucide-re
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { deleteSubmission, resendPass, updateSubmission } from "@/app/admin/actions";
+import { PreEventForm } from "@/components/admin/PreEventForm";
 import { SubmissionForm } from "@/components/admin/SubmissionForm";
 import { formatDate, PageHeader, StatusBadge } from "@/components/admin/StatusBadge";
 import { ConfirmForm, SubmitButton } from "@/components/admin/ui";
 import { TYPE_NAMES } from "@/lib/admin/labels";
 import { requireDb, schema as s } from "@/lib/db";
 import { PASS_CATEGORIES, PASS_FOR_TYPE, type PassCategory } from "@/lib/passCategories";
+import { holdersFor } from "@/lib/passes";
 
 const label = (key: string) => key.replace(/_/g, " ").replace(/([a-z])([A-Z])/g, "$1 $2").replace(/^\w/, (c) => c.toUpperCase());
 
@@ -29,6 +31,10 @@ export default async function SubmissionPage({ params }: { params: Promise<{ id:
   const [row] = await requireDb().select().from(s.submissions).where(eq(s.submissions.id, id)).limit(1);
   if (!row) notFound();
   const passes = PASS_FOR_TYPE[row.type] ? await requireDb().select().from(s.passes).where(eq(s.passes.submissionId, id)).orderBy(asc(s.passes.id)) : [];
+  const [competition] =
+    row.type === "competition" && row.subject
+      ? await requireDb().select({ preEvent: s.competitions.preEvent }).from(s.competitions).where(eq(s.competitions.name, row.subject)).limit(1)
+      : [];
 
   // Gender is edited in the sidebar form (the column is the source of truth), so it is not repeated here.
   const { members, paymentSlip, resultCard, gender: _gender, ...data } = row.data as Record<string, unknown> & { members?: Record<string, string>[]; paymentSlip?: string; resultCard?: string };
@@ -149,6 +155,12 @@ export default async function SubmissionPage({ params }: { params: Promise<{ id:
           <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
             <SubmissionForm status={row.status} notes={row.notes ?? ""} gender={row.gender ?? ""} showGender={row.type !== "sponsor" && row.type !== "contact"} payment={row.paymentStatus ?? ""} showPayment={row.type === "competition"} action={updateSubmission.bind(null, row.id)} />
           </section>
+          {competition?.preEvent ? (
+            <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+              <h2 className="mb-3 font-heading text-sm font-bold uppercase tracking-wide text-cye-blue">Campus pre-event</h2>
+              <PreEventForm id={row.id} result={row.preEventResult} absent={row.preEventAbsent ?? []} members={holdersFor(row).map((h) => ({ name: h.name, email: h.email }))} />
+            </section>
+          ) : null}
           {PASS_FOR_TYPE[row.type] ? (
             <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
               <h2 className="flex items-center gap-2 font-heading text-sm font-bold uppercase tracking-wide text-cye-blue">

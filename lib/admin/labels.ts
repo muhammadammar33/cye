@@ -40,3 +40,21 @@ export const PAYMENT_STYLES: Record<PaymentStatus | "", string> = {
   Fake: "border-red-300 bg-red-50 text-red-700",
   "": "border-dashed border-slate-300 bg-white text-slate-400",
 };
+
+/** Campus pre-event result for competitions that shortlist at campus pre-events (empty = pending). */
+export const PRE_EVENT_RESULTS = ["qualified", "not_qualified", "absent"] as const;
+export type PreEventResult = (typeof PRE_EVENT_RESULTS)[number];
+
+export const PRE_EVENT_LABELS: Record<PreEventResult | "", string> = {
+  qualified: "Qualified",
+  not_qualified: "Not qualified",
+  absent: "Absent",
+  "": "Pending",
+};
+
+export const PRE_EVENT_STYLES: Record<PreEventResult | "", string> = {
+  qualified: "border-emerald-300 bg-emerald-50 text-emerald-700",
+  not_qualified: "border-red-300 bg-red-50 text-red-700",
+  absent: "border-amber-300 bg-amber-50 text-amber-700",
+  "": "border-dashed border-slate-300 bg-white text-slate-400",
+};

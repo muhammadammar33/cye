@@ -3,7 +3,7 @@ import { and, asc, eq, ilike, inArray, isNull, or, sql, type SQL } from "drizzle
 import { requireDb, schema as s } from "@/lib/db";
 import { SUBMISSION_STATUSES, SUBMISSION_TYPES, type SubmissionStatus, type SubmissionType } from "@/lib/db/schema";
 import { GENDERS } from "@/data/event";
-import { PAYMENT_STATUSES } from "@/lib/admin/labels";
+import { PAYMENT_STATUSES, PRE_EVENT_RESULTS } from "@/lib/admin/labels";
 
 export const GENDER_FILTERS = [...GENDERS, "none"] as const;
 export type GenderFilter = (typeof GENDER_FILTERS)[number];
@@ -11,7 +11,10 @@ export type GenderFilter = (typeof GENDER_FILTERS)[number];
 export const PAYMENT_FILTERS = [...PAYMENT_STATUSES, "none"] as const;
 export type PaymentFilter = (typeof PAYMENT_FILTERS)[number];
 
-export type SubmissionFilters = { type?: SubmissionType; status?: SubmissionStatus; gender?: GenderFilter; payment?: PaymentFilter; q?: string; uni?: string[] };
+export const PRE_EVENT_FILTERS = [...PRE_EVENT_RESULTS, "pending", "has_absent"] as const;
+export type PreEventFilter = (typeof PRE_EVENT_FILTERS)[number];
+
+export type SubmissionFilters = { type?: SubmissionType; status?: SubmissionStatus; gender?: GenderFilter; payment?: PaymentFilter; pre?: PreEventFilter; q?: string; uni?: string[] };
 
 /**
  * Institution names as typed by applicants, folded so "COMSATS", " comsats " and "Comsats." count as one.
@@ -26,6 +29,7 @@ export function parseFilters(params: Record<string, string | string[] | undefine
   const status = one(params.status);
   const gender = one(params.gender);
   const payment = one(params.payment);
+  const pre = one(params.pre);
   const q = one(params.q)?.trim();
   const uni = [...new Set(many(params.uni).map((u) => u.trim().toLowerCase()).filter(Boolean))].slice(0, 200);
   return {
@@ -33,6 +37,7 @@ export function parseFilters(params: Record<string, string | string[] | undefine
     status: SUBMISSION_STATUSES.includes(status as SubmissionStatus) ? (status as SubmissionStatus) : undefined,
     gender: GENDER_FILTERS.includes(gender as GenderFilter) ? (gender as GenderFilter) : undefined,
     payment: PAYMENT_FILTERS.includes(payment as PaymentFilter) ? (payment as PaymentFilter) : undefined,
+    pre: PRE_EVENT_FILTERS.includes(pre as PreEventFilter) ? (pre as PreEventFilter) : undefined,
     q: q || undefined,
     uni: uni.length ? uni : undefined,
   };
@@ -57,6 +62,13 @@ export function whereFor(f: SubmissionFilters): SQL | undefined {
     // Payment only applies to competition registrations.
     parts.push(eq(s.submissions.type, "competition"));
     parts.push(f.payment === "none" ? isNull(s.submissions.paymentStatus) : eq(s.submissions.paymentStatus, f.payment));
+  }
+  if (f.pre) {
+    // Pre-event results only exist on competition registrations.
+    parts.push(eq(s.submissions.type, "competition"));
+    if (f.pre === "pending") parts.push(isNull(s.submissions.preEventResult));
+    else if (f.pre === "has_absent") parts.push(sql`jsonb_array_length(coalesce(${s.submissions.preEventAbsent}, '[]'::jsonb)) > 0`);
+    else parts.push(eq(s.submissions.preEventResult, f.pre));
   }
   if (f.uni?.length) parts.push(inArray(institutionKey, f.uni));
   if (f.q) {

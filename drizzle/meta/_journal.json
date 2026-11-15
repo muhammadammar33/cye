@@ -71,6 +71,13 @@
       "when": 1794494608566,
       "tag": "0009_pass_companions",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1794765633798,
+      "tag": "0010_pre_events",
+      "breakpoints": true
     }
   ]
 }

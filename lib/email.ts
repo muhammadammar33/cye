@@ -211,9 +211,9 @@ const ISSUED = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short"
  * The event pass, styled like the printable pass page: a ribbon in the pass type's colour, labelled fields,
  * a modest QR code and the venue along the bottom. Built from tables and hosted images so email apps show it.
  */
-export function passEmail(ctx: EmailContext, pass: PassForEmail) {
+/** The pass card itself, shared by the pass email and the pre-event result email. */
+function passCardHtml(ctx: EmailContext, pass: PassForEmail) {
   const cat = PASS_CATEGORIES[pass.category as PassCategory] ?? PASS_CATEGORIES.visitor;
-  const link = `${ctx.origin}/pass/${pass.token}`;
   const qr = `${ctx.origin}/api/passes/${pass.token}/qr`;
   const diamonds = (c: string, onRibbon = false) =>
     (onRibbon ? ["#ffffff", "#ffffff99", "#ffffff"] : ["#ef432c", c, "#f4782a"]).map((d) => `<span style="display:inline-block;width:7px;height:7px;background:${d};transform:rotate(45deg);margin:0 2px"></span>`).join("");
@@ -244,6 +244,20 @@ export function passEmail(ctx: EmailContext, pass: PassForEmail) {
   </td></tr>
   <tr><td style="padding:0;line-height:0"><img src="${esc(ctx.origin)}/brand/email-pass-venue.jpg" width="600" alt="${esc(EVENT.venue)}, ${esc(EVENT.city)}" style="display:block;width:100%;height:auto;border:0"></td></tr>
 </table>`;
+  return card;
+}
+
+const ENTRANCE_TIPS = `<p style="margin:0 0 8px"><strong style="color:${BLUE}">At the entrance</strong></p>
+<ul style="margin:0 0 16px;padding-left:20px;font-size:14px;color:#374151">
+  <li style="margin-bottom:4px">Show the QR code on your phone, or a printout of this pass.</li>
+  <li style="margin-bottom:4px">Bring your CNIC, student card or B-Form.</li>
+  <li>This pass is for you only and can't be shared.</li>
+</ul>`;
+
+export function passEmail(ctx: EmailContext, pass: PassForEmail) {
+  const cat = PASS_CATEGORIES[pass.category as PassCategory] ?? PASS_CATEGORIES.visitor;
+  const link = `${ctx.origin}/pass/${pass.token}`;
+  const card = passCardHtml(ctx, pass);
   return layout(ctx, {
     preheader: `Your ${cat.label} pass for Capital Youth Expo 2026, ${EVENT.date}.`,
     eyebrow: "YOUR EVENT PASS",
@@ -252,15 +266,50 @@ export function passEmail(ctx: EmailContext, pass: PassForEmail) {
     body: `<p style="margin:0 0 12px">Dear ${esc(pass.name)},</p>
 <p style="margin:0 0 12px">Your place at <strong>${esc(EVENT.name)}</strong> is confirmed. This is your personal entry pass.</p>
 ${card}
-<p style="margin:0 0 8px"><strong style="color:${BLUE}">At the entrance</strong></p>
-<ul style="margin:0 0 16px;padding-left:20px;font-size:14px;color:#374151">
-  <li style="margin-bottom:4px">Show the QR code on your phone, or a printout of this pass.</li>
-  <li style="margin-bottom:4px">Bring your CNIC, student card or B-Form.</li>
-  <li>This pass is for you only and can't be shared.</li>
-</ul>
+${ENTRANCE_TIPS}
 <p style="margin:0 0 16px;text-align:center">${button(link, "Open my pass", cat.color)}</p>
 <p style="margin:0 0 4px;font-size:13px;color:#6b7280">If the QR code doesn't show, open the pass with the button above. You can print it or save it as a PDF from there.</p>
 <p style="margin:16px 0 0">See you there,<br><strong>Team ${esc(EVENT.name)}</strong></p>`,
+  });
+}
+
+export type PreEventNotice = {
+  name: string;
+  competition: string;
+  /** Why they are now a visitor. */
+  reason: "not_qualified" | "absent";
+  /** They were emailed a Competitor pass by mistake: open with the apology. */
+  apology: boolean;
+  pass: PassForEmail;
+};
+
+/** Campus pre-event outcome: not qualified or absent, now a visitor, with their Visitor pass (and an apology if needed). */
+export function preEventEmail(ctx: EmailContext, n: PreEventNotice) {
+  const link = `${ctx.origin}/pass/${n.pass.token}`;
+  const apology = n.apology
+    ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 16px;background:#fff4f2;border-left:4px solid ${ORANGE};border-radius:8px">
+  <tr><td style="padding:14px 16px;font:14px/1.6 ${FONT};color:#374151"><strong style="color:${BLUE}">An apology first</strong><br>Earlier you received an email with a <strong>Competitor pass for ${esc(n.competition)}</strong>. That email was not intended: it was sent by mistake because of a technical problem on our side, and that Competitor pass is no longer valid. We sincerely apologise for the confusion.</td></tr>
+</table>`
+    : "";
+  const outcome =
+    n.reason === "absent"
+      ? `<p style="margin:0 0 12px">Our records show that you did not attend the <strong>${esc(n.competition)}</strong> pre-event held at your campus, so you are not part of the competition at ${esc(EVENT.name)}.</p>
+<p style="margin:0 0 12px">You are still very welcome to visit the expo on <strong>${esc(EVENT.date)}</strong>. Below is your personal <strong>Visitor pass</strong>.</p>`
+      : `<p style="margin:0 0 12px">Thank you for taking part in the <strong>${esc(n.competition)}</strong> pre-event at your campus. After the judging, your team did not qualify for the final round at ${esc(EVENT.name)}.</p>
+<p style="margin:0 0 12px">We would love to have you at the expo on <strong>${esc(EVENT.date)}</strong> as a visitor. Below is your personal <strong>Visitor pass</strong>.</p>`;
+  return layout(ctx, {
+    preheader: n.reason === "absent" ? "You can still visit CYE 2026: here is your Visitor pass." : "Thank you for taking part. Here is your Visitor pass for CYE 2026.",
+    eyebrow: n.apology ? "AN UPDATE AND AN APOLOGY" : "PRE-EVENT RESULT",
+    title: n.reason === "absent" ? "You can still join us as a visitor" : "Thank you for competing",
+    logoWidth: 150,
+    body: `<p style="margin:0 0 12px">Dear ${esc(n.name)},</p>
+${apology}
+${outcome}
+${passCardHtml(ctx, n.pass)}
+${ENTRANCE_TIPS}
+<p style="margin:0 0 16px;text-align:center">${button(link, "Open my Visitor pass", PASS_CATEGORIES.visitor.color)}</p>
+<p style="margin:0 0 4px;font-size:13px;color:#6b7280">Questions? Simply reply to this email.</p>
+<p style="margin:16px 0 0">Regards,<br><strong>Team ${esc(EVENT.name)}</strong></p>`,
   });
 }
 

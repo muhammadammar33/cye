@@ -1,12 +1,12 @@
-import { count, desc } from "drizzle-orm";
+import { count, desc, eq } from "drizzle-orm";
 import { Download } from "lucide-react";
 import Link from "next/link";
-import { bulkSetStatus } from "@/app/admin/actions";
+import { bulkSetPreEvent, bulkSetStatus } from "@/app/admin/actions";
 import { formatDate, PageHeader, StatusBadge } from "@/components/admin/StatusBadge";
 import { inputClass, SubmitButton } from "@/components/admin/ui";
-import { PAYMENT_STATUSES, STATUS_LABELS, TYPE_NAMES } from "@/lib/admin/labels";
+import { PAYMENT_STATUSES, PRE_EVENT_LABELS, PRE_EVENT_RESULTS, STATUS_LABELS, TYPE_NAMES } from "@/lib/admin/labels";
 import { filterQuery, institutionOptions, parseFilters, whereFor } from "@/lib/admin/submissionQuery";
-import { GenderSelect, PaymentSelect, UniversityFilter } from "@/components/admin/SubmissionFilters";
+import { GenderSelect, PaymentSelect, PreEventSelect, UniversityFilter } from "@/components/admin/SubmissionFilters";
 import { GENDERS } from "@/data/event";
 import { requireDb, schema as s } from "@/lib/db";
 import { SUBMISSION_STATUSES, SUBMISSION_TYPES } from "@/lib/db/schema";
@@ -19,11 +19,14 @@ export default async function SubmissionsPage({ searchParams }: { searchParams: 
   const page = Math.max(1, Number(params.page) || 1);
   const db = requireDb();
   const where = whereFor(filters);
-  const [rows, [{ total }], universities] = await Promise.all([
+  const [rows, [{ total }], universities, preEventComps] = await Promise.all([
     db.select().from(s.submissions).where(where).orderBy(desc(s.submissions.createdAt)).limit(PAGE_SIZE).offset((page - 1) * PAGE_SIZE),
     db.select({ total: count() }).from(s.submissions).where(where),
     institutionOptions(filters.type),
+    db.select({ name: s.competitions.name }).from(s.competitions).where(eq(s.competitions.preEvent, true)),
   ]);
+  // Competitions that shortlist at campus pre-events show a Pre-event column picker.
+  const preEvent = new Set(preEventComps.map((c) => c.name));
   const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   return (
@@ -39,7 +42,7 @@ export default async function SubmissionsPage({ searchParams }: { searchParams: 
         }
       />
 
-      <form className="mb-4 grid gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-[1fr_1fr_0.9fr_1fr_1.3fr_1.4fr_auto]">
+      <form className="mb-4 grid gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-[1fr_1fr_0.9fr_1fr_1fr_1.3fr_1.4fr_auto]">
         <select name="type" defaultValue={filters.type ?? ""} className={inputClass} aria-label="Form">
           <option value="">All forms</option>
           {SUBMISSION_TYPES.map((t) => (
@@ -74,6 +77,16 @@ export default async function SubmissionsPage({ searchParams }: { searchParams: 
           ))}
           <option value="none">Not checked</option>
         </select>
+        <select name="pre" defaultValue={filters.pre ?? ""} className={inputClass} aria-label="Pre-event result">
+          <option value="">Any pre-event</option>
+          <option value="pending">Pending</option>
+          {PRE_EVENT_RESULTS.map((r) => (
+            <option key={r} value={r}>
+              {PRE_EVENT_LABELS[r]}
+            </option>
+          ))}
+          <option value="has_absent">Some members absent</option>
+        </select>
         <div>
           <UniversityFilter key={(filters.uni ?? []).join("|")} options={universities} selected={filters.uni ?? []} />
         </div>
@@ -92,6 +105,7 @@ export default async function SubmissionsPage({ searchParams }: { searchParams: 
                 <th className="px-4 py-3">Name</th>
                 <th className="px-4 py-3">Gender</th>
                 <th className="px-4 py-3">Payment</th>
+                <th className="px-4 py-3">Pre-event</th>
                 <th className="px-4 py-3">Form</th>
                 <th className="px-4 py-3">About</th>
                 <th className="px-4 py-3">Status</th>
@@ -101,7 +115,7 @@ export default async function SubmissionsPage({ searchParams }: { searchParams: 
             <tbody className="divide-y divide-slate-100">
               {rows.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-4 py-10 text-center text-slate-500">
+                  <td colSpan={9} className="px-4 py-10 text-center text-slate-500">
                     No submissions match these filters.
                   </td>
                 </tr>
@@ -125,6 +139,20 @@ export default async function SubmissionsPage({ searchParams }: { searchParams: 
                     </td>
                     <td className="px-4 py-3">
                       {row.type === "competition" ? <PaymentSelect id={row.id} value={row.paymentStatus} name={row.name} /> : <span className="text-xs text-slate-300">n/a</span>}
+                    </td>
+                    <td className="px-4 py-3">
+                      {row.type === "competition" && preEvent.has(row.subject ?? "") ? (
+                        <>
+                          <PreEventSelect id={row.id} value={row.preEventResult} name={row.name} />
+                          {row.preEventAbsent?.length ? (
+                            <span className="mt-1 block text-[11px] font-semibold text-amber-700">
+                              {row.preEventAbsent.length} member{row.preEventAbsent.length === 1 ? "" : "s"} absent
+                            </span>
+                          ) : null}
+                        </>
+                      ) : (
+                        <span className="text-xs text-slate-300">n/a</span>
+                      )}
                     </td>
                     <td className="px-4 py-3 text-slate-600">{TYPE_NAMES[row.type]}</td>
                     <td className="px-4 py-3 text-slate-600">
@@ -163,6 +191,22 @@ export default async function SubmissionsPage({ searchParams }: { searchParams: 
               ))}
             </select>
             <SubmitButton variant="ghost">Apply</SubmitButton>
+            {preEvent.size ? (
+              <>
+                <span className="ml-2 text-sm text-slate-400">|</span>
+                <select name="bulkPreEvent" defaultValue="not_qualified" className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm" aria-label="Pre-event result">
+                  {PRE_EVENT_RESULTS.map((r) => (
+                    <option key={r} value={r}>
+                      Pre-event: {PRE_EVENT_LABELS[r]}
+                    </option>
+                  ))}
+                  <option value="pending">Pre-event: Pending</option>
+                </select>
+                <button type="submit" formAction={bulkSetPreEvent} className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                  Set result
+                </button>
+              </>
+            ) : null}
           </div>
         ) : null}
       </form>

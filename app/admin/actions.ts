@@ -12,7 +12,8 @@ import { db, requireDb, schema as s } from "@/lib/db";
 import { SUBMISSION_STATUSES, type SubmissionStatus } from "@/lib/db/schema";
 import { DEFAULT_SETTINGS } from "@/lib/defaults";
 import { ENTITIES, isEntity, type FieldDef } from "@/lib/admin/entities";
-import { PAYMENT_STATUSES, STATUS_LABELS, TYPE_NAMES } from "@/lib/admin/labels";
+import { PAYMENT_STATUSES, PRE_EVENT_LABELS, PRE_EVENT_RESULTS, STATUS_LABELS, TYPE_NAMES, type PreEventResult } from "@/lib/admin/labels";
+import { applyPreEventResults, matchResults, saveResults, type CsvMatch, type CsvProblem } from "@/lib/preEvents";
 import { GENDERS } from "@/data/event";
 import { logActivity } from "@/lib/admin/log";
 import { emailPasses, issueForSubmissions, issueManualPass, passByToken, passOrigin, revokeForSubmissions } from "@/lib/passes";
@@ -122,6 +123,7 @@ async function syncPasses(me: { id: number; name: string; email: string }, ids: 
 const INLINE_FIELDS = {
   gender: { column: "gender", label: "Gender", empty: "not set", allowed: GENDERS as readonly string[], competitionOnly: false },
   payment: { column: "paymentStatus", label: "Payment", empty: "not checked", allowed: PAYMENT_STATUSES as readonly string[], competitionOnly: true },
+  preEvent: { column: "preEventResult", label: "Pre-event", empty: "pending", allowed: PRE_EVENT_RESULTS as readonly string[], competitionOnly: true },
 } as const;
 export type InlineField = keyof typeof INLINE_FIELDS;
 
@@ -139,8 +141,10 @@ export async function setSubmissionField(id: number, field: InlineField, value: 
   if (prev === next) return { ok: "Saved." };
   await database.update(s.submissions).set({ [def.column]: next }).where(eq(s.submissions.id, id));
   await logActivity(me, "Updated submission", `#${id} ${before.name} (${TYPE_NAMES[before.type]})`, `${def.label}: ${prev ?? def.empty} to ${next ?? def.empty}`);
+  // A team marked Qualified on an approved registration now gets its Competitor passes.
+  const note = field === "preEvent" && next === "qualified" && before.status === "approved" ? await syncPasses(me, [id], "approved") : "";
   revalidatePath("/admin", "layout");
-  return { ok: "Saved." };
+  return { ok: `Saved.${note}` };
 }
 
 export async function bulkSetStatus(form: FormData) {
@@ -425,4 +429,75 @@ export async function checkInPass(token: string) {
   await requireDb().update(s.passes).set({ checkedInAt: new Date() }).where(eq(s.passes.id, pass.id));
   await logActivity(me, "Checked in", `${pass.code} ${pass.name}`);
   revalidatePath(`/pass/${token}`);
+}
+
+/* ---------------------------- pre-events ---------------------------- */
+
+const preEventValue = (raw: unknown) => ((PRE_EVENT_RESULTS as readonly string[]).includes(String(raw)) ? (String(raw) as PreEventResult) : null);
+
+/** Marks the pre-event result of the selected registrations (Submissions table, bulk). */
+export async function bulkSetPreEvent(form: FormData) {
+  const me = await requireAdmin();
+  const result = preEventValue(form.get("bulkPreEvent"));
+  const ids = form.getAll("ids").map(Number).filter(Number.isInteger);
+  if (!ids.length) return;
+  await requireDb()
+    .update(s.submissions)
+    .set({ preEventResult: result })
+    .where(and(inArray(s.submissions.id, ids), eq(s.submissions.type, "competition")));
+  await logActivity(me, "Pre-event results", `${ids.length} registration${ids.length === 1 ? "" : "s"}: ${ids.map((n) => `#${n}`).join(", ")}`, `Marked ${PRE_EVENT_LABELS[result ?? ""]}`);
+  if (result === "qualified") await syncPasses(me, ids, "approved");
+  revalidatePath("/admin", "layout");
+}
+
+/** Pre-event panel on a registration: team result and which members were absent. */
+export async function savePreEvent(id: number, _prev: ActionState, form: FormData): Promise<ActionState> {
+  const me = await requireAdmin();
+  const result = preEventValue(form.get("result"));
+  const absent = [...new Set(form.getAll("absent").map((e) => String(e).trim().toLowerCase()).filter(Boolean))];
+  const database = requireDb();
+  const [before] = await database.select().from(s.submissions).where(eq(s.submissions.id, id)).limit(1);
+  if (!before || before.type !== "competition") return { error: "Not a competition registration." };
+  await database.update(s.submissions).set({ preEventResult: result, preEventAbsent: absent.length ? absent : null }).where(eq(s.submissions.id, id));
+  await logActivity(me, "Pre-event result", `#${id} ${before.name} (${before.subject})`, `${PRE_EVENT_LABELS[result ?? ""]}${absent.length ? `; absent: ${absent.join(", ")}` : ""}`);
+  const note = result === "qualified" && before.status === "approved" ? await syncPasses(me, [id], "approved") : "";
+  revalidatePath("/admin", "layout");
+  return { ok: `Saved.${note}` };
+}
+
+export type ResultsListState = { error?: string; ok?: string; matches?: CsvMatch[]; problems?: CsvProblem[]; saved?: boolean } | undefined;
+
+/** Results list from a campus (CSV or pasted WhatsApp lines): preview first, then save. */
+export async function importPreEventResults(_prev: ResultsListState, form: FormData): Promise<ResultsListState> {
+  const me = await requireAdmin();
+  const file = form.get("file");
+  const pasted = String(form.get("text") ?? "");
+  const text = file instanceof File && file.size > 0 ? (file.size > 2_000_000 ? "" : await file.text()) : pasted;
+  if (!text.trim()) return { error: "Upload a CSV file or paste the results first." };
+  const { matches, problems } = await matchResults(text.slice(0, 500_000));
+  if (form.get("mode") !== "save") return { matches, problems };
+  const changed = await saveResults(matches);
+  await logActivity(me, "Pre-event results imported", `${matches.length} line${matches.length === 1 ? "" : "s"}, ${changed.length} registration${changed.length === 1 ? "" : "s"}`, problems.length ? `${problems.length} line(s) not matched` : null);
+  const approvedQualified = await requireDb()
+    .select({ id: s.submissions.id })
+    .from(s.submissions)
+    .where(and(inArray(s.submissions.id, changed.length ? changed : [-1]), eq(s.submissions.status, "approved"), eq(s.submissions.preEventResult, "qualified")));
+  const note = approvedQualified.length ? await syncPasses(me, approvedQualified.map((r) => r.id), "approved") : "";
+  revalidatePath("/admin", "layout");
+  return { ok: `Saved results for ${changed.length} registration${changed.length === 1 ? "" : "s"}.${note}`, problems, saved: true };
+}
+
+/** Moves everyone marked Not qualified or Absent to visitors and emails them (with an apology where needed). */
+export async function sendPreEventResults() {
+  const me = await requireAdmin();
+  const r = await applyPreEventResults(me.name);
+  if (r.moved) {
+    await logActivity(
+      me,
+      "Sent pre-event results",
+      `${r.moved} people moved to visitors`,
+      `${r.cancelled} Competitor passes cancelled; ${r.emailed} emails sent (${r.apologies} with apology)`,
+    );
+  }
+  revalidatePath("/admin", "layout");
 }

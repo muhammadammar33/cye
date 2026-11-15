@@ -40,6 +40,7 @@ export const ENTITIES = {
       { name: "rulebook", label: "Rule book link", kind: "link", help: "A site file such as /rulebooks/01-robo-war.pdf, or a full https:// link. Leave empty to hide the rule book button." },
       { name: "focalName", label: "Focal person", kind: "text", help: "Shown on the competition card, the registration form and the confirmation email. Leave empty to hide." },
       { name: "focalPhone", label: "Focal person phone", kind: "text", help: "e.g. +92 349 9181998 (also used for the WhatsApp link)" },
+      { name: "preEvent", label: "Has campus pre-event", kind: "checkbox", help: "Teams are shortlisted at campus pre-events. Competitor passes are only sent once a team is marked Qualified (Admin > Pre-events)." },
       order,
       active,
     ],

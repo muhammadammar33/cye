@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { setSubmissionField, type InlineField } from "@/app/admin/actions";
 import { inputClass } from "@/components/admin/ui";
 import { GENDERS } from "@/data/event";
-import { PAYMENT_STATUSES, PAYMENT_STYLES, type PaymentStatus } from "@/lib/admin/labels";
+import { PAYMENT_STATUSES, PAYMENT_STYLES, PRE_EVENT_LABELS, PRE_EVENT_RESULTS, PRE_EVENT_STYLES, type PaymentStatus, type PreEventResult } from "@/lib/admin/labels";
 import { cn } from "@/lib/cn";
 
 type Option = { key: string; label: string; count: number };
@@ -138,6 +138,7 @@ function InlineSelect({
   emptyLabel,
   options,
   styleFor,
+  labels,
 }: {
   id: number;
   field: InlineField;
@@ -146,6 +147,8 @@ function InlineSelect({
   emptyLabel: string;
   options: readonly string[];
   styleFor: (value: string) => string;
+  /** Display text for option values, when they differ from the stored value. */
+  labels?: Record<string, string>;
 }) {
   const [current, setCurrent] = useState(value ?? "");
   const [error, setError] = useState(false);
@@ -174,7 +177,7 @@ function InlineSelect({
       <option value="">{emptyLabel}</option>
       {options.map((o) => (
         <option key={o} value={o}>
-          {o}
+          {labels?.[o] ?? o}
         </option>
       ))}
     </select>
@@ -206,6 +209,22 @@ export function PaymentSelect({ id, value, name }: { id: number; value: string |
       emptyLabel="Not checked"
       options={PAYMENT_STATUSES}
       styleFor={(v) => PAYMENT_STYLES[v as PaymentStatus | ""] ?? PAYMENT_STYLES[""]}
+    />
+  );
+}
+
+/** Campus pre-event result: Pending / Qualified / Not qualified / Absent. */
+export function PreEventSelect({ id, value, name }: { id: number; value: string | null; name: string }) {
+  return (
+    <InlineSelect
+      id={id}
+      field="preEvent"
+      value={value}
+      label={`Pre-event result for ${name}`}
+      emptyLabel="Pending"
+      options={PRE_EVENT_RESULTS}
+      labels={PRE_EVENT_LABELS}
+      styleFor={(v) => PRE_EVENT_STYLES[v as PreEventResult | ""] ?? PRE_EVENT_STYLES[""]}
     />
   );
 }
