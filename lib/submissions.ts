@@ -18,7 +18,8 @@ const longText = (max = 5000) => z.string().trim().min(1, "Required").max(max);
 const consents = { consent_accuracy: consent, consent_rules: consent };
 const gender = z.enum(GENDERS, { message: "Select a gender" });
 
-const member = z.object({ name: text(), email, phone, institution: text(), gender });
+/** One team member; also used when an admin adds a member to a registered team. */
+export const member = z.object({ name: text(), email, phone, institution: text(), gender });
 
 export const SCHEMAS = {
   competition: z.object({

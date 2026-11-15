@@ -14,6 +14,7 @@ import { DEFAULT_SETTINGS } from "@/lib/defaults";
 import { ENTITIES, isEntity, type FieldDef } from "@/lib/admin/entities";
 import { PAYMENT_STATUSES, PRE_EVENT_LABELS, PRE_EVENT_RESULTS, STATUS_LABELS, TYPE_NAMES, type PreEventResult } from "@/lib/admin/labels";
 import { applyPreEventResults, matchResults, saveResults, type CsvMatch, type CsvProblem } from "@/lib/preEvents";
+import { member as memberSchema } from "@/lib/submissions";
 import { GENDERS } from "@/data/event";
 import { logActivity } from "@/lib/admin/log";
 import { emailPasses, issueForSubmissions, issueManualPass, passByToken, passOrigin, revokeForSubmissions } from "@/lib/passes";
@@ -499,5 +500,76 @@ export async function sendPreEventResults() {
       `${r.cancelled} Competitor passes cancelled; ${r.emailed} emails sent (${r.apologies} with apology)`,
     );
   }
+  revalidatePath("/admin", "layout");
+}
+
+/* --------------------------- team members --------------------------- */
+
+type Member = { name: string; email: string; phone?: string; institution?: string; gender?: string };
+
+/** Team size limits of the competition a registration is for. */
+async function teamLimits(subject: string | null) {
+  const [c] = await requireDb()
+    .select({ teamMin: s.competitions.teamMin, teamMax: s.competitions.teamMax })
+    .from(s.competitions)
+    .where(eq(s.competitions.name, subject ?? ""))
+    .limit(1);
+  return c ?? null;
+}
+
+/**
+ * Adds a member to a registered team (the fee is per team, so nothing else changes). Same checks as the
+ * registration form; stays within the competition's team limit. An approved team's new member gets their pass.
+ */
+export async function addTeamMember(id: number, _prev: ActionState, form: FormData): Promise<ActionState> {
+  const me = await requireAdmin();
+  const database = requireDb();
+  const [sub] = await database.select().from(s.submissions).where(eq(s.submissions.id, id)).limit(1);
+  if (!sub || sub.type !== "competition") return { error: "Not a competition registration." };
+  const parsed = memberSchema.safeParse(Object.fromEntries(["name", "email", "phone", "institution", "gender"].map((k) => [k, String(form.get(k) ?? "")])));
+  if (!parsed.success) {
+    const issue = parsed.error.issues[0];
+    return { error: `${issue.path.join(".") || "Member"}: ${issue.message}` };
+  }
+  const members = Array.isArray(sub.data.members) ? (sub.data.members as Member[]) : [];
+  const limits = await teamLimits(sub.subject);
+  if (limits && members.length >= limits.teamMax) return { error: `${sub.subject} allows at most ${limits.teamMax} members; this team is full.` };
+  if (members.some((m) => m.email?.toLowerCase() === parsed.data.email)) return { error: "That email is already on this team." };
+  const next = [...members, parsed.data];
+  await database.update(s.submissions).set({ data: { ...sub.data, members: next, size: next.length } }).where(eq(s.submissions.id, id));
+  await logActivity(me, "Added team member", `#${id} ${sub.subject}, team ${String(sub.data.team || sub.name)}`, `${parsed.data.name} (${parsed.data.email})`);
+  const note = sub.status === "approved" ? await syncPasses(me, [id], "approved") : "";
+  revalidatePath("/admin", "layout");
+  return { ok: `Added ${parsed.data.name}.${note || (sub.status === "approved" ? "" : " Their pass is sent when the team is approved.")}` };
+}
+
+/** Removes a member (not the team lead) and cancels their pass. */
+export async function removeTeamMember(id: number, index: number, email: string) {
+  const me = await requireAdmin();
+  const database = requireDb();
+  const [sub] = await database.select().from(s.submissions).where(eq(s.submissions.id, id)).limit(1);
+  if (!sub || sub.type !== "competition" || index < 1) return;
+  const members = Array.isArray(sub.data.members) ? (sub.data.members as Member[]) : [];
+  const gone = members[index];
+  if (!gone || gone.email?.toLowerCase() !== email.toLowerCase()) return; // list changed meanwhile
+  const limits = await teamLimits(sub.subject);
+  if (limits && members.length - 1 < limits.teamMin) return;
+  const next = members.filter((_, i) => i !== index);
+  const absent = (sub.preEventAbsent ?? []).filter((e) => e !== email.toLowerCase());
+  await database
+    .update(s.submissions)
+    .set({ data: { ...sub.data, members: next, size: next.length }, preEventAbsent: absent.length ? absent : null })
+    .where(eq(s.submissions.id, id));
+  const cancelled = await database
+    .update(s.passes)
+    .set({ revokedAt: new Date() })
+    .where(and(eq(s.passes.submissionId, id), eq(s.passes.email, gone.email), eq(s.passes.name, gone.name), isNull(s.passes.revokedAt)))
+    .returning({ code: s.passes.code });
+  await logActivity(
+    me,
+    "Removed team member",
+    `#${id} ${sub.subject}, team ${String(sub.data.team || sub.name)}`,
+    `${gone.name} (${gone.email})${cancelled.length ? `; cancelled ${cancelled.map((c) => c.code).join(", ")}` : ""}`,
+  );
   revalidatePath("/admin", "layout");
 }
