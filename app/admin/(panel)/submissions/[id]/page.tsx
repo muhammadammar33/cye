@@ -2,7 +2,8 @@ import { asc, eq } from "drizzle-orm";
 import { ArrowLeft, Mail, MessageCircle, Phone, Ticket, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { deleteSubmission, resendPass, updateSubmission } from "@/app/admin/actions";
+import { deleteSubmission, removeTeamMember, resendPass, updateSubmission } from "@/app/admin/actions";
+import { AddMemberForm } from "@/components/admin/AddMemberForm";
 import { PreEventForm } from "@/components/admin/PreEventForm";
 import { SubmissionForm } from "@/components/admin/SubmissionForm";
 import { formatDate, PageHeader, StatusBadge } from "@/components/admin/StatusBadge";
@@ -33,7 +34,11 @@ export default async function SubmissionPage({ params }: { params: Promise<{ id:
   const passes = PASS_FOR_TYPE[row.type] ? await requireDb().select().from(s.passes).where(eq(s.passes.submissionId, id)).orderBy(asc(s.passes.id)) : [];
   const [competition] =
     row.type === "competition" && row.subject
-      ? await requireDb().select({ preEvent: s.competitions.preEvent }).from(s.competitions).where(eq(s.competitions.name, row.subject)).limit(1)
+      ? await requireDb()
+          .select({ preEvent: s.competitions.preEvent, teamMin: s.competitions.teamMin, teamMax: s.competitions.teamMax })
+          .from(s.competitions)
+          .where(eq(s.competitions.name, row.subject))
+          .limit(1)
       : [];
 
   // Gender is edited in the sidebar form (the column is the source of truth), so it is not repeated here.
@@ -122,7 +127,10 @@ export default async function SubmissionPage({ params }: { params: Promise<{ id:
 
           {members?.length ? (
             <section className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
-              <h2 className="px-5 pt-4 font-heading text-base font-bold text-cye-blue">Team members ({members.length})</h2>
+              <h2 className="px-5 pt-4 font-heading text-base font-bold text-cye-blue">
+                Team members ({members.length}
+                {competition ? ` of ${competition.teamMax}` : ""})
+              </h2>
               <table className="mt-2 w-full min-w-[560px] text-left text-sm">
                 <thead className="text-xs font-bold uppercase tracking-wider text-slate-400">
                   <tr>
@@ -132,6 +140,7 @@ export default async function SubmissionPage({ params }: { params: Promise<{ id:
                     <th className="px-5 py-2">Phone</th>
                     <th className="px-5 py-2">Institution</th>
                     <th className="px-5 py-2">Gender</th>
+                    <th className="px-5 py-2" />
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -143,10 +152,36 @@ export default async function SubmissionPage({ params }: { params: Promise<{ id:
                       <td className="px-5 py-2.5">{m.phone}</td>
                       <td className="px-5 py-2.5">{m.institution}</td>
                       <td className="px-5 py-2.5">{m.gender ?? ""}</td>
+                      <td className="px-5 py-2.5 text-right">
+                        {i > 0 && competition && members.length > competition.teamMin ? (
+                          <ConfirmForm
+                            action={removeTeamMember.bind(null, row.id, i, m.email)}
+                            message={`Remove ${m.name} from this team? Their pass, if any, will be cancelled.`}
+                          >
+                            <button type="submit" className="rounded-lg border border-red-200 px-2.5 py-1 text-xs font-semibold text-red-600 hover:bg-red-50">
+                              Remove
+                            </button>
+                          </ConfirmForm>
+                        ) : null}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
+              {competition ? (
+                <div className="border-t border-slate-100 px-5 py-4">
+                  {members.length < competition.teamMax ? (
+                    <>
+                      <h3 className="mb-2 text-sm font-bold text-slate-700">
+                        Add a member <span className="font-normal text-slate-500">({competition.teamMax - members.length} more allowed; the fee is per team)</span>
+                      </h3>
+                      <AddMemberForm id={row.id} />
+                    </>
+                  ) : (
+                    <p className="text-sm text-slate-500">This team is full ({competition.teamMax} members is the limit for {row.subject}).</p>
+                  )}
+                </div>
+              ) : null}
             </section>
           ) : null}
         </div>
