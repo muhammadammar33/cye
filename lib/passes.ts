@@ -79,7 +79,9 @@ export async function issueForSubmissions(ids: number[], issuedBy: string) {
   if (!ids.length) return [];
   const db = requireDb();
   const subs = await db.select().from(s.submissions).where(and(inArray(s.submissions.id, ids), eq(s.submissions.status, "approved")));
-  const eligible = subs.filter((sub) => PASS_FOR_TYPE[sub.type]);
+  // Competitions with campus pre-events: only teams marked Qualified get Competitor passes.
+  const preEvent = new Set((await db.select({ name: s.competitions.name }).from(s.competitions).where(eq(s.competitions.preEvent, true))).map((r) => r.name));
+  const eligible = subs.filter((sub) => PASS_FOR_TYPE[sub.type] && !(sub.type === "competition" && preEvent.has(sub.subject ?? "") && sub.preEventResult !== "qualified"));
   if (!eligible.length) return [];
   const existing = await db
     .select({ submissionId: s.passes.submissionId, name: s.passes.name, email: s.passes.email })
@@ -89,6 +91,8 @@ export async function issueForSubmissions(ids: number[], issuedBy: string) {
   const rows = eligible.flatMap((sub) =>
     holdersFor(sub)
       .filter((h) => !have.has(`${sub.id}|${h.email.toLowerCase()}|${h.name.toLowerCase()}`))
+      // Members marked absent at the pre-event go as visitors instead.
+      .filter((h) => !(sub.preEventAbsent ?? []).includes(h.email.toLowerCase()))
       .map((h) => ({ ...h, category: PASS_FOR_TYPE[sub.type]!, submissionId: sub.id, issuedBy })),
   );
   return createPasses(rows);

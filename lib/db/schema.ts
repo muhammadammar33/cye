@@ -52,6 +52,10 @@ export const submissions = pgTable(
     gender: text("gender"),
     /** Competition payment check: "Confirmed" | "Unpaid" | "Fake"; empty until an admin checks it. */
     paymentStatus: text("payment_status"),
+    /** Campus pre-event result for competitions that have one: "qualified" | "not_qualified" | "absent"; empty = pending. */
+    preEventResult: text("pre_event_result"),
+    /** Emails (lower case) of team members marked absent at the pre-event, when the rest of the team attended. */
+    preEventAbsent: jsonb("pre_event_absent").$type<string[]>(),
     // What the submission is about: competition name, project title, sponsor tier, subject line...
     subject: text("subject"),
     data: jsonb("data").$type<Record<string, unknown>>().notNull(),
@@ -82,6 +86,8 @@ export const competitions = pgTable("competitions", {
   /** Competition focal person shown to participants, e.g. "Syed Hamza Ali" and "+92 349 9181998". */
   focalName: text("focal_name"),
   focalPhone: text("focal_phone"),
+  /** Teams are shortlisted at campus pre-events; Competitor passes go only to teams marked Qualified. */
+  preEvent: boolean("pre_event").default(false).notNull(),
   ...content,
 });
 
