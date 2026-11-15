@@ -56,7 +56,8 @@ export default async function SubmissionPage({ params }: { params: Promise<{ id:
       <PageHeader title={row.name} description={`${TYPE_NAMES[row.type]} #${row.id} · received ${formatDate(row.createdAt)}`} actions={<StatusBadge status={row.status} />} />
 
       <div className="grid gap-6 xl:grid-cols-[1fr_340px]">
-        <div className="space-y-6">
+        {/* min-w-0: let the main column shrink (wide tables scroll inside it) so the sidebar always stays on screen */}
+        <div className="min-w-0 space-y-6">
           <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
             <div className="flex flex-wrap gap-2">
               <a href={`mailto:${row.email}`} className="inline-flex items-center gap-1.5 rounded-xl bg-cye-mist px-3 py-1.5 text-sm font-semibold text-cye-blue">
@@ -126,12 +127,13 @@ export default async function SubmissionPage({ params }: { params: Promise<{ id:
           ) : null}
 
           {members?.length ? (
-            <section className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
               <h2 className="px-5 pt-4 font-heading text-base font-bold text-cye-blue">
                 Team members ({members.length}
                 {competition ? ` of ${competition.teamMax}` : ""})
               </h2>
-              <table className="mt-2 w-full min-w-[560px] text-left text-sm">
+              <div className="overflow-x-auto">
+              <table className="mt-2 w-full min-w-[640px] text-left text-sm">
                 <thead className="text-xs font-bold uppercase tracking-wider text-slate-400">
                   <tr>
                     <th className="px-5 py-2">#</th>
@@ -168,6 +170,7 @@ export default async function SubmissionPage({ params }: { params: Promise<{ id:
                   ))}
                 </tbody>
               </table>
+              </div>
               {competition ? (
                 <div className="border-t border-slate-100 px-5 py-4">
                   {members.length < competition.teamMax ? (

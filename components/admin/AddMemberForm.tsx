@@ -8,7 +8,7 @@ import { GENDERS } from "@/data/event";
 export function AddMemberForm({ id }: { id: number }) {
   const { state, onSubmit, pending } = useFormAction(addTeamMember.bind(null, id));
   return (
-    <form key={state?.ok} onSubmit={onSubmit} className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+    <form key={state?.ok} onSubmit={onSubmit} className="grid gap-3 sm:grid-cols-2 2xl:grid-cols-5">
       <label className="block text-xs font-semibold text-slate-700">
         Name
         <input name="name" required className={inputClass} />
@@ -38,7 +38,7 @@ export function AddMemberForm({ id }: { id: number }) {
           ))}
         </select>
       </label>
-      <div className="space-y-2 sm:col-span-2 lg:col-span-5">
+      <div className="space-y-2 sm:col-span-2 2xl:col-span-5">
         <FormMessage state={state} />
         <SubmitButton pending={pending}>Add member</SubmitButton>
       </div>
