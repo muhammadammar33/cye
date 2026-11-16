@@ -78,6 +78,13 @@
       "when": 1794765633798,
       "tag": "0010_pre_events",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1794848392562,
+      "tag": "0011_competition_prizes",
+      "breakpoints": true
     }
   ]
 }

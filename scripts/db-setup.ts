@@ -34,7 +34,7 @@ async function main() {
 
   await seed(s.competitions, E.COMPETITIONS.map((c, i) => ({
     name: c.name, vertical: c.vertical, audience: c.audience, fee: c.fee,
-    teamMin: c.teamMin, teamMax: c.teamMax, description: c.desc, rulebook: c.rulebook, focalName: c.focalName, focalPhone: c.focalPhone, sortOrder: i,
+    teamMin: c.teamMin, teamMax: c.teamMax, description: c.desc, rulebook: c.rulebook, focalName: c.focalName, focalPhone: c.focalPhone, prize1: c.prizes[0], prize2: c.prizes[1], prize3: c.prizes[2], sortOrder: i,
   })), "competitions");
   await seed(s.guests, E.GUESTS.map((g, i) => ({
     name: g.name, role: g.role, photo: g.photo ? `/guests/${g.photo}.webp` : null, sortOrder: i,
@@ -153,6 +153,18 @@ async function applyPatches(db: Db) {
       .where(and(byName("Arts"), or(isNull(s.competitions.focalName), eq(s.competitions.focalName, "Anas Mehmood"))));
     applied.add("2026-11-arts-focal-person");
     console.log("[db-setup] applied patch 2026-11-arts-focal-person");
+  }
+
+  if (!applied.has("2026-11-prizes")) {
+    // Prize money per competition from the official prize list. Only fills rows without prizes, so admin edits are kept.
+    for (const c of E.COMPETITIONS) {
+      await db
+        .update(s.competitions)
+        .set({ prize1: c.prizes[0], prize2: c.prizes[1], prize3: c.prizes[2] })
+        .where(and(byName(c.name), isNull(s.competitions.prize1), isNull(s.competitions.prize2), isNull(s.competitions.prize3)));
+    }
+    applied.add("2026-11-prizes");
+    console.log("[db-setup] applied patch 2026-11-prizes");
   }
 
   if (!applied.has("2026-10-remove-debate")) {

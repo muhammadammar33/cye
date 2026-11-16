@@ -86,6 +86,10 @@ export const competitions = pgTable("competitions", {
   /** Competition focal person shown to participants, e.g. "Syed Hamza Ali" and "+92 349 9181998". */
   focalName: text("focal_name"),
   focalPhone: text("focal_phone"),
+  /** Prize money for 1st, 2nd and 3rd place, e.g. "PKR 50,000". Empty ones are hidden. */
+  prize1: text("prize_1"),
+  prize2: text("prize_2"),
+  prize3: text("prize_3"),
   /** Teams are shortlisted at campus pre-events; Competitor passes go only to teams marked Qualified. */
   preEvent: boolean("pre_event").default(false).notNull(),
   ...content,

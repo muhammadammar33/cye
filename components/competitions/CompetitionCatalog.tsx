@@ -1,6 +1,6 @@
 "use client";
 
-import { FileText, Phone, Users, Wallet } from "lucide-react";
+import { FileText, Phone, Trophy, Users, Wallet } from "lucide-react";
 import { useState } from "react";
 import { VERTICALS } from "@/data/event";
 import type { Competition } from "@/lib/content";
@@ -9,6 +9,15 @@ import { Card } from "@/components/ui/Card";
 import { FadeIn } from "@/components/ui/FadeIn";
 import { cn } from "@/lib/cn";
 import { whatsappLink } from "@/lib/phone";
+
+const PLACES = ["1st", "2nd", "3rd"];
+
+/** Total of the listed prizes, e.g. "PKR 90,000", or null when an amount can't be read as a number. */
+function prizePool(prizes: string[]) {
+  const amounts = prizes.map((p) => Number(p.replace(/[^\d]/g, "")));
+  if (amounts.length < 2 || amounts.some((n) => !n)) return null;
+  return `PKR ${amounts.reduce((a, b) => a + b, 0).toLocaleString("en-US")}`;
+}
 
 export const VERTICAL_ACCENT: Record<string, string> = {
   TechNexus: "text-cye-blue bg-cye-blue/10",
@@ -87,6 +96,27 @@ export function CompetitionCatalog({ competitions, onSelect }: { competitions: C
                     {teamLabel(item.teamMin, item.teamMax)}
                   </dd>
                 </div>
+                {item.prizes.length ? (
+                  <div className="col-span-2 rounded-2xl bg-cye-mist px-3 py-2">
+                    <dt className="flex items-center justify-between gap-2 font-semibold uppercase tracking-wide text-cye-ink/45">
+                      <span className="flex items-center gap-1">
+                        <Trophy className="h-3.5 w-3.5 text-cye-orange" aria-hidden />
+                        Prizes
+                      </span>
+                      {prizePool(item.prizes) ? (
+                        <span className="normal-case tracking-normal text-cye-orange">Pool {prizePool(item.prizes)}</span>
+                      ) : null}
+                    </dt>
+                    <dd className="mt-1 grid grid-cols-3 gap-1.5">
+                      {item.prizes.map((prize, i) => (
+                        <span key={i} className="rounded-xl bg-white px-1.5 py-1 text-center">
+                          <span className="block text-[10px] font-bold uppercase tracking-wide text-cye-ink/45">{PLACES[i]}</span>
+                          <span className="block font-heading font-bold leading-snug text-cye-blue">{prize.replace(/^(PKR|Rs\.?)\s*/i, "")}</span>
+                        </span>
+                      ))}
+                    </dd>
+                  </div>
+                ) : null}
                 {item.focalName ? (
                   <div className="col-span-2 rounded-2xl bg-cye-mist px-3 py-2">
                     <dt className="flex items-center gap-1 font-semibold uppercase tracking-wide text-cye-ink/45">
