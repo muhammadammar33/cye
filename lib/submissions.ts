@@ -30,6 +30,8 @@ export const SCHEMAS = {
     idNumber: text(40),
     language: optional(20),
     artCategory: optional(40),
+    /** A head ambassador's coupon code (checked against the database when the registration is saved). */
+    coupon: optional(40),
     members: z.array(member).min(1).max(10),
     ...consents,
   }),

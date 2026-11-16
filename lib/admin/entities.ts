@@ -85,6 +85,7 @@ export const ENTITIES = {
       { name: "role", label: "Role", kind: "select", required: true, options: [...AMBASSADOR_ROLES] },
       { name: "phone", label: "Phone", kind: "text", help: "Shown with a WhatsApp link for head ambassadors only, e.g. +92 315 5107753." },
       { name: "photo", label: "Photo", kind: "image", help: "Square photo works best." },
+      { name: "coupon", label: "Coupon code", kind: "text", help: "Head ambassadors only, e.g. CYE-NUST: gives 10% off a competition registration fee. Leave empty for none." },
       { ...order, help: "Institutes appear in the order of their lowest number; within an institute, the head first, then by this number." },
       active,
     ],
@@ -93,6 +94,7 @@ export const ENTITIES = {
       { name: "name", label: "Name" },
       { name: "institute", label: "Institute" },
       { name: "role", label: "Role" },
+      { name: "coupon", label: "Coupon" },
     ],
   },
   advisory: {

@@ -11,6 +11,7 @@ import { CONTENT_TAG } from "@/lib/content";
 import { db, requireDb, schema as s } from "@/lib/db";
 import { SUBMISSION_STATUSES, type SubmissionStatus } from "@/lib/db/schema";
 import { DEFAULT_SETTINGS } from "@/lib/defaults";
+import { normalizeCoupon } from "@/lib/coupons";
 import { ENTITIES, isEntity, type FieldDef } from "@/lib/admin/entities";
 import { PAYMENT_STATUSES, PRE_EVENT_LABELS, PRE_EVENT_RESULTS, STATUS_LABELS, TYPE_NAMES, type PreEventResult } from "@/lib/admin/labels";
 import { applyPreEventResults, matchResults, saveResults, type CsvMatch, type CsvProblem } from "@/lib/preEvents";
@@ -229,6 +230,12 @@ export async function saveEntity(entity: string, id: number | null, _prev: Actio
     return { error: err instanceof Error ? err.message : "Could not save." };
   }
   if ("teamMin" in values && Number(values.teamMin) > Number(values.teamMax)) return { error: "Min team size cannot be larger than max." };
+  // Coupon codes are unique and stored in capitals; no code is stored as empty, not "".
+  if ("coupon" in values) values.coupon = normalizeCoupon(String(values.coupon ?? "")) || null;
+  if (values.coupon) {
+    const [taken] = await requireDb().select({ id: s.ambassadors.id }).from(s.ambassadors).where(eq(s.ambassadors.coupon, String(values.coupon))).limit(1);
+    if (taken && taken.id !== id) return { error: `The coupon code ${values.coupon} already belongs to another ambassador.` };
+  }
 
   const table = def.table as typeof s.guests; // every content table has an id plus the fields above
   const database = requireDb();

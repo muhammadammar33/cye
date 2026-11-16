@@ -12,6 +12,8 @@ import { compressImage } from "@/lib/compressImage";
 import { CONSENT_FIELDS } from "@/lib/consent";
 import { submitForm } from "@/lib/submit";
 import { choiceFor } from "@/lib/competitionOptions";
+import { CouponField, type AppliedCoupon } from "@/components/competitions/CouponField";
+import { discountedFee } from "@/lib/coupons";
 
 /** How the payment slip field behaves: hidden, optional or required. */
 export type SlipMode = "off" | "optional" | "required";
@@ -24,12 +26,16 @@ export function TeamRegistrationForm({
   selected,
   onSelect,
   slipMode = "off",
+  coupon = null,
+  onCoupon = () => {},
 }: {
   competitions: Competition[];
   inbox: string;
   selected: string;
   onSelect: (name: string) => void;
   slipMode?: SlipMode;
+  coupon?: AppliedCoupon | null;
+  onCoupon?: (coupon: AppliedCoupon | null) => void;
 }) {
   const [teamSize, setTeamSize] = useState(1);
   const [slipPreview, setSlipPreview] = useState<string | null>(null);
@@ -51,6 +57,7 @@ export function TeamRegistrationForm({
       team: get("team"),
       level: get("level"),
       idNumber: get("idNumber"),
+      coupon: get("coupon").trim(),
       ...(choice ? { [choice.field]: get(choice.field) } : {}),
       members: Array.from({ length: size }, (_, i) => ({
         name: get(`member${i}_name`),
@@ -202,6 +209,14 @@ export function TeamRegistrationForm({
           </Field>
         </fieldset>
       ))}
+
+      <CouponField className="sm:col-span-2" applied={coupon} onApply={onCoupon} />
+      {coupon && competition && discountedFee(competition.fee) ? (
+        <p className="-mt-2 text-sm text-cye-ink/75 sm:col-span-2">
+          Fee for {competition.name}: <s className="text-cye-ink/45">{competition.fee}</s>{" "}
+          <span className="font-heading font-extrabold text-cye-blue">{discountedFee(competition.fee)}</span>
+        </p>
+      ) : null}
 
       {slipMode !== "off" ? (
         <label className="block rounded-2xl border border-dashed border-cye-blue/25 bg-cye-mist p-4 text-sm font-semibold text-cye-blue sm:col-span-2">

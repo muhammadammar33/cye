@@ -92,6 +92,13 @@
       "when": 1794865664318,
       "tag": "0012_ambassadors",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1794868494513,
+      "tag": "0013_ambassador_coupons",
+      "breakpoints": true
     }
   ]
 }

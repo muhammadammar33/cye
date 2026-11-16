@@ -2,14 +2,15 @@
  * Campus ambassadors shown on /ambassadors, grouped by institute in this order.
  * Heads and their phone numbers come from the "HEAD AMBASSADORS" sheet; co-ambassadors and photos from the
  * ambassadors' Drive folders (Nov 2026). Seeds the ambassadors table; edit them in Admin > Ambassadors.
+ * Each head ambassador has a coupon code that gives 10% off a competition registration fee.
  */
-export type AmbassadorSeed = { institute: string; name: string; role: "Head Ambassador" | "Co-Ambassador"; phone: string | null; photo: string | null };
+export type AmbassadorSeed = { institute: string; name: string; role: "Head Ambassador" | "Co-Ambassador"; phone: string | null; photo: string | null; coupon?: string };
 
 export const AMBASSADOR_ROLES = ["Head Ambassador", "Co-Ambassador"] as const;
 
 export const AMBASSADORS: AmbassadorSeed[] = [
   // NUST
-  { institute: "NUST", name: "M Talha Bin Rafaqat", role: "Head Ambassador", phone: "+92 315 5107753", photo: "/ambassadors/m-talha-bin-rafaqat-nust.webp" },
+  { institute: "NUST", name: "M Talha Bin Rafaqat", role: "Head Ambassador", phone: "+92 315 5107753", photo: "/ambassadors/m-talha-bin-rafaqat-nust.webp", coupon: "CYE-NUST" },
   { institute: "NUST", name: "Abdul Ahad", role: "Co-Ambassador", phone: null, photo: "/ambassadors/abdul-ahad-nust.webp" },
   { institute: "NUST", name: "Ahdia", role: "Co-Ambassador", phone: null, photo: "/ambassadors/ahdia-nust.webp" },
   { institute: "NUST", name: "Ahmed Ayyaz", role: "Co-Ambassador", phone: null, photo: "/ambassadors/ahmed-ayyaz-nust.webp" },
@@ -36,7 +37,7 @@ export const AMBASSADORS: AmbassadorSeed[] = [
   { institute: "NUST", name: "Vaneeza Mumtaz", role: "Co-Ambassador", phone: null, photo: "/ambassadors/vaneeza-mumtaz-nust.webp" },
   { institute: "NUST", name: "Younas Khan", role: "Co-Ambassador", phone: null, photo: "/ambassadors/younas-khan-nust.webp" },
   // FAST NUCES
-  { institute: "FAST NUCES", name: "Sudais Mahmood", role: "Head Ambassador", phone: "+92 301 7100614", photo: "/ambassadors/sudais-mahmood-fast-nuces.webp" },
+  { institute: "FAST NUCES", name: "Sudais Mahmood", role: "Head Ambassador", phone: "+92 301 7100614", photo: "/ambassadors/sudais-mahmood-fast-nuces.webp", coupon: "CYE-FAST" },
   { institute: "FAST NUCES", name: "Ahmad Saeed", role: "Co-Ambassador", phone: null, photo: "/ambassadors/ahmad-saeed-fast-nuces.webp" },
   { institute: "FAST NUCES", name: "Aleena Maqsood", role: "Co-Ambassador", phone: null, photo: null },
   { institute: "FAST NUCES", name: "Burhan Aslam", role: "Co-Ambassador", phone: null, photo: "/ambassadors/burhan-aslam-fast-nuces.webp" },
@@ -47,7 +48,7 @@ export const AMBASSADORS: AmbassadorSeed[] = [
   { institute: "FAST NUCES", name: "Saad Bin Ashfaq", role: "Co-Ambassador", phone: null, photo: "/ambassadors/saad-bin-ashfaq-fast-nuces.webp" },
   { institute: "FAST NUCES", name: "Taha", role: "Co-Ambassador", phone: null, photo: "/ambassadors/taha-fast-nuces.webp" },
   // Iqra University, H-9
-  { institute: "Iqra University, H-9", name: "Faraz Ahmed", role: "Head Ambassador", phone: "+92 333 7393471", photo: "/ambassadors/faraz-ahmed-iqra-university-h-9.webp" },
+  { institute: "Iqra University, H-9", name: "Faraz Ahmed", role: "Head Ambassador", phone: "+92 333 7393471", photo: "/ambassadors/faraz-ahmed-iqra-university-h-9.webp", coupon: "CYE-IQRA-H9" },
   { institute: "Iqra University, H-9", name: "Afaq Ahmed", role: "Co-Ambassador", phone: null, photo: "/ambassadors/afaq-ahmed-iqra-university-h-9.webp" },
   { institute: "Iqra University, H-9", name: "Ahmad Raza", role: "Co-Ambassador", phone: null, photo: "/ambassadors/ahmad-raza-iqra-university-h-9.webp" },
   { institute: "Iqra University, H-9", name: "Anas Ejaz", role: "Co-Ambassador", phone: null, photo: "/ambassadors/anas-ejaz-iqra-university-h-9.webp" },
@@ -67,7 +68,7 @@ export const AMBASSADORS: AmbassadorSeed[] = [
   { institute: "Iqra University, H-9", name: "Urooj Fatima", role: "Co-Ambassador", phone: null, photo: "/ambassadors/urooj-fatima-iqra-university-h-9.webp" },
   { institute: "Iqra University, H-9", name: "Uzair Butt", role: "Co-Ambassador", phone: null, photo: "/ambassadors/uzair-butt-iqra-university-h-9.webp" },
   // SZABIST
-  { institute: "SZABIST", name: "Syed Dawood Anwar", role: "Head Ambassador", phone: "+92 309 7716633", photo: "/ambassadors/syed-dawood-anwar-szabist.webp" },
+  { institute: "SZABIST", name: "Syed Dawood Anwar", role: "Head Ambassador", phone: "+92 309 7716633", photo: "/ambassadors/syed-dawood-anwar-szabist.webp", coupon: "CYE-SZABIST" },
   { institute: "SZABIST", name: "Anis Ur Rahman", role: "Co-Ambassador", phone: null, photo: "/ambassadors/anis-ur-rahman-szabist.webp" },
   { institute: "SZABIST", name: "Farrukh Abbasi", role: "Co-Ambassador", phone: null, photo: "/ambassadors/farrukh-abbasi-szabist.webp" },
   { institute: "SZABIST", name: "Malik Sarmad", role: "Co-Ambassador", phone: null, photo: "/ambassadors/malik-sarmad-szabist.webp" },
@@ -75,7 +76,7 @@ export const AMBASSADORS: AmbassadorSeed[] = [
   { institute: "SZABIST", name: "Muizzah Fatima", role: "Co-Ambassador", phone: null, photo: "/ambassadors/muizzah-fatima-szabist.webp" },
   { institute: "SZABIST", name: "Tayyab Ali", role: "Co-Ambassador", phone: null, photo: "/ambassadors/tayyab-ali-szabist.webp" },
   // Bahria University, E-8
-  { institute: "Bahria University, E-8", name: "M Ali Chaudhary", role: "Head Ambassador", phone: "+92 347 6919198", photo: "/ambassadors/m-ali-chaudhary-bahria-university-e-8.webp" },
+  { institute: "Bahria University, E-8", name: "M Ali Chaudhary", role: "Head Ambassador", phone: "+92 347 6919198", photo: "/ambassadors/m-ali-chaudhary-bahria-university-e-8.webp", coupon: "CYE-BAHRIA-E8" },
   { institute: "Bahria University, E-8", name: "Gull-e-Zainab", role: "Co-Ambassador", phone: null, photo: "/ambassadors/gull-e-zainab-bahria-university-e-8.webp" },
   { institute: "Bahria University, E-8", name: "Qazi Talal Ahmed", role: "Co-Ambassador", phone: null, photo: "/ambassadors/qazi-talal-ahmed-bahria-university-e-8.webp" },
   { institute: "Bahria University, E-8", name: "Safa Waseem", role: "Co-Ambassador", phone: null, photo: "/ambassadors/safa-waseem-bahria-university-e-8.webp" },
@@ -84,14 +85,14 @@ export const AMBASSADORS: AmbassadorSeed[] = [
   { institute: "Bahria University, E-8", name: "Talha Rehman", role: "Co-Ambassador", phone: null, photo: "/ambassadors/talha-rehman-bahria-university-e-8.webp" },
   { institute: "Bahria University, E-8", name: "Zoha Ziauddin", role: "Co-Ambassador", phone: null, photo: "/ambassadors/zoha-ziauddin-bahria-university-e-8.webp" },
   // Riphah International University (Female)
-  { institute: "Riphah International University (Female)", name: "Hajra Khurshid", role: "Head Ambassador", phone: "+92 348 1089635", photo: "/ambassadors/hajra-khurshid-riphah-international-university-female.webp" },
+  { institute: "Riphah International University (Female)", name: "Hajra Khurshid", role: "Head Ambassador", phone: "+92 348 1089635", photo: "/ambassadors/hajra-khurshid-riphah-international-university-female.webp", coupon: "CYE-RIPHAH-F" },
   { institute: "Riphah International University (Female)", name: "Fizza Naeem", role: "Co-Ambassador", phone: null, photo: "/ambassadors/fizza-naeem-riphah-international-university-female.webp" },
   { institute: "Riphah International University (Female)", name: "Ilsa Fatima", role: "Co-Ambassador", phone: null, photo: "/ambassadors/ilsa-fatima-riphah-international-university-female.webp" },
   { institute: "Riphah International University (Female)", name: "Rabia Kanwal", role: "Co-Ambassador", phone: null, photo: "/ambassadors/rabia-kanwal-riphah-international-university-female.webp" },
   { institute: "Riphah International University (Female)", name: "Tayyaba Zahra", role: "Co-Ambassador", phone: null, photo: "/ambassadors/tayyaba-zahra-riphah-international-university-female.webp" },
   { institute: "Riphah International University (Female)", name: "Zamara Niazi", role: "Co-Ambassador", phone: null, photo: "/ambassadors/zamara-niazi-riphah-international-university-female.webp" },
   // Riphah International University (Male)
-  { institute: "Riphah International University (Male)", name: "Muhammad Waqas", role: "Head Ambassador", phone: "+92 311 5561062", photo: "/ambassadors/muhammad-waqas-riphah-international-university-male.webp" },
+  { institute: "Riphah International University (Male)", name: "Muhammad Waqas", role: "Head Ambassador", phone: "+92 311 5561062", photo: "/ambassadors/muhammad-waqas-riphah-international-university-male.webp", coupon: "CYE-RIPHAH-M" },
   { institute: "Riphah International University (Male)", name: "Affan Khan Tareen", role: "Co-Ambassador", phone: null, photo: "/ambassadors/affan-khan-tareen-riphah-international-university-male.webp" },
   { institute: "Riphah International University (Male)", name: "Ahmed Ali", role: "Co-Ambassador", phone: null, photo: "/ambassadors/ahmed-ali-riphah-international-university-male.webp" },
   { institute: "Riphah International University (Male)", name: "Ahmed Kazmi", role: "Co-Ambassador", phone: null, photo: "/ambassadors/ahmed-kazmi-riphah-international-university-male.webp" },
@@ -114,7 +115,7 @@ export const AMBASSADORS: AmbassadorSeed[] = [
   { institute: "Riphah International University (Male)", name: "Raja Usman Naeem", role: "Co-Ambassador", phone: null, photo: "/ambassadors/raja-usman-naeem-riphah-international-university-male.webp" },
   { institute: "Riphah International University (Male)", name: "Subhan Khan", role: "Co-Ambassador", phone: null, photo: "/ambassadors/subhan-khan-riphah-international-university-male.webp" },
   // National Defence University
-  { institute: "National Defence University", name: "Meerab Faisal", role: "Head Ambassador", phone: "+92 316 5056643", photo: "/ambassadors/meerab-faisal-national-defence-university.webp" },
+  { institute: "National Defence University", name: "Meerab Faisal", role: "Head Ambassador", phone: "+92 316 5056643", photo: "/ambassadors/meerab-faisal-national-defence-university.webp", coupon: "CYE-NDU" },
   { institute: "National Defence University", name: "Abdul Moeed", role: "Co-Ambassador", phone: null, photo: "/ambassadors/abdul-moeed-national-defence-university.webp" },
   { institute: "National Defence University", name: "Ayesha Shoaib", role: "Co-Ambassador", phone: null, photo: "/ambassadors/ayesha-shoaib-national-defence-university.webp" },
   { institute: "National Defence University", name: "Ayman Gul", role: "Co-Ambassador", phone: null, photo: "/ambassadors/ayman-gul-national-defence-university.webp" },
@@ -124,7 +125,7 @@ export const AMBASSADORS: AmbassadorSeed[] = [
   { institute: "National Defence University", name: "Muskan Yousufzai", role: "Co-Ambassador", phone: null, photo: "/ambassadors/muskan-yousufzai-national-defence-university.webp" },
   { institute: "National Defence University", name: "Salar Khan Afridi", role: "Co-Ambassador", phone: null, photo: "/ambassadors/salar-khan-afridi-national-defence-university.webp" },
   // NUTECH
-  { institute: "NUTECH", name: "Fatima Hafeez", role: "Head Ambassador", phone: "+92 333 0788409", photo: null },
+  { institute: "NUTECH", name: "Fatima Hafeez", role: "Head Ambassador", phone: "+92 333 0788409", photo: null, coupon: "CYE-NUTECH" },
   { institute: "NUTECH", name: "Abdullah Khan", role: "Co-Ambassador", phone: null, photo: "/ambassadors/abdullah-khan-nutech.webp" },
   { institute: "NUTECH", name: "Abdullah Malik", role: "Co-Ambassador", phone: null, photo: "/ambassadors/abdullah-malik-nutech.webp" },
   { institute: "NUTECH", name: "Abdur Rehman", role: "Co-Ambassador", phone: null, photo: "/ambassadors/abdur-rehman-nutech.webp" },
@@ -134,7 +135,7 @@ export const AMBASSADORS: AmbassadorSeed[] = [
   { institute: "NUTECH", name: "Malik Junaid", role: "Co-Ambassador", phone: null, photo: "/ambassadors/malik-junaid-nutech.webp" },
   { institute: "NUTECH", name: "Muhammad Abdullah", role: "Co-Ambassador", phone: null, photo: "/ambassadors/muhammad-abdullah-nutech.webp" },
   // NUML
-  { institute: "NUML", name: "Nimra Nazeer", role: "Head Ambassador", phone: "+92 342 6736716", photo: "/ambassadors/nimra-nazeer-numl.webp" },
+  { institute: "NUML", name: "Nimra Nazeer", role: "Head Ambassador", phone: "+92 342 6736716", photo: "/ambassadors/nimra-nazeer-numl.webp", coupon: "CYE-NUML" },
   { institute: "NUML", name: "Abdul Basit", role: "Co-Ambassador", phone: null, photo: "/ambassadors/abdul-basit-numl.webp" },
   { institute: "NUML", name: "Aiman Shaukat", role: "Co-Ambassador", phone: null, photo: "/ambassadors/aiman-shaukat-numl.webp" },
   { institute: "NUML", name: "Anas Shabbir Choudary", role: "Co-Ambassador", phone: null, photo: "/ambassadors/anas-shabbir-choudary-numl.webp" },
@@ -148,14 +149,14 @@ export const AMBASSADORS: AmbassadorSeed[] = [
   { institute: "NUML", name: "Samra Nazeer", role: "Co-Ambassador", phone: null, photo: "/ambassadors/samra-nazeer-numl.webp" },
   { institute: "NUML", name: "Sidra Nazeer", role: "Co-Ambassador", phone: null, photo: "/ambassadors/sidra-nazeer-numl.webp" },
   // Air University
-  { institute: "Air University", name: "M. Fahad", role: "Head Ambassador", phone: "+92 331 5555507", photo: "/ambassadors/m-fahad-air-university.webp" },
+  { institute: "Air University", name: "M. Fahad", role: "Head Ambassador", phone: "+92 331 5555507", photo: "/ambassadors/m-fahad-air-university.webp", coupon: "CYE-AIR" },
   { institute: "Air University", name: "Abdullah", role: "Co-Ambassador", phone: null, photo: "/ambassadors/abdullah-air-university.webp" },
   { institute: "Air University", name: "M. Saad", role: "Co-Ambassador", phone: null, photo: "/ambassadors/m-saad-air-university.webp" },
   { institute: "Air University", name: "Nabeel Khan", role: "Co-Ambassador", phone: null, photo: "/ambassadors/nabeel-khan-air-university.webp" },
   { institute: "Air University", name: "Syed Shabi", role: "Co-Ambassador", phone: null, photo: "/ambassadors/syed-shabi-air-university.webp" },
   { institute: "Air University", name: "Tayyiba", role: "Co-Ambassador", phone: null, photo: "/ambassadors/tayyiba-air-university.webp" },
   // PIEAS
-  { institute: "PIEAS", name: "Ahmad Siddique", role: "Head Ambassador", phone: "+92 313 5590341", photo: "/ambassadors/ahmad-siddique-pieas.webp" },
+  { institute: "PIEAS", name: "Ahmad Siddique", role: "Head Ambassador", phone: "+92 313 5590341", photo: "/ambassadors/ahmad-siddique-pieas.webp", coupon: "CYE-PIEAS" },
   { institute: "PIEAS", name: "Abdul Hadi Jadoon", role: "Co-Ambassador", phone: null, photo: "/ambassadors/abdul-hadi-jadoon-pieas.webp" },
   { institute: "PIEAS", name: "Ali Ammar", role: "Co-Ambassador", phone: null, photo: "/ambassadors/ali-ammar-pieas.webp" },
   { institute: "PIEAS", name: "Asma Batool", role: "Co-Ambassador", phone: null, photo: "/ambassadors/asma-batool-pieas.webp" },
@@ -176,7 +177,7 @@ export const AMBASSADORS: AmbassadorSeed[] = [
   { institute: "PIEAS", name: "Taha Zafar", role: "Co-Ambassador", phone: null, photo: "/ambassadors/taha-zafar-pieas.webp" },
   { institute: "PIEAS", name: "Wasif Arif", role: "Co-Ambassador", phone: null, photo: "/ambassadors/wasif-arif-pieas.webp" },
   // COMSATS University
-  { institute: "COMSATS University", name: "Umar Awais", role: "Head Ambassador", phone: "+92 304 9896161", photo: "/ambassadors/umar-awais-comsats-university.webp" },
+  { institute: "COMSATS University", name: "Umar Awais", role: "Head Ambassador", phone: "+92 304 9896161", photo: "/ambassadors/umar-awais-comsats-university.webp", coupon: "CYE-COMSATS" },
   { institute: "COMSATS University", name: "Abdullah Malik", role: "Co-Ambassador", phone: null, photo: "/ambassadors/abdullah-malik-comsats-university.webp" },
   { institute: "COMSATS University", name: "Avaiz Asim", role: "Co-Ambassador", phone: null, photo: "/ambassadors/avaiz-asim-comsats-university.webp" },
   { institute: "COMSATS University", name: "Emad Ahmad", role: "Co-Ambassador", phone: null, photo: "/ambassadors/emad-ahmad-comsats-university.webp" },
@@ -185,7 +186,7 @@ export const AMBASSADORS: AmbassadorSeed[] = [
   { institute: "COMSATS University", name: "Linta Adnan", role: "Co-Ambassador", phone: null, photo: "/ambassadors/linta-adnan-comsats-university.webp" },
   { institute: "COMSATS University", name: "Munnazah Noor", role: "Co-Ambassador", phone: null, photo: "/ambassadors/munnazah-noor-comsats-university.webp" },
   // Capital University of Science & Technology
-  { institute: "Capital University of Science & Technology", name: "Sibghat Ullah", role: "Head Ambassador", phone: "+92 332 4433933", photo: "/ambassadors/sibghat-ullah-capital-university-of-science-and-technology.webp" },
+  { institute: "Capital University of Science & Technology", name: "Sibghat Ullah", role: "Head Ambassador", phone: "+92 332 4433933", photo: "/ambassadors/sibghat-ullah-capital-university-of-science-and-technology.webp", coupon: "CYE-CUST" },
   { institute: "Capital University of Science & Technology", name: "Abdullah Ahmed", role: "Co-Ambassador", phone: null, photo: "/ambassadors/abdullah-ahmed-capital-university-of-science-and-technology.webp" },
   { institute: "Capital University of Science & Technology", name: "Amna Abrar", role: "Co-Ambassador", phone: null, photo: "/ambassadors/amna-abrar-capital-university-of-science-and-technology.webp" },
   { institute: "Capital University of Science & Technology", name: "Azra Mobeen", role: "Co-Ambassador", phone: null, photo: null },
@@ -200,7 +201,7 @@ export const AMBASSADORS: AmbassadorSeed[] = [
   { institute: "Capital University of Science & Technology", name: "Shazaib Ali", role: "Co-Ambassador", phone: null, photo: "/ambassadors/shazaib-ali-capital-university-of-science-and-technology.webp" },
   { institute: "Capital University of Science & Technology", name: "Syeda Hafsa Fatima", role: "Co-Ambassador", phone: null, photo: "/ambassadors/syeda-hafsa-fatima-capital-university-of-science-and-technology.webp" },
   // KMU
-  { institute: "KMU", name: "Arif Hussain", role: "Head Ambassador", phone: "+92 310 5665758", photo: "/ambassadors/arif-hussain-kmu.webp" },
+  { institute: "KMU", name: "Arif Hussain", role: "Head Ambassador", phone: "+92 310 5665758", photo: "/ambassadors/arif-hussain-kmu.webp", coupon: "CYE-KMU" },
   { institute: "KMU", name: "Fizza Ilyas", role: "Co-Ambassador", phone: null, photo: "/ambassadors/fizza-ilyas-kmu.webp" },
   { institute: "KMU", name: "Hania Khan", role: "Co-Ambassador", phone: null, photo: "/ambassadors/hania-khan-kmu.webp" },
   { institute: "KMU", name: "Hanif Sultan", role: "Co-Ambassador", phone: null, photo: "/ambassadors/hanif-sultan-kmu.webp" },
@@ -213,7 +214,7 @@ export const AMBASSADORS: AmbassadorSeed[] = [
   { institute: "KMU", name: "Shehzadi Hafeez", role: "Co-Ambassador", phone: null, photo: "/ambassadors/shehzadi-hafeez-kmu.webp" },
   { institute: "KMU", name: "Surayya Shafi", role: "Co-Ambassador", phone: null, photo: "/ambassadors/surayya-shafi-kmu.webp" },
   // Hamdard University
-  { institute: "Hamdard University", name: "Malik Ahmad Mehmood", role: "Head Ambassador", phone: "+92 314 5437910", photo: "/ambassadors/malik-ahmad-mehmood-hamdard-university.webp" },
+  { institute: "Hamdard University", name: "Malik Ahmad Mehmood", role: "Head Ambassador", phone: "+92 314 5437910", photo: "/ambassadors/malik-ahmad-mehmood-hamdard-university.webp", coupon: "CYE-HAMDARD" },
   { institute: "Hamdard University", name: "Abdul Wajid", role: "Co-Ambassador", phone: null, photo: "/ambassadors/abdul-wajid-hamdard-university.webp" },
   { institute: "Hamdard University", name: "Abdus Slam", role: "Co-Ambassador", phone: null, photo: "/ambassadors/abdus-slam-hamdard-university.webp" },
   { institute: "Hamdard University", name: "Hajra Ahsan", role: "Co-Ambassador", phone: null, photo: "/ambassadors/hajra-ahsan-hamdard-university.webp" },
@@ -225,7 +226,7 @@ export const AMBASSADORS: AmbassadorSeed[] = [
   { institute: "Hamdard University", name: "Sharjeel Hassan", role: "Co-Ambassador", phone: null, photo: "/ambassadors/sharjeel-hassan-hamdard-university.webp" },
   { institute: "Hamdard University", name: "Yashfa Emaan", role: "Co-Ambassador", phone: null, photo: "/ambassadors/yashfa-emaan-hamdard-university.webp" },
   // Abasyn University
-  { institute: "Abasyn University", name: "Huzaifa Khan", role: "Head Ambassador", phone: "+92 336 0954113", photo: "/ambassadors/huzaifa-khan-abasyn-university.webp" },
+  { institute: "Abasyn University", name: "Huzaifa Khan", role: "Head Ambassador", phone: "+92 336 0954113", photo: "/ambassadors/huzaifa-khan-abasyn-university.webp", coupon: "CYE-ABASYN" },
   { institute: "Abasyn University", name: "Afshal", role: "Co-Ambassador", phone: null, photo: "/ambassadors/afshal-abasyn-university.webp" },
   { institute: "Abasyn University", name: "Aiyysha Akhtar", role: "Co-Ambassador", phone: null, photo: "/ambassadors/aiyysha-akhtar-abasyn-university.webp" },
   { institute: "Abasyn University", name: "Amna Malik", role: "Co-Ambassador", phone: null, photo: "/ambassadors/amna-malik-abasyn-university.webp" },
@@ -237,7 +238,7 @@ export const AMBASSADORS: AmbassadorSeed[] = [
   { institute: "Abasyn University", name: "Talha Shahbaz", role: "Co-Ambassador", phone: null, photo: "/ambassadors/talha-shahbaz-abasyn-university.webp" },
   { institute: "Abasyn University", name: "Tayyab Fareed", role: "Co-Ambassador", phone: null, photo: "/ambassadors/tayyab-fareed-abasyn-university.webp" },
   // Institute of Space Technology
-  { institute: "Institute of Space Technology", name: "Muhammad Wasiq Hussain", role: "Head Ambassador", phone: "+92 329 8986426", photo: "/ambassadors/muhammad-wasiq-hussain-institute-of-space-technology.webp" },
+  { institute: "Institute of Space Technology", name: "Muhammad Wasiq Hussain", role: "Head Ambassador", phone: "+92 329 8986426", photo: "/ambassadors/muhammad-wasiq-hussain-institute-of-space-technology.webp", coupon: "CYE-IST" },
   { institute: "Institute of Space Technology", name: "Affaf E Taiba", role: "Co-Ambassador", phone: null, photo: "/ambassadors/affaf-e-taiba-institute-of-space-technology.webp" },
   { institute: "Institute of Space Technology", name: "Arslan Aslam", role: "Co-Ambassador", phone: null, photo: "/ambassadors/arslan-aslam-institute-of-space-technology.webp" },
   { institute: "Institute of Space Technology", name: "Atika Jawad", role: "Co-Ambassador", phone: null, photo: "/ambassadors/atika-jawad-institute-of-space-technology.webp" },
@@ -249,9 +250,9 @@ export const AMBASSADORS: AmbassadorSeed[] = [
   { institute: "Institute of Space Technology", name: "Muhammad Abdullah", role: "Co-Ambassador", phone: null, photo: "/ambassadors/muhammad-abdullah-institute-of-space-technology.webp" },
   { institute: "Institute of Space Technology", name: "Shahzaib Khan Abbasi", role: "Co-Ambassador", phone: null, photo: "/ambassadors/shahzaib-khan-abbasi-institute-of-space-technology.webp" },
   // Ibadat International University
-  { institute: "Ibadat International University", name: "Seham", role: "Head Ambassador", phone: "+92 343 8070077", photo: null },
+  { institute: "Ibadat International University", name: "Seham", role: "Head Ambassador", phone: "+92 343 8070077", photo: null, coupon: "CYE-IBADAT" },
   // FUUAST
-  { institute: "FUUAST", name: "Ali Asghar", role: "Head Ambassador", phone: "+92 333 1045023", photo: null },
+  { institute: "FUUAST", name: "Ali Asghar", role: "Head Ambassador", phone: "+92 333 1045023", photo: null, coupon: "CYE-FUUAST" },
   { institute: "FUUAST", name: "Abdur Rehman", role: "Co-Ambassador", phone: null, photo: "/ambassadors/abdur-rehman-fuuast.webp" },
   { institute: "FUUAST", name: "Amina Naem", role: "Co-Ambassador", phone: null, photo: "/ambassadors/amina-naem-fuuast.webp" },
   { institute: "FUUAST", name: "Aziz-Ul-Hassan", role: "Co-Ambassador", phone: null, photo: "/ambassadors/aziz-ul-hassan-fuuast.webp" },
@@ -260,11 +261,11 @@ export const AMBASSADORS: AmbassadorSeed[] = [
   { institute: "FUUAST", name: "Muhammad Ali Raza", role: "Co-Ambassador", phone: null, photo: "/ambassadors/muhammad-ali-raza-fuuast.webp" },
   { institute: "FUUAST", name: "Syed Abdullah", role: "Co-Ambassador", phone: null, photo: "/ambassadors/syed-abdullah-fuuast.webp" },
   // Iqra University, Chak Shahzad
-  { institute: "Iqra University, Chak Shahzad", name: "Anas Ur Rehman", role: "Head Ambassador", phone: "+92 332 9520618", photo: null },
+  { institute: "Iqra University, Chak Shahzad", name: "Anas Ur Rehman", role: "Head Ambassador", phone: "+92 332 9520618", photo: null, coupon: "CYE-IQRA-CS" },
   // Quaid-i-Azam University
-  { institute: "Quaid-i-Azam University", name: "M Salman", role: "Head Ambassador", phone: "+92 312 9902994", photo: null },
+  { institute: "Quaid-i-Azam University", name: "M Salman", role: "Head Ambassador", phone: "+92 312 9902994", photo: null, coupon: "CYE-QAU" },
   // International Islamic University
-  { institute: "International Islamic University", name: "Malik Kamran", role: "Head Ambassador", phone: "+92 344 1368538", photo: "/ambassadors/malik-kamran-international-islamic-university.webp" },
+  { institute: "International Islamic University", name: "Malik Kamran", role: "Head Ambassador", phone: "+92 344 1368538", photo: "/ambassadors/malik-kamran-international-islamic-university.webp", coupon: "CYE-IIUI" },
   { institute: "International Islamic University", name: "Adeeba Nisar", role: "Co-Ambassador", phone: null, photo: "/ambassadors/adeeba-nisar-international-islamic-university.webp" },
   { institute: "International Islamic University", name: "Afraim Naseer Khan", role: "Co-Ambassador", phone: null, photo: "/ambassadors/afraim-naseer-khan-international-islamic-university.webp" },
   { institute: "International Islamic University", name: "Ahsan Fayyaz", role: "Co-Ambassador", phone: null, photo: "/ambassadors/ahsan-fayyaz-international-islamic-university.webp" },
@@ -287,16 +288,16 @@ export const AMBASSADORS: AmbassadorSeed[] = [
   { institute: "International Islamic University", name: "Samra Aziz", role: "Co-Ambassador", phone: null, photo: "/ambassadors/samra-aziz-international-islamic-university.webp" },
   { institute: "International Islamic University", name: "Sharim Ali", role: "Co-Ambassador", phone: null, photo: "/ambassadors/sharim-ali-international-islamic-university.webp" },
   // NSU
-  { institute: "NSU", name: "Aliha Ansar", role: "Head Ambassador", phone: "+92 334 9226136", photo: null },
+  { institute: "NSU", name: "Aliha Ansar", role: "Head Ambassador", phone: "+92 334 9226136", photo: null, coupon: "CYE-NSU" },
   // UET Taxila
-  { institute: "UET Taxila", name: "Areeb Ali", role: "Head Ambassador", phone: "+92 303 5627078", photo: null },
+  { institute: "UET Taxila", name: "Areeb Ali", role: "Head Ambassador", phone: "+92 303 5627078", photo: null, coupon: "CYE-UET-TAXILA" },
   // NUST EME
-  { institute: "NUST EME", name: "Muhammad Saad Hassan", role: "Head Ambassador", phone: "+92 301 5411131", photo: "/ambassadors/muhammad-saad-hassan-nust-eme.webp" },
+  { institute: "NUST EME", name: "Muhammad Saad Hassan", role: "Head Ambassador", phone: "+92 301 5411131", photo: "/ambassadors/muhammad-saad-hassan-nust-eme.webp", coupon: "CYE-NUST-EME" },
   { institute: "NUST EME", name: "Muhammad Ahmad", role: "Co-Ambassador", phone: null, photo: "/ambassadors/muhammad-ahmad-nust-eme.webp" },
   { institute: "NUST EME", name: "Rana Ahmad Riaz", role: "Co-Ambassador", phone: null, photo: "/ambassadors/rana-ahmad-riaz-nust-eme.webp" },
   { institute: "NUST EME", name: "Rao Abdul Rauf", role: "Co-Ambassador", phone: null, photo: "/ambassadors/rao-abdul-rauf-nust-eme.webp" },
   // MYU
-  { institute: "MYU", name: "Umair Hassan", role: "Head Ambassador", phone: "+92 312 1382700", photo: "/ambassadors/umair-hassan-myu.webp" },
+  { institute: "MYU", name: "Umair Hassan", role: "Head Ambassador", phone: "+92 312 1382700", photo: "/ambassadors/umair-hassan-myu.webp", coupon: "CYE-MYU" },
   { institute: "MYU", name: "Bagan Soomro", role: "Co-Ambassador", phone: null, photo: "/ambassadors/bagan-soomro-myu.webp" },
   { institute: "MYU", name: "Mahnoor Fatima", role: "Co-Ambassador", phone: null, photo: "/ambassadors/mahnoor-fatima-myu.webp" },
   { institute: "MYU", name: "Muhammad Afnan", role: "Co-Ambassador", phone: null, photo: "/ambassadors/muhammad-afnan-myu.webp" },
@@ -305,25 +306,25 @@ export const AMBASSADORS: AmbassadorSeed[] = [
   { institute: "MYU", name: "Noor Ul Eman", role: "Co-Ambassador", phone: null, photo: "/ambassadors/noor-ul-eman-myu.webp" },
   { institute: "MYU", name: "Shomaiza Rani", role: "Co-Ambassador", phone: null, photo: "/ambassadors/shomaiza-rani-myu.webp" },
   // Kulsum Institute
-  { institute: "Kulsum Institute", name: "Aizaz Ur Rehman", role: "Head Ambassador", phone: "+92 305 9837116", photo: "/ambassadors/aizaz-ur-rehman-kulsum-institute.webp" },
+  { institute: "Kulsum Institute", name: "Aizaz Ur Rehman", role: "Head Ambassador", phone: "+92 305 9837116", photo: "/ambassadors/aizaz-ur-rehman-kulsum-institute.webp", coupon: "CYE-KULSUM" },
   { institute: "Kulsum Institute", name: "Adil Khan", role: "Co-Ambassador", phone: null, photo: "/ambassadors/adil-khan-kulsum-institute.webp" },
   { institute: "Kulsum Institute", name: "Ayaan Abdullah", role: "Co-Ambassador", phone: null, photo: "/ambassadors/ayaan-abdullah-kulsum-institute.webp" },
   { institute: "Kulsum Institute", name: "Shayan Shah", role: "Co-Ambassador", phone: null, photo: "/ambassadors/shayan-shah-kulsum-institute.webp" },
   // Barani Institute of Information Technology
-  { institute: "Barani Institute of Information Technology", name: "Muhammad Usman Khan", role: "Head Ambassador", phone: "+92 312 5650565", photo: "/ambassadors/muhammad-usman-khan-barani-institute-of-information-technology.webp" },
+  { institute: "Barani Institute of Information Technology", name: "Muhammad Usman Khan", role: "Head Ambassador", phone: "+92 312 5650565", photo: "/ambassadors/muhammad-usman-khan-barani-institute-of-information-technology.webp", coupon: "CYE-BIIT" },
   { institute: "Barani Institute of Information Technology", name: "Haris Khan", role: "Co-Ambassador", phone: null, photo: "/ambassadors/haris-khan-barani-institute-of-information-technology.webp" },
   { institute: "Barani Institute of Information Technology", name: "Muhammad Awais", role: "Co-Ambassador", phone: null, photo: "/ambassadors/muhammad-awais-barani-institute-of-information-technology.webp" },
   { institute: "Barani Institute of Information Technology", name: "Muhammad Irtaza", role: "Co-Ambassador", phone: null, photo: "/ambassadors/muhammad-irtaza-barani-institute-of-information-technology.webp" },
   { institute: "Barani Institute of Information Technology", name: "Sameer Ahmed", role: "Co-Ambassador", phone: null, photo: "/ambassadors/sameer-ahmed-barani-institute-of-information-technology.webp" },
   // Health Services Academy
-  { institute: "Health Services Academy", name: "Asad Khan", role: "Head Ambassador", phone: "+92 312 8994240", photo: "/ambassadors/asad-khan-health-services-academy.webp" },
+  { institute: "Health Services Academy", name: "Asad Khan", role: "Head Ambassador", phone: "+92 312 8994240", photo: "/ambassadors/asad-khan-health-services-academy.webp", coupon: "CYE-HSA" },
   { institute: "Health Services Academy", name: "Awais Rafiq", role: "Co-Ambassador", phone: null, photo: "/ambassadors/awais-rafiq-health-services-academy.webp" },
   { institute: "Health Services Academy", name: "Hamad Ullah", role: "Co-Ambassador", phone: null, photo: "/ambassadors/hamad-ullah-health-services-academy.webp" },
   { institute: "Health Services Academy", name: "Sohail Ahmad", role: "Co-Ambassador", phone: null, photo: "/ambassadors/sohail-ahmad-health-services-academy.webp" },
   // Siddique Public School
-  { institute: "Siddique Public School", name: "Khuzema", role: "Head Ambassador", phone: "+92 337 5825572", photo: null },
+  { institute: "Siddique Public School", name: "Khuzema", role: "Head Ambassador", phone: "+92 337 5825572", photo: null, coupon: "CYE-SPS" },
   // Fazaia College
-  { institute: "Fazaia College", name: "Zainab Fatima", role: "Head Ambassador", phone: "+92 331 7397495", photo: "/ambassadors/zainab-fatima-fazaia-college.webp" },
+  { institute: "Fazaia College", name: "Zainab Fatima", role: "Head Ambassador", phone: "+92 331 7397495", photo: "/ambassadors/zainab-fatima-fazaia-college.webp", coupon: "CYE-FAZAIA" },
   { institute: "Fazaia College", name: "Hania Fatima", role: "Co-Ambassador", phone: null, photo: "/ambassadors/hania-fatima-fazaia-college.webp" },
   { institute: "Fazaia College", name: "Hasnain Alam", role: "Co-Ambassador", phone: null, photo: "/ambassadors/hasnain-alam-fazaia-college.webp" },
   { institute: "Fazaia College", name: "Huda Urooj", role: "Co-Ambassador", phone: null, photo: "/ambassadors/huda-urooj-fazaia-college.webp" },
@@ -333,14 +334,14 @@ export const AMBASSADORS: AmbassadorSeed[] = [
   { institute: "Fazaia College", name: "Saim Arfat", role: "Co-Ambassador", phone: null, photo: "/ambassadors/saim-arfat-fazaia-college.webp" },
   { institute: "Fazaia College", name: "Zarak Zafaryab", role: "Co-Ambassador", phone: null, photo: "/ambassadors/zarak-zafaryab-fazaia-college.webp" },
   // Institute of Home Economics, F-11/1
-  { institute: "Institute of Home Economics, F-11/1", name: "Haniza", role: "Head Ambassador", phone: "+92 316 1572779", photo: null },
+  { institute: "Institute of Home Economics, F-11/1", name: "Haniza", role: "Head Ambassador", phone: "+92 316 1572779", photo: null, coupon: "CYE-IHE" },
   // SZABMU
-  { institute: "SZABMU", name: "Syed Nihal Abbas", role: "Head Ambassador", phone: "+92 349 6425929", photo: null },
+  { institute: "SZABMU", name: "Syed Nihal Abbas", role: "Head Ambassador", phone: "+92 349 6425929", photo: null, coupon: "CYE-SZABMU" },
   // Shifa Tameer-e-Millat University
-  { institute: "Shifa Tameer-e-Millat University", name: "Jaam Muhammad Ali Laar", role: "Head Ambassador", phone: "+92 335 5543855", photo: "/ambassadors/jaam-muhammad-ali-laar-shifa-tameer-e-millat-university.webp" },
+  { institute: "Shifa Tameer-e-Millat University", name: "Jaam Muhammad Ali Laar", role: "Head Ambassador", phone: "+92 335 5543855", photo: "/ambassadors/jaam-muhammad-ali-laar-shifa-tameer-e-millat-university.webp", coupon: "CYE-SHIFA" },
   { institute: "Shifa Tameer-e-Millat University", name: "Ayesha Batool", role: "Co-Ambassador", phone: null, photo: "/ambassadors/ayesha-batool-shifa-tameer-e-millat-university.webp" },
   // NUMS
-  { institute: "NUMS", name: "Uzair Ali", role: "Head Ambassador", phone: "+92 314 3829917", photo: "/ambassadors/uzair-ali-nums.webp" },
+  { institute: "NUMS", name: "Uzair Ali", role: "Head Ambassador", phone: "+92 314 3829917", photo: "/ambassadors/uzair-ali-nums.webp", coupon: "CYE-NUMS" },
   { institute: "NUMS", name: "Alishba Naz", role: "Co-Ambassador", phone: null, photo: "/ambassadors/alishba-naz-nums.webp" },
   { institute: "NUMS", name: "Dua E Zahra", role: "Co-Ambassador", phone: null, photo: "/ambassadors/dua-e-zahra-nums.webp" },
   { institute: "NUMS", name: "Iffat Zahra", role: "Co-Ambassador", phone: null, photo: "/ambassadors/iffat-zahra-nums.webp" },
@@ -353,16 +354,16 @@ export const AMBASSADORS: AmbassadorSeed[] = [
   { institute: "NUMS", name: "Ubaid Tanoli", role: "Co-Ambassador", phone: null, photo: "/ambassadors/ubaid-tanoli-nums.webp" },
   { institute: "NUMS", name: "Zainab Hafeez", role: "Co-Ambassador", phone: null, photo: "/ambassadors/zainab-hafeez-nums.webp" },
   // Rawal
-  { institute: "Rawal", name: "Najam Ahmad", role: "Head Ambassador", phone: "+92 345 9366064", photo: null },
+  { institute: "Rawal", name: "Najam Ahmad", role: "Head Ambassador", phone: "+92 345 9366064", photo: null, coupon: "CYE-RAWAL" },
   // IMPCC H-8/4
-  { institute: "IMPCC H-8/4", name: "Mustafa Fahad", role: "Head Ambassador", phone: "+92 315 1927031", photo: "/ambassadors/mustafa-fahad-impcc-h-8-4.webp" },
+  { institute: "IMPCC H-8/4", name: "Mustafa Fahad", role: "Head Ambassador", phone: "+92 315 1927031", photo: "/ambassadors/mustafa-fahad-impcc-h-8-4.webp", coupon: "CYE-IMPCC-H84" },
   // ICB G-6/3
-  { institute: "ICB G-6/3", name: "Salman Hayat", role: "Head Ambassador", phone: "+92 330 0002950", photo: "/ambassadors/salman-hayat-icb-g-6-3.webp" },
+  { institute: "ICB G-6/3", name: "Salman Hayat", role: "Head Ambassador", phone: "+92 330 0002950", photo: "/ambassadors/salman-hayat-icb-g-6-3.webp", coupon: "CYE-ICB-G63" },
   // IMPCC H-8
-  { institute: "IMPCC H-8", name: "Sanaullah", role: "Head Ambassador", phone: "+92 319 9777620", photo: "/ambassadors/sanaullah-impcc-h-8.webp" },
+  { institute: "IMPCC H-8", name: "Sanaullah", role: "Head Ambassador", phone: "+92 319 9777620", photo: "/ambassadors/sanaullah-impcc-h-8.webp", coupon: "CYE-IMPCC-H8" },
   { institute: "IMPCC H-8", name: "Rafay Farooq", role: "Co-Ambassador", phone: null, photo: "/ambassadors/rafay-farooq-impcc-h-8.webp" },
   // IMCB H-9
-  { institute: "IMCB H-9", name: "Muhammad Awais", role: "Head Ambassador", phone: "+92 339 5784659", photo: "/ambassadors/muhammad-awais-imcb-h-9.webp" },
+  { institute: "IMCB H-9", name: "Muhammad Awais", role: "Head Ambassador", phone: "+92 339 5784659", photo: "/ambassadors/muhammad-awais-imcb-h-9.webp", coupon: "CYE-IMCB-H9" },
   { institute: "IMCB H-9", name: "Affan Khattak", role: "Co-Ambassador", phone: null, photo: "/ambassadors/affan-khattak-imcb-h-9.webp" },
   { institute: "IMCB H-9", name: "Ahmad Abullah", role: "Co-Ambassador", phone: null, photo: "/ambassadors/ahmad-abullah-imcb-h-9.webp" },
   { institute: "IMCB H-9", name: "Aqeel Anjum", role: "Co-Ambassador", phone: null, photo: "/ambassadors/aqeel-anjum-imcb-h-9.webp" },
@@ -372,7 +373,7 @@ export const AMBASSADORS: AmbassadorSeed[] = [
   { institute: "IMCB H-9", name: "Syed Ibrahim", role: "Co-Ambassador", phone: null, photo: "/ambassadors/syed-ibrahim-imcb-h-9.webp" },
   { institute: "IMCB H-9", name: "Wali Khan", role: "Co-Ambassador", phone: null, photo: "/ambassadors/wali-khan-imcb-h-9.webp" },
   // University of Wah
-  { institute: "University of Wah", name: "Muhammad Aamir", role: "Head Ambassador", phone: "+92 342 5905889", photo: "/ambassadors/muhammad-aamir-university-of-wah.webp" },
+  { institute: "University of Wah", name: "Muhammad Aamir", role: "Head Ambassador", phone: "+92 342 5905889", photo: "/ambassadors/muhammad-aamir-university-of-wah.webp", coupon: "CYE-UOW" },
   { institute: "University of Wah", name: "Ahmed Shahid", role: "Co-Ambassador", phone: null, photo: "/ambassadors/ahmed-shahid-university-of-wah.webp" },
   { institute: "University of Wah", name: "Ahmed Sheraz", role: "Co-Ambassador", phone: null, photo: "/ambassadors/ahmed-sheraz-university-of-wah.webp" },
   { institute: "University of Wah", name: "Aleeya Fatima", role: "Co-Ambassador", phone: null, photo: "/ambassadors/aleeya-fatima-university-of-wah.webp" },
@@ -384,10 +385,10 @@ export const AMBASSADORS: AmbassadorSeed[] = [
   { institute: "University of Wah", name: "Noor Ullah", role: "Co-Ambassador", phone: null, photo: "/ambassadors/noor-ullah-university-of-wah.webp" },
   { institute: "University of Wah", name: "Syed Ashir", role: "Co-Ambassador", phone: null, photo: "/ambassadors/syed-ashir-university-of-wah.webp" },
   // Fatima Jinnah Women University
-  { institute: "Fatima Jinnah Women University", name: "Minahil", role: "Head Ambassador", phone: "+92 312 5781223", photo: null },
+  { institute: "Fatima Jinnah Women University", name: "Minahil", role: "Head Ambassador", phone: "+92 312 5781223", photo: null, coupon: "CYE-FJWU" },
   // Riphah International University, Gulberg
-  { institute: "Riphah International University, Gulberg", name: "Areeba Rashid", role: "Head Ambassador", phone: "+92 310 5535952", photo: null },
+  { institute: "Riphah International University, Gulberg", name: "Areeba Rashid", role: "Head Ambassador", phone: "+92 310 5535952", photo: null, coupon: "CYE-RIPHAH-GLB" },
   // APS
-  { institute: "APS", name: "M. Abdul Rehman", role: "Head Ambassador", phone: null, photo: "/ambassadors/m-abdul-rehman-aps.webp" },
+  { institute: "APS", name: "M. Abdul Rehman", role: "Head Ambassador", phone: null, photo: "/ambassadors/m-abdul-rehman-aps.webp", coupon: "CYE-APS" },
   { institute: "APS", name: "Ehan Farooq", role: "Co-Ambassador", phone: null, photo: "/ambassadors/ehan-farooq-aps.webp" },
 ];
