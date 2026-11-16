@@ -86,6 +86,22 @@ export default async function SubmissionPage({ params }: { params: Promise<{ id:
             </dl>
           </section>
 
+          {row.type === "competition" && typeof data.fee === "string" ? (
+            // What the payment slip should show: the fee after any head ambassador coupon.
+            <section className={`rounded-2xl border p-5 shadow-sm ${data.coupon ? "border-emerald-300 bg-emerald-50" : "border-slate-200 bg-white"}`}>
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-500">Amount to collect</p>
+              <p className="mt-1 font-heading text-2xl font-extrabold text-cye-blue">{data.fee}</p>
+              {data.coupon ? (
+                <p className="mt-1 text-sm text-emerald-800">
+                  Coupon <strong>{String(data.coupon)}</strong> ({String(data.couponDiscount ?? "10%")} off{data.feeBeforeCoupon ? <> <s>{String(data.feeBeforeCoupon)}</s></> : null})
+                  {data.couponAmbassador ? <> from {String(data.couponAmbassador)}</> : null}. Check the payment slip against this amount.
+                </p>
+              ) : (
+                <p className="mt-1 text-sm text-slate-500">No coupon used. Check the payment slip against this amount.</p>
+              )}
+            </section>
+          ) : null}
+
           {paymentSlip ? (
             <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
               <div className="flex items-center justify-between gap-3">
