@@ -304,7 +304,7 @@ function ResultScreen({ shown, onDone, onUndo, onTeam }: { shown: Shown; onDone:
   const askTeam = shown.result === "checked_in" && pass?.askTeam;
   const cat = pass ? catOf(pass.category) : null;
   const look = {
-    checked_in: { bg: "#15803d", title: "Checked in", note: "Check their CNIC, student card or B-Form." },
+    checked_in: { bg: "#15803d", title: "Checked in", note: "Check their student card." },
     already: {
       bg: "#b45309",
       title: "Already checked in",

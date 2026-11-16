@@ -104,7 +104,7 @@ export function PassCard({ pass, valid }: { pass: PassForCard; valid: boolean })
         {/* Venue */}
         <footer className="relative mt-4">
           <p className="relative z-10 px-6 text-center text-[11px] font-bold leading-tight text-cye-blue">
-            Original CNIC, student card or B-Form required for entry
+            Original student card required for entry
           </p>
           <div className="relative -mt-1 h-24 [mask-image:linear-gradient(to_bottom,transparent,black_45%)]">
             <Image src="/brand/pass-venue-building.webp" alt={`${EVENT.venue}, ${EVENT.city}`} fill sizes="380px" className="object-cover object-center" />
