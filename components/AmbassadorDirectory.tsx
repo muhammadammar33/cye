@@ -36,9 +36,10 @@ function InstituteCard({ group, open, onToggle }: { group: AmbassadorGroup; open
   const co = group.members.filter((m) => m !== head);
   return (
     <article className="flex flex-col rounded-3xl border border-cye-blue/10 bg-white p-5 shadow-card">
-      <h3 className="font-heading text-base font-extrabold leading-snug text-cye-blue">{group.institute}</h3>
+      {/* Two-line name slot keeps cards in a row the same height. */}
+      <h3 className="font-heading text-base font-extrabold leading-snug text-cye-blue sm:line-clamp-2 sm:min-h-[2lh]">{group.institute}</h3>
       {head ? (
-        <div className="mt-4 flex items-center gap-3">
+        <div className="mt-4 flex min-h-16 items-center gap-3">
           <Avatar person={head} size={60} className="ring-cye-orange/40" />
           <div className="min-w-0">
             <p className="text-[11px] font-bold uppercase tracking-wide text-cye-orange">Head Ambassador</p>
@@ -83,7 +84,10 @@ function InstituteCard({ group, open, onToggle }: { group: AmbassadorGroup; open
             </ul>
           ) : null}
         </div>
-      ) : null}
+      ) : (
+        // Same height as the co-ambassadors row, so cards line up.
+        <p className="mt-4 flex h-[49px] items-end border-t border-cye-blue/10 text-sm text-cye-ink/45">Co-ambassadors coming soon</p>
+      )}
     </article>
   );
 }
