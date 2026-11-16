@@ -24,7 +24,6 @@ const DOODLES: [LucideIcon, number, number, number, number, boolean][] = [
  * Background art for the entry pass, in SVG so it prints crisply:
  * - warm paper with CYE orange and blue washes, a light geometric star pattern and painted brush swashes;
  * - 3D shapes: glossy spheres, a ring and isometric cubes in CYE colours and the pass colour;
- * - a real photo of Faisal Mosque as a tilted print with a drop shadow;
  * - competition icons on glossy bubbles, and a few birds.
  * Artwork near the top is laid out from the card's top edge and artwork near the bottom from its bottom edge, so
  * nothing drifts onto the text when a pass has more or fewer fields. `accent` is the pass type's colour.
@@ -192,16 +191,6 @@ export function PassBackground({ accent, id }: { accent: string; id: string }) {
               <ellipse cx="414" cy="560" rx="34" ry="12" fill="none" stroke={u("ring")} strokeWidth="11" />
               <ellipse cx="414" cy="556" rx="34" ry="12" fill="none" stroke="#fff" strokeOpacity="0.55" strokeWidth="2" />
             </g>
-          </g>
-
-          {/* Faisal Mosque: a real photo (CC0, Wikimedia Commons "Near Faisal Mosque Ii") as a tilted print */}
-          <g transform="rotate(6 352 700)">
-            <rect x="298" y="646" width="112" height="100" rx="3" fill="#0b1b3a" opacity="0.28" filter={u("soft")} transform="translate(3 6)" />
-            <rect x="298" y="646" width="112" height="100" rx="3" fill="#ffffff" />
-            <image href="/brand/pass-faisal-mosque.jpg" x="304" y="652" width="100" height="70" preserveAspectRatio="xMidYMid slice" />
-            <text x="354" y="738" textAnchor="middle" fontSize="7.5" fontWeight="700" fill={ink} fontFamily="var(--font-sans), sans-serif" letterSpacing="0.6">
-              FAISAL MOSQUE
-            </text>
           </g>
 
           {DOODLES.filter((d) => d[2] >= 430).map(bubble)}

@@ -240,7 +240,7 @@ function passCardHtml(ctx: EmailContext, pass: PassForEmail) {
     <p style="margin:6px 0 0">${diamonds(cat.color)}</p>
     ${pass.createdAt ? `<p style="margin:4px 0 0;font-size:11px;color:#6b7280">Issued ${esc(ISSUED.format(pass.createdAt))}</p>` : ""}
     <p style="margin:12px 0 0;font-size:13px;color:#1b4694"><strong>${esc(EVENT.date)}</strong> · ${esc(EVENT.venue)}, ${esc(EVENT.city)}</p>
-    <p style="margin:8px 0 10px;font-size:12px;font-weight:bold;color:#1b4694">Original CNIC, student card or B-Form required for entry</p>
+    <p style="margin:8px 0 10px;font-size:12px;font-weight:bold;color:#1b4694">Original student card required for entry</p>
   </td></tr>
   <tr><td style="padding:0;line-height:0"><img src="${esc(ctx.origin)}/brand/email-pass-venue.jpg" width="600" alt="${esc(EVENT.venue)}, ${esc(EVENT.city)}" style="display:block;width:100%;height:auto;border:0"></td></tr>
 </table>`;
@@ -250,7 +250,7 @@ function passCardHtml(ctx: EmailContext, pass: PassForEmail) {
 const ENTRANCE_TIPS = `<p style="margin:0 0 8px"><strong style="color:${BLUE}">At the entrance</strong></p>
 <ul style="margin:0 0 16px;padding-left:20px;font-size:14px;color:#374151">
   <li style="margin-bottom:4px">Show the QR code on your phone, or a printout of this pass.</li>
-  <li style="margin-bottom:4px">Bring your CNIC, student card or B-Form.</li>
+  <li style="margin-bottom:4px">Bring your student card.</li>
   <li>This pass is for you only and can't be shared.</li>
 </ul>`;
 
