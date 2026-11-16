@@ -6,22 +6,39 @@ import { Container } from "@/components/ui/Container";
 import { FadeIn } from "@/components/ui/FadeIn";
 import { InterestForm } from "@/components/ui/InterestForm";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { getSettings } from "@/lib/content";
+import { AmbassadorDirectory } from "@/components/AmbassadorDirectory";
+import { getAmbassadors, getSettings } from "@/lib/content";
 
 export async function CampusAmbassador() {
-  const { registration_open: REGISTRATION_OPEN, inboxes: EMAILS } = await getSettings();
+  const [{ registration_open: REGISTRATION_OPEN, inboxes: EMAILS }, ambassadors] = await Promise.all([getSettings(), getAmbassadors()]);
   return (
     <section className="bg-white pt-32 pb-20 sm:pt-36 sm:pb-24">
       <Container>
         <FadeIn>
-          <Breadcrumbs current="Campus Ambassador" />
+          <Breadcrumbs current="Campus Ambassadors" />
+        </FadeIn>
+        {ambassadors.length ? (
+          <div className="mb-20 sm:mb-24">
+            <FadeIn>
+              <SectionHeading
+                eyebrow="The faces of CYE on campus"
+                title="Meet our Campus Ambassadors"
+                description="Have a question about CYE 2026 at your institute? WhatsApp your head ambassador, or find your campus team below."
+              />
+            </FadeIn>
+            <div className="mt-10">
+              <AmbassadorDirectory groups={ambassadors} />
+            </div>
+          </div>
+        ) : null}
+        <FadeIn>
           <SectionHeading
             eyebrow="Lead your campus"
             title="Campus Ambassador Registration"
             description="Become the face of CYE 2026 at your institution. Ambassadors drive registrations, host campus activations, and help us reach 700+ educational institutions across Islamabad."
           />
         </FadeIn>
-        <div className="mt-12 grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
+        <div id="apply" className="mt-12 grid scroll-mt-28 gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
           <FadeIn className="space-y-6">
             <div className="rounded-3xl bg-cye-mist p-6 sm:p-7">
               <h3 className="font-heading text-sm font-bold uppercase tracking-wider text-cye-orange">

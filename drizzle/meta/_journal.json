@@ -85,6 +85,13 @@
       "when": 1794848392562,
       "tag": "0011_competition_prizes",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1794865664318,
+      "tag": "0012_ambassadors",
+      "breakpoints": true
     }
   ]
 }

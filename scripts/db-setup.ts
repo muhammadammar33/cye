@@ -10,6 +10,7 @@ import { migrate } from "drizzle-orm/postgres-js/migrator";
 import postgres from "postgres";
 import type { PgTable } from "drizzle-orm/pg-core";
 import * as s from "../lib/db/schema";
+import { AMBASSADORS } from "../data/ambassadors";
 import * as E from "../data/event";
 import { DEFAULT_SETTINGS } from "../lib/defaults";
 
@@ -32,6 +33,7 @@ async function main() {
     console.log(`[db-setup] seeded ${rows.length} ${label}`);
   }
 
+  await seed(s.ambassadors, AMBASSADORS.map((a, i) => ({ ...a, sortOrder: i })), "ambassadors");
   await seed(s.competitions, E.COMPETITIONS.map((c, i) => ({
     name: c.name, vertical: c.vertical, audience: c.audience, fee: c.fee,
     teamMin: c.teamMin, teamMax: c.teamMax, description: c.desc, rulebook: c.rulebook, focalName: c.focalName, focalPhone: c.focalPhone, prize1: c.prizes[0], prize2: c.prizes[1], prize3: c.prizes[2], sortOrder: i,

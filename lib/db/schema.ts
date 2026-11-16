@@ -103,6 +103,19 @@ export const guests = pgTable("guests", {
   ...content,
 });
 
+/** Campus ambassadors shown on /ambassadors, grouped by institute. */
+export const ambassadors = pgTable("ambassadors", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  institute: text("institute").notNull(),
+  /** "Head Ambassador" or "Co-Ambassador". */
+  role: text("role").notNull(),
+  /** Shown (with a WhatsApp link) for head ambassadors only. */
+  phone: text("phone"),
+  photo: text("photo"),
+  ...content,
+});
+
 export const advisoryMembers = pgTable("advisory_members", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),

@@ -1,3 +1,4 @@
+import { AMBASSADOR_ROLES } from "@/data/ambassadors";
 import { VERTICALS } from "@/data/event";
 import { schema as s } from "@/lib/db";
 
@@ -10,6 +11,7 @@ type EntityDef = {
   table:
     | typeof s.competitions
     | typeof s.guests
+    | typeof s.ambassadors
     | typeof s.advisoryMembers
     | typeof s.teamMembers
     | typeof s.tiers
@@ -69,6 +71,27 @@ export const ENTITIES = {
     columns: [
       { name: "photo", label: "" },
       { name: "name", label: "Name" },
+      { name: "role", label: "Role" },
+    ],
+  },
+  ambassadors: {
+    label: "Ambassadors",
+    singular: "ambassador",
+    table: s.ambassadors,
+    folder: "ambassadors",
+    fields: [
+      { name: "name", label: "Name", kind: "text", required: true },
+      { name: "institute", label: "Institute", kind: "text", required: true, help: "Spell it exactly like the other ambassadors of this institute, so they show together." },
+      { name: "role", label: "Role", kind: "select", required: true, options: [...AMBASSADOR_ROLES] },
+      { name: "phone", label: "Phone", kind: "text", help: "Shown with a WhatsApp link for head ambassadors only, e.g. +92 315 5107753." },
+      { name: "photo", label: "Photo", kind: "image", help: "Square photo works best." },
+      { ...order, help: "Institutes appear in the order of their lowest number; within an institute, the head first, then by this number." },
+      active,
+    ],
+    columns: [
+      { name: "photo", label: "" },
+      { name: "name", label: "Name" },
+      { name: "institute", label: "Institute" },
       { name: "role", label: "Role" },
     ],
   },
