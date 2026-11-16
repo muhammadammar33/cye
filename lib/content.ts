@@ -1,6 +1,7 @@
 import "server-only";
 import { asc, eq } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
+import { AMBASSADORS } from "@/data/ambassadors";
 import * as E from "@/data/event";
 import { db, schema as s } from "@/lib/db";
 import { DEFAULT_SETTINGS, type SiteSettings } from "@/lib/defaults";
@@ -13,6 +14,9 @@ export type Person = { id?: number; name: string; role: string; photo: string | 
 export type Advisor = Person & { bio: string };
 export type TeamMember = Person & { featured: boolean };
 export type Tier = { id?: number; name: string; price: string; benefits: string[]; highlight: boolean };
+export type Ambassador = { name: string; role: string; phone: string | null; photo: string | null };
+/** One institute's ambassadors: the head first, then co-ambassadors. */
+export type AmbassadorGroup = { institute: string; members: Ambassador[] };
 export type Contact = { id?: number; label: string; phones: string[]; email: string };
 
 const fallback = {
@@ -22,6 +26,7 @@ const fallback = {
   team: (): TeamMember[] => E.TEAM.map((t, i) => ({ name: t.name, role: t.role, photo: `/team/${t.photo}.webp`, featured: i < 2 })),
   sponsorship: (): Tier[] => E.SPONSORSHIP.map((t) => ({ name: t.tier, price: t.price, benefits: t.benefits, highlight: t.highlight })),
   stalls: (): Tier[] => E.STALLS.map((t) => ({ name: t.tier, price: t.price, benefits: t.benefits, highlight: false })),
+  ambassadors: (): AmbassadorGroup[] => groupAmbassadors(AMBASSADORS),
   contacts: (): Contact[] => E.CONTACTS.map((c) => ({ ...c })),
 };
 
@@ -57,6 +62,28 @@ export const getCompetitions = cached(
       (c) => ({ id: c.id, name: c.name, vertical: c.vertical, audience: c.audience, fee: c.fee, teamMin: c.teamMin, teamMax: c.teamMax, desc: c.description, rulebook: c.rulebook, focalName: c.focalName, focalPhone: c.focalPhone, prizes: [c.prize1, c.prize2, c.prize3].filter((p): p is string => !!p?.trim()), preEvent: c.preEvent }),
     ),
   fallback.competitions,
+);
+
+/** Groups ambassadors by institute, in the order each institute first appears; the head leads each group. */
+function groupAmbassadors(rows: (Ambassador & { institute: string })[]): AmbassadorGroup[] {
+  const groups = new Map<string, Ambassador[]>();
+  for (const { institute, ...a } of rows) {
+    const key = institute.trim();
+    groups.set(key, [...(groups.get(key) ?? []), a]);
+  }
+  const isHead = (a: Ambassador) => /head/i.test(a.role);
+  return [...groups].map(([institute, members]) => ({ institute, members: [...members.filter(isHead), ...members.filter((m) => !isHead(m))] }));
+}
+
+export const getAmbassadors = cached(
+  "ambassadors",
+  async () =>
+    groupAmbassadors(
+      (await need().select().from(s.ambassadors).where(eq(s.ambassadors.active, true)).orderBy(asc(s.ambassadors.sortOrder), asc(s.ambassadors.id))).map((a) => ({
+        institute: a.institute, name: a.name, role: a.role, phone: a.phone, photo: a.photo,
+      })),
+    ),
+  fallback.ambassadors,
 );
 
 export const getGuests = cached(
