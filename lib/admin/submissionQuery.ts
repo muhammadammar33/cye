@@ -73,7 +73,7 @@ export function whereFor(f: SubmissionFilters): SQL | undefined {
   if (f.uni?.length) parts.push(inArray(institutionKey, f.uni));
   if (f.q) {
     const like = `%${f.q.replace(/[%_]/g, "\\$&")}%`;
-    parts.push(or(ilike(s.submissions.name, like), ilike(s.submissions.email, like), ilike(s.submissions.subject, like), ilike(s.submissions.institution, like), ilike(s.submissions.phone, like))!);
+    parts.push(or(ilike(s.submissions.name, like), ilike(s.submissions.email, like), ilike(s.submissions.subject, like), ilike(s.submissions.institution, like), ilike(s.submissions.phone, like), ilike(sql`${s.submissions.data}->>'coupon'`, like))!);
   }
   return parts.length ? and(...parts) : undefined;
 }

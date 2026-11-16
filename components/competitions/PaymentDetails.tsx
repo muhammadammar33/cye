@@ -37,7 +37,8 @@ const isIban = (value: string) => /^[A-Z]{2}\d{2}[A-Z0-9]{8,}$/i.test(value.repl
 /** IBANs read and wrap better in groups of four: PK19 JCMA 0810 ... */
 const display = (value: string) => (isIban(value) ? value.replace(/\s+/g, "").replace(/(.{4})(?=.)/g, "$1 ") : value);
 
-export function PaymentDetails({ payment, fee }: { payment: PaymentSettings; fee?: string }) {
+/** `feeBefore`: the fee without the coupon, shown struck through when a coupon is applied. */
+export function PaymentDetails({ payment, fee, feeBefore }: { payment: PaymentSettings; fee?: string; feeBefore?: string }) {
   if (payment.accounts.length === 0) return null;
   return (
     <div className="rounded-2xl border border-cye-orange/25 bg-cye-orange/5 p-5">
@@ -47,7 +48,14 @@ export function PaymentDetails({ payment, fee }: { payment: PaymentSettings; fee
       </p>
       {fee ? (
         <p className="mt-2 text-sm text-cye-ink/75">
-          Registration fee: <span className="font-heading font-extrabold text-cye-blue">{fee}</span>
+          Registration fee:{" "}
+          {feeBefore ? (
+            <>
+              <s className="text-cye-ink/45">{feeBefore}</s>{" "}
+            </>
+          ) : null}
+          <span className="font-heading font-extrabold text-cye-blue">{fee}</span>
+          {feeBefore ? <span className="text-emerald-700"> (coupon applied)</span> : null}
         </p>
       ) : null}
       {payment.instructions ? <p className="mt-2 text-sm leading-relaxed text-cye-ink/70">{payment.instructions}</p> : null}

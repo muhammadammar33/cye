@@ -15,6 +15,8 @@ import { FocalPerson } from "@/components/ui/FocalPerson";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { PaymentDetails } from "@/components/competitions/PaymentDetails";
 import type { SlipMode } from "@/components/competitions/TeamRegistrationForm";
+import type { AppliedCoupon } from "@/components/competitions/CouponField";
+import { discountedFee } from "@/lib/coupons";
 import type { Competition } from "@/lib/content";
 import type { PaymentSettings } from "@/lib/defaults";
 
@@ -32,6 +34,9 @@ export function Competitions({
   slipMode: SlipMode;
 }) {
   const [selected, setSelected] = useState("");
+  const [coupon, setCoupon] = useState<AppliedCoupon | null>(null);
+  const fee = competitions.find((item) => item.name === selected)?.fee;
+  const feeAfterCoupon = coupon && fee ? discountedFee(fee) : null;
 
   return (
     <section className="bg-wash pt-32 pb-20 sm:pt-36 sm:pb-24">
@@ -73,7 +78,7 @@ export function Competitions({
             </div>
             {open && payment.accounts.length ? (
               <div className="mt-5">
-                <PaymentDetails payment={payment} fee={competitions.find((item) => item.name === selected)?.fee} />
+                <PaymentDetails payment={payment} fee={feeAfterCoupon ?? fee} feeBefore={feeAfterCoupon ? fee : undefined} />
               </div>
             ) : null}
             <div className="mt-6">
@@ -84,6 +89,8 @@ export function Competitions({
                   selected={selected}
                   onSelect={setSelected}
                   slipMode={slipMode}
+                  coupon={coupon}
+                  onCoupon={setCoupon}
                 />
               ) : (
                 <ClosedNotice what="Competition registration" email={inbox} />

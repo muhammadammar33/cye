@@ -169,6 +169,19 @@ async function applyPatches(db: Db) {
     console.log("[db-setup] applied patch 2026-11-prizes");
   }
 
+  if (!applied.has("2026-11-ambassador-coupons")) {
+    // A coupon code for every head ambassador. Only fills heads without one, so codes set in admin are kept.
+    for (const a of AMBASSADORS) {
+      if (!a.coupon) continue;
+      await db
+        .update(s.ambassadors)
+        .set({ coupon: a.coupon })
+        .where(and(eq(s.ambassadors.institute, a.institute), eq(s.ambassadors.role, "Head Ambassador"), isNull(s.ambassadors.coupon)));
+    }
+    applied.add("2026-11-ambassador-coupons");
+    console.log("[db-setup] applied patch 2026-11-ambassador-coupons");
+  }
+
   if (!applied.has("2026-10-remove-debate")) {
     await db.delete(s.competitions).where(byName("Debate"));
     applied.add("2026-10-remove-debate");

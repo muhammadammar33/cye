@@ -7,6 +7,8 @@ import { getCompetitions, getSettings } from "@/lib/content";
 import { db, schema as s } from "@/lib/db";
 import type { SubmissionType } from "@/lib/db/schema";
 import { confirmationEmail, sendEmail, teamEmail } from "@/lib/email";
+import { COUPON_PERCENT, discountedFee } from "@/lib/coupons";
+import { findCoupon } from "@/lib/couponLookup";
 import { slipModeFor } from "@/lib/payment";
 import { GATE, INBOX, normalize, TYPE_LABELS } from "@/lib/submissions";
 
@@ -53,6 +55,22 @@ export async function createSubmission(opts: {
   if (recent.length) return { ok: false, error: "This email just submitted this form. Please wait a minute before trying again.", status: 429 };
 
   if (type === "competition") {
+    // A head ambassador's coupon: 10% off the fee. A wrong code stops the registration so the team can fix it.
+    const code = typeof result.data.coupon === "string" ? result.data.coupon.trim() : "";
+    delete result.data.coupon;
+    if (code) {
+      const owner = await findCoupon(code);
+      if (!owner) return { ok: false, error: `coupon: "${code}" is not a valid coupon code. Check it with your head ambassador, or leave it empty.`, status: 422 };
+      const fee = String(result.data.fee ?? "");
+      const after = discountedFee(fee);
+      result.data.coupon = owner.code;
+      result.data.couponAmbassador = `${owner.name}, ${owner.institute}`;
+      if (after) {
+        result.data.feeBeforeCoupon = fee;
+        result.data.fee = after;
+        result.data.couponDiscount = `${COUPON_PERCENT}%`;
+      }
+    }
     const mode = slipModeFor(settings);
     if (mode === "required" && !slip) return { ok: false, error: "Please upload a photo or screenshot of your payment slip.", status: 422 };
     if (slip && mode !== "off") {
@@ -94,7 +112,7 @@ export async function createSubmission(opts: {
       sendEmail({
         to: result.email,
         subject: `${kind} received | Capital Youth Expo 2026`,
-        html: confirmationEmail(ctx, type, result.name, kind, result.subject ?? "", type === "competition" ? { payment: settings.payment, fee: String(result.data.fee ?? ""), slipReceived: Boolean(result.data.paymentSlip) } : undefined, focal),
+        html: confirmationEmail(ctx, type, result.name, kind, result.subject ?? "", type === "competition" ? { payment: settings.payment, fee: result.data.couponDiscount ? `${result.data.fee} (${result.data.couponDiscount} off with coupon ${result.data.coupon})` : String(result.data.fee ?? ""), slipReceived: Boolean(result.data.paymentSlip) } : undefined, focal),
         replyTo: settings.inboxes[INBOX[type]],
       }),
     ]);

@@ -113,6 +113,8 @@ export const ambassadors = pgTable("ambassadors", {
   /** Shown (with a WhatsApp link) for head ambassadors only. */
   phone: text("phone"),
   photo: text("photo"),
+  /** Head ambassadors' coupon code, e.g. CYE-NUST: 10% off a competition registration fee. Stored in capitals. */
+  coupon: text("coupon").unique(),
   ...content,
 });
 
