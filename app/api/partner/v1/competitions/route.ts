@@ -29,6 +29,8 @@ export async function GET(req: NextRequest) {
         rulebookUrl: c.rulebook ? (c.rulebook.startsWith("/") ? `${origin}${c.rulebook}` : c.rulebook) : null,
         // Extra field POST /registrations needs for this competition (Speech: language, Arts: artCategory).
         requiredChoice: choice ? { field: choice.field, options: choice.options } : null,
+        // Prize money for 1st, 2nd and 3rd place (empty when not announced).
+        prizes: c.prizes,
         focalPerson: c.focalName ? { name: c.focalName, phone: c.focalPhone || null } : null,
       };
     }),
