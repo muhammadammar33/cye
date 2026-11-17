@@ -287,6 +287,16 @@ async function applyPatches(db: Db) {
     console.log("[db-setup] applied patch 2026-11-ambassador-fixes-5");
   }
 
+  if (!applied.has("2026-11-ambassador-fixes-6")) {
+    // FJWU head ambassador's full name. Only the row still carrying the old name changes.
+    await db
+      .update(s.ambassadors)
+      .set({ name: "Minahil Gul" })
+      .where(and(eq(s.ambassadors.institute, "Fatima Jinnah Women University"), eq(s.ambassadors.role, "Head Ambassador"), eq(s.ambassadors.name, "Minahil")));
+    applied.add("2026-11-ambassador-fixes-6");
+    console.log("[db-setup] applied patch 2026-11-ambassador-fixes-6");
+  }
+
   if (!applied.has("2026-10-remove-debate")) {
     await db.delete(s.competitions).where(byName("Debate"));
     applied.add("2026-10-remove-debate");
