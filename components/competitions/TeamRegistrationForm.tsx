@@ -18,7 +18,7 @@ import { discountedFee } from "@/lib/coupons";
 /** How the payment slip field behaves: hidden, optional or required. */
 export type SlipMode = "off" | "optional" | "required";
 
-const MEMBER_ORDINALS = ["Team lead", "2nd member", "3rd member", "4th member"];
+const MEMBER_ORDINALS = ["Team lead", "2nd member", "3rd member", "4th member", "5th member"];
 
 export function TeamRegistrationForm({
   competitions,
@@ -170,7 +170,7 @@ export function TeamRegistrationForm({
       {Array.from({ length: size }, (_, i) => (
         <fieldset key={i} className="grid gap-4 rounded-2xl border border-cye-blue/10 p-4 sm:col-span-2 sm:grid-cols-2">
           <legend className="px-2 font-heading text-xs font-bold uppercase tracking-wider text-cye-orange">
-            {MEMBER_ORDINALS[i]}
+            {MEMBER_ORDINALS[i] ?? `Member ${i + 1}`}
           </legend>
           <Field label="Full name">
             <input name={`member${i}_name`} required autoComplete={i === 0 ? "name" : "off"} className={fieldClass} />
