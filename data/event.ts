@@ -4,6 +4,8 @@ export const EVENT = {
   tagline: "ENGAGE | ENCOURAGE | EMPOWER",
   date: "2 December 2026",
   isoDate: "2026-12-02",
+  /** Last day to register (Pakistan time). The home page counts down to it and hides the notice afterwards. */
+  registrationDeadline: "2026-11-22",
   venue: "Pak-China Friendship Center",
   city: "Islamabad",
   organizers: ["SAFE", "Youth Insight (YI)"],
