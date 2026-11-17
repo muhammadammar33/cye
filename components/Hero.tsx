@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarDays, MapPin } from "lucide-react";
+import { CalendarDays, Hourglass, MapPin } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useSyncExternalStore } from "react";
@@ -57,8 +57,19 @@ function useCountdown(isoDate: string) {
   };
 }
 
+/** Calendar days from today to the registration deadline, both in Pakistan time (null before the clock starts). */
+function useDaysToDeadline(isoDate: string) {
+  const now = useSyncExternalStore(subscribeToClock, getClockSnapshot, getServerClockSnapshot);
+  if (!now) return null;
+  const today = new Date(now + 5 * 3_600_000).toISOString().slice(0, 10); // UTC+5, no daylight saving
+  return Math.round((Date.parse(isoDate) - Date.parse(today)) / 86_400_000);
+}
+
+const DEADLINE_LABEL = new Date(`${EVENT.registrationDeadline}T12:00:00+05:00`).toLocaleDateString("en-GB", { day: "numeric", month: "long", timeZone: "Asia/Karachi" });
+
 export function Hero() {
   const countdown = useCountdown(EVENT.isoDate);
+  const daysLeft = useDaysToDeadline(EVENT.registrationDeadline);
 
   return (
     <section id="top" className="relative overflow-hidden bg-white pt-28 pb-16 sm:pt-32 sm:pb-24">
@@ -115,7 +126,22 @@ export function Hero() {
               priority
             />
           </p>
-          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+          {daysLeft === null || daysLeft >= 0 ? (
+            <Link
+              href="/competitions"
+              className="mx-auto mt-8 inline-flex max-w-full flex-wrap items-center justify-center gap-x-2 gap-y-1 rounded-2xl bg-grad-orange px-5 py-3 text-center text-white shadow-card transition hover:brightness-110 sm:rounded-full"
+            >
+              <Hourglass className="h-5 w-5 shrink-0" aria-hidden />
+              <span className="font-heading text-base font-extrabold uppercase tracking-wide sm:text-lg">
+                {daysLeft === null ? "Registration closing soon" : daysLeft === 0 ? "Last day to register" : `${daysLeft} day${daysLeft === 1 ? "" : "s"} left to register`}
+              </span>
+              <span className="text-sm font-semibold text-white/90">
+                <span className="hidden sm:inline">· </span>Deadline: {daysLeft === 0 ? "today, " : ""}
+                {DEADLINE_LABEL}
+              </span>
+            </Link>
+          ) : null}
+          <div className="mt-5 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Button href="/competitions" className="w-full sm:w-auto sm:px-9">
               Register Now
             </Button>

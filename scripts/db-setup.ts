@@ -253,6 +253,33 @@ async function applyPatches(db: Db) {
     console.log("[db-setup] applied patch 2026-11-ambassador-names-3");
   }
 
+  if (!applied.has("2026-11-ambassador-fixes-4")) {
+    // Fixes sent by the ambassadors. Each only touches rows still in their old state, so admin edits are kept.
+    const A = s.ambassadors;
+    await db.update(A).set({ phone: "+92 345 5310038" }).where(and(eq(A.institute, "Fazaia College"), eq(A.role, "Head Ambassador"), eq(A.phone, "+92 331 7397495")));
+    // PIEAS: Muhammad Abdullah was listed twice with the same photo.
+    await db.delete(A).where(and(eq(A.institute, "PIEAS"), eq(A.name, "Muhammad Abdullah"), eq(A.photo, "/ambassadors/muhammad-abdullah-pieas-2.webp")));
+    await db
+      .update(A)
+      .set({ photo: "/ambassadors/haleema-aurangzeb-ist.webp" })
+      .where(and(eq(A.name, "Haleema Aurangzeb"), eq(A.photo, "/ambassadors/haleema-aurangzeb-institute-of-space-technology.webp")));
+    await db
+      .update(A)
+      .set({ photo: "/ambassadors/fatima-hafeez-nutech.webp" })
+      .where(and(eq(A.institute, "NUTECH"), eq(A.role, "Head Ambassador"), isNull(A.photo)));
+    // Yusra Zafar (campus ambassador application #876) joins Shifa as a co-ambassador.
+    const shifa = "Shifa Tameer-e-Millat University";
+    const [already] = await db.select({ id: A.id }).from(A).where(and(eq(A.institute, shifa), sql`lower(${A.name}) = 'yusra zafar'`)).limit(1);
+    const [app] = await db.select({ name: s.submissions.name, type: s.submissions.type }).from(s.submissions).where(eq(s.submissions.id, 876)).limit(1);
+    if (!already && app?.type === "ambassador" && /yusra/i.test(app.name)) {
+      const name = app.name.trim().replace(/\s+/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+      const [last] = await db.select({ order: sql<number>`max(${A.sortOrder})` }).from(A).where(eq(A.institute, shifa));
+      await db.insert(A).values({ name, institute: shifa, role: "Co-Ambassador", sortOrder: Number(last?.order ?? 0) });
+    }
+    applied.add("2026-11-ambassador-fixes-4");
+    console.log("[db-setup] applied patch 2026-11-ambassador-fixes-4");
+  }
+
   if (!applied.has("2026-10-remove-debate")) {
     await db.delete(s.competitions).where(byName("Debate"));
     applied.add("2026-10-remove-debate");
