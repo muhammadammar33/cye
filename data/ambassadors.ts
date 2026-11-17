@@ -125,7 +125,7 @@ export const AMBASSADORS: AmbassadorSeed[] = [
   { institute: "National Defence University", name: "Muskan Yousufzai", role: "Co-Ambassador", phone: null, photo: "/ambassadors/muskan-yousufzai-national-defence-university.webp" },
   { institute: "National Defence University", name: "Salar Khan Afridi", role: "Co-Ambassador", phone: null, photo: "/ambassadors/salar-khan-afridi-national-defence-university.webp" },
   // NUTECH
-  { institute: "NUTECH", name: "Fatima Hafeez", role: "Head Ambassador", phone: "+92 333 0788409", photo: null, coupon: "CYE-NUTECH" },
+  { institute: "NUTECH", name: "Fatima Hafeez", role: "Head Ambassador", phone: "+92 333 0788409", photo: "/ambassadors/fatima-hafeez-nutech.webp", coupon: "CYE-NUTECH" },
   { institute: "NUTECH", name: "Abdullah Khan", role: "Co-Ambassador", phone: null, photo: "/ambassadors/abdullah-khan-nutech.webp" },
   { institute: "NUTECH", name: "Abdullah Malik", role: "Co-Ambassador", phone: null, photo: "/ambassadors/abdullah-malik-nutech.webp" },
   { institute: "NUTECH", name: "Abdur Rehman", role: "Co-Ambassador", phone: null, photo: "/ambassadors/abdur-rehman-nutech.webp" },

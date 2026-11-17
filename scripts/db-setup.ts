@@ -263,6 +263,10 @@ async function applyPatches(db: Db) {
       .update(A)
       .set({ photo: "/ambassadors/haleema-aurangzeb-ist.webp" })
       .where(and(eq(A.name, "Haleema Aurangzeb"), eq(A.photo, "/ambassadors/haleema-aurangzeb-institute-of-space-technology.webp")));
+    await db
+      .update(A)
+      .set({ photo: "/ambassadors/fatima-hafeez-nutech.webp" })
+      .where(and(eq(A.institute, "NUTECH"), eq(A.role, "Head Ambassador"), isNull(A.photo)));
     // Yusra Zafar (campus ambassador application #876) joins Shifa as a co-ambassador.
     const shifa = "Shifa Tameer-e-Millat University";
     const [already] = await db.select({ id: A.id }).from(A).where(and(eq(A.institute, shifa), sql`lower(${A.name}) = 'yusra zafar'`)).limit(1);
