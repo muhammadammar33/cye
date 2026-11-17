@@ -220,6 +220,16 @@ async function applyPatches(db: Db) {
     console.log("[db-setup] applied patch 2026-11-ambassador-names");
   }
 
+  if (!applied.has("2026-11-ambassador-names-2")) {
+    // More spelling corrections from ambassadors. Only rows still carrying the old spelling change.
+    const renames: [institute: string, from: string, to: string][] = [["NUST", "Tehreem Mansha", "Tahreem Mansha"]];
+    for (const [institute, from, to] of renames) {
+      await db.update(s.ambassadors).set({ name: to }).where(and(eq(s.ambassadors.institute, institute), eq(s.ambassadors.name, from)));
+    }
+    applied.add("2026-11-ambassador-names-2");
+    console.log("[db-setup] applied patch 2026-11-ambassador-names-2");
+  }
+
   if (!applied.has("2026-10-remove-debate")) {
     await db.delete(s.competitions).where(byName("Debate"));
     applied.add("2026-10-remove-debate");
