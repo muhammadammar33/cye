@@ -230,6 +230,19 @@ async function applyPatches(db: Db) {
     console.log("[db-setup] applied patch 2026-11-ambassador-names-2");
   }
 
+  if (!applied.has("2026-11-ambassador-phones")) {
+    // Phone corrections for head ambassadors. Only rows still carrying the old number change.
+    const fixes: [institute: string, from: string, to: string][] = [["PIEAS", "+92 313 5590341", "+92 326 8210196"]];
+    for (const [institute, from, to] of fixes) {
+      await db
+        .update(s.ambassadors)
+        .set({ phone: to })
+        .where(and(eq(s.ambassadors.institute, institute), eq(s.ambassadors.role, "Head Ambassador"), eq(s.ambassadors.phone, from)));
+    }
+    applied.add("2026-11-ambassador-phones");
+    console.log("[db-setup] applied patch 2026-11-ambassador-phones");
+  }
+
   if (!applied.has("2026-10-remove-debate")) {
     await db.delete(s.competitions).where(byName("Debate"));
     applied.add("2026-10-remove-debate");

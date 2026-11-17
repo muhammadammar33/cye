@@ -156,7 +156,7 @@ export const AMBASSADORS: AmbassadorSeed[] = [
   { institute: "Air University", name: "Syed Shabi", role: "Co-Ambassador", phone: null, photo: "/ambassadors/syed-shabi-air-university.webp" },
   { institute: "Air University", name: "Tayyiba", role: "Co-Ambassador", phone: null, photo: "/ambassadors/tayyiba-air-university.webp" },
   // PIEAS
-  { institute: "PIEAS", name: "Ahmad Siddique", role: "Head Ambassador", phone: "+92 313 5590341", photo: "/ambassadors/ahmad-siddique-pieas.webp", coupon: "CYE-PIEAS" },
+  { institute: "PIEAS", name: "Ahmad Siddique", role: "Head Ambassador", phone: "+92 326 8210196", photo: "/ambassadors/ahmad-siddique-pieas.webp", coupon: "CYE-PIEAS" },
   { institute: "PIEAS", name: "Abdul Hadi Jadoon", role: "Co-Ambassador", phone: null, photo: "/ambassadors/abdul-hadi-jadoon-pieas.webp" },
   { institute: "PIEAS", name: "Ali Ammar", role: "Co-Ambassador", phone: null, photo: "/ambassadors/ali-ammar-pieas.webp" },
   { institute: "PIEAS", name: "Asma Batool", role: "Co-Ambassador", phone: null, photo: "/ambassadors/asma-batool-pieas.webp" },
