@@ -67,8 +67,7 @@ export function CouponField({ applied, onApply, className }: { applied: AppliedC
           readOnly={Boolean(applied)}
           autoComplete="off"
           spellCheck={false}
-          placeholder="e.g. CYE-NUST"
-          className={`${fieldClass} uppercase placeholder:normal-case`}
+          className={`${fieldClass} uppercase`}
           aria-describedby="coupon-status"
         />
         {applied ? (
