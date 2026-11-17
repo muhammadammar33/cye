@@ -263,10 +263,6 @@ async function applyPatches(db: Db) {
       .update(A)
       .set({ photo: "/ambassadors/haleema-aurangzeb-ist.webp" })
       .where(and(eq(A.name, "Haleema Aurangzeb"), eq(A.photo, "/ambassadors/haleema-aurangzeb-institute-of-space-technology.webp")));
-    await db
-      .update(A)
-      .set({ photo: "/ambassadors/fatima-hafeez-nutech.webp" })
-      .where(and(eq(A.institute, "NUTECH"), eq(A.role, "Head Ambassador"), isNull(A.photo)));
     // Yusra Zafar (campus ambassador application #876) joins Shifa as a co-ambassador.
     const shifa = "Shifa Tameer-e-Millat University";
     const [already] = await db.select({ id: A.id }).from(A).where(and(eq(A.institute, shifa), sql`lower(${A.name}) = 'yusra zafar'`)).limit(1);
@@ -278,6 +274,17 @@ async function applyPatches(db: Db) {
     }
     applied.add("2026-11-ambassador-fixes-4");
     console.log("[db-setup] applied patch 2026-11-ambassador-fixes-4");
+  }
+
+  if (!applied.has("2026-11-ambassador-fixes-5")) {
+    // Photo for the NUTECH head ambassador. Its own patch: fixes-4 had already run (preview builds share the
+    // database) before this was added to it. Only sets a photo where there is none.
+    await db
+      .update(s.ambassadors)
+      .set({ photo: "/ambassadors/fatima-hafeez-nutech.webp" })
+      .where(and(eq(s.ambassadors.institute, "NUTECH"), eq(s.ambassadors.role, "Head Ambassador"), isNull(s.ambassadors.photo)));
+    applied.add("2026-11-ambassador-fixes-5");
+    console.log("[db-setup] applied patch 2026-11-ambassador-fixes-5");
   }
 
   if (!applied.has("2026-10-remove-debate")) {
