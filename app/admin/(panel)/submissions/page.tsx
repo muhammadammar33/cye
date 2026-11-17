@@ -139,6 +139,11 @@ export default async function SubmissionsPage({ searchParams }: { searchParams: 
                     </td>
                     <td className="px-4 py-3">
                       {row.type === "competition" ? <PaymentSelect id={row.id} value={row.paymentStatus} name={row.name} /> : <span className="text-xs text-slate-300">n/a</span>}
+                      {row.type === "competition" && typeof row.data?.coupon === "string" ? (
+                        <span title={`Coupon ${row.data.coupon}: pays ${String(row.data.fee ?? "")}`} className="mt-1 block w-fit whitespace-nowrap rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-bold text-emerald-700">
+                          Coupon −{String(row.data.couponDiscount ?? "10%")} · {row.data.coupon}
+                        </span>
+                      ) : null}
                     </td>
                     <td className="px-4 py-3">
                       {row.type === "competition" && preEvent.has(row.subject ?? "") ? (
