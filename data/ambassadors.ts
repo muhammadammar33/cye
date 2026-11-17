@@ -31,7 +31,7 @@ export const AMBASSADORS: AmbassadorSeed[] = [
   { institute: "NUST", name: "Muhammad Imad", role: "Co-Ambassador", phone: null, photo: "/ambassadors/muhammad-imad-nust.webp" },
   { institute: "NUST", name: "Naymal Afzal", role: "Co-Ambassador", phone: null, photo: "/ambassadors/naymal-afzal-nust.webp" },
   { institute: "NUST", name: "Rooh Ul Amin", role: "Co-Ambassador", phone: null, photo: "/ambassadors/rooh-ul-amin-nust.webp" },
-  { institute: "NUST", name: "Tehreem Mansha", role: "Co-Ambassador", phone: null, photo: "/ambassadors/tehreem-mansha-nust.webp" },
+  { institute: "NUST", name: "Tahreem Mansha", role: "Co-Ambassador", phone: null, photo: "/ambassadors/tehreem-mansha-nust.webp" },
   { institute: "NUST", name: "Ubaid Ali", role: "Co-Ambassador", phone: null, photo: "/ambassadors/ubaid-ali-nust.webp" },
   { institute: "NUST", name: "Urwa Zahid", role: "Co-Ambassador", phone: null, photo: "/ambassadors/urwa-zahid-nust.webp" },
   { institute: "NUST", name: "Vaneeza Mumtaz", role: "Co-Ambassador", phone: null, photo: "/ambassadors/vaneeza-mumtaz-nust.webp" },
