@@ -160,6 +160,7 @@ async function applyPatches(db: Db) {
   if (!applied.has("2026-11-prizes")) {
     // Prize money per competition from the official prize list. Only fills rows without prizes, so admin edits are kept.
     for (const c of E.COMPETITIONS) {
+      if (!c.prizes.length) continue;
       await db
         .update(s.competitions)
         .set({ prize1: c.prizes[0], prize2: c.prizes[1], prize3: c.prizes[2] })
@@ -180,6 +181,22 @@ async function applyPatches(db: Db) {
     }
     applied.add("2026-11-ambassador-coupons");
     console.log("[db-setup] applied patch 2026-11-ambassador-coupons");
+  }
+
+  if (!applied.has("2026-11-e-gaming")) {
+    // New E-Gaming competitions (PUBG, Tekken, FIFA), added at the end. Skipped if a row with the name exists.
+    const [{ max }] = await db.select({ max: sql<number>`coalesce(max(${s.competitions.sortOrder}), 0)` }).from(s.competitions);
+    let order = Number(max);
+    for (const c of E.COMPETITIONS.filter((x) => x.name.startsWith("E-Gaming:"))) {
+      const [exists] = await db.select({ id: s.competitions.id }).from(s.competitions).where(byName(c.name)).limit(1);
+      if (exists) continue;
+      await db.insert(s.competitions).values({
+        name: c.name, vertical: c.vertical, audience: c.audience, fee: c.fee, teamMin: c.teamMin, teamMax: c.teamMax,
+        description: c.desc, rulebook: c.rulebook, focalName: c.focalName, focalPhone: c.focalPhone, sortOrder: ++order,
+      });
+    }
+    applied.add("2026-11-e-gaming");
+    console.log("[db-setup] applied patch 2026-11-e-gaming");
   }
 
   if (!applied.has("2026-10-remove-debate")) {

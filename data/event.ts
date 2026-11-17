@@ -262,6 +262,13 @@ export const COMPETITIONS = [
     desc: "A declamation contest: deliver a persuasive, prepared speech of up to 5 minutes in English or Urdu, with each language judged separately." },
   { name: "Arts", vertical: "Literary", audience: "Schools & University", fee: "PKR 500", teamMin: 1, teamMax: 1, rulebook: "/rulebooks/19-arts.pdf" as string | null, focalName: "Kaleem Ul Haq", focalPhone: "+92 344 0442365", prizes: ["PKR 10,000", "PKR 8,000", "PKR 5,000"] as [string, string, string],
     desc: "Create an original artwork on the spot around the expo theme." },
+  // E-Gaming: one rule book for three games. Prizes and focal persons to be announced.
+  { name: "E-Gaming: PUBG", vertical: "TechNexus", audience: "Schools & University", fee: "PKR 1,500", teamMin: 4, teamMax: 5, rulebook: "/rulebooks/20-e-gaming.pdf", focalName: null, focalPhone: null, prizes: [] as string[],
+    desc: "Squads of four (plus an optional substitute) battle it out on the official tournament setup, ranked on placement and kill points." },
+  { name: "E-Gaming: Tekken", vertical: "TechNexus", audience: "Schools & University", fee: "PKR 1,000", teamMin: 1, teamMax: 1, rulebook: "/rulebooks/20-e-gaming.pdf", focalName: null, focalPhone: null, prizes: [] as string[],
+    desc: "Go head-to-head in a 1 v 1 Tekken knockout bracket, played on site on organizer-provided setups." },
+  { name: "E-Gaming: FIFA", vertical: "TechNexus", audience: "Schools & University", fee: "PKR 1,000", teamMin: 1, teamMax: 1, rulebook: "/rulebooks/20-e-gaming.pdf", focalName: null, focalPhone: null, prizes: [] as string[],
+    desc: "Take on opponents in a 1 v 1 FIFA knockout bracket: the higher goal count at full time advances." },
 ];
 
 // Source: https://prize.org.pk/national-article-writing-competition
