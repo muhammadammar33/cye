@@ -218,7 +218,7 @@ export const AMBASSADORS: AmbassadorSeed[] = [
   { institute: "Hamdard University", name: "Abdul Wajid", role: "Co-Ambassador", phone: null, photo: "/ambassadors/abdul-wajid-hamdard-university.webp" },
   { institute: "Hamdard University", name: "Abdus Slam", role: "Co-Ambassador", phone: null, photo: "/ambassadors/abdus-slam-hamdard-university.webp" },
   { institute: "Hamdard University", name: "Hajra Ahsan", role: "Co-Ambassador", phone: null, photo: "/ambassadors/hajra-ahsan-hamdard-university.webp" },
-  { institute: "Hamdard University", name: "Haleem Sadia", role: "Co-Ambassador", phone: null, photo: "/ambassadors/haleem-sadia-hamdard-university.webp" },
+  { institute: "Hamdard University", name: "Haleema Sadia", role: "Co-Ambassador", phone: null, photo: "/ambassadors/haleem-sadia-hamdard-university.webp" },
   { institute: "Hamdard University", name: "Hassan Khan", role: "Co-Ambassador", phone: null, photo: "/ambassadors/hassan-khan-hamdard-university.webp" },
   { institute: "Hamdard University", name: "Maleeha Rehman", role: "Co-Ambassador", phone: null, photo: "/ambassadors/maleeha-rehman-hamdard-university.webp" },
   { institute: "Hamdard University", name: "Maooz Khan", role: "Co-Ambassador", phone: null, photo: "/ambassadors/maooz-khan-hamdard-university.webp" },

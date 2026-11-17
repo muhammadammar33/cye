@@ -243,6 +243,16 @@ async function applyPatches(db: Db) {
     console.log("[db-setup] applied patch 2026-11-ambassador-phones");
   }
 
+  if (!applied.has("2026-11-ambassador-names-3")) {
+    // Spelling correction from an ambassador. Only the row still carrying the old spelling changes.
+    await db
+      .update(s.ambassadors)
+      .set({ name: "Haleema Sadia" })
+      .where(and(eq(s.ambassadors.institute, "Hamdard University"), eq(s.ambassadors.name, "Haleem Sadia")));
+    applied.add("2026-11-ambassador-names-3");
+    console.log("[db-setup] applied patch 2026-11-ambassador-names-3");
+  }
+
   if (!applied.has("2026-10-remove-debate")) {
     await db.delete(s.competitions).where(byName("Debate"));
     applied.add("2026-10-remove-debate");
