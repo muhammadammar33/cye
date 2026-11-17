@@ -168,7 +168,6 @@ export const AMBASSADORS: AmbassadorSeed[] = [
   { institute: "PIEAS", name: "Laiba Tahir", role: "Co-Ambassador", phone: null, photo: "/ambassadors/laiba-tahir-pieas.webp" },
   { institute: "PIEAS", name: "Mariyam Muzammil", role: "Co-Ambassador", phone: null, photo: "/ambassadors/mariyam-muzammil-pieas.webp" },
   { institute: "PIEAS", name: "Muhammad Abdullah", role: "Co-Ambassador", phone: null, photo: "/ambassadors/muhammad-abdullah-pieas.webp" },
-  { institute: "PIEAS", name: "Muhammad Abdullah", role: "Co-Ambassador", phone: null, photo: "/ambassadors/muhammad-abdullah-pieas-2.webp" },
   { institute: "PIEAS", name: "Muhammad Junaid", role: "Co-Ambassador", phone: null, photo: "/ambassadors/muhammad-junaid-pieas.webp" },
   { institute: "PIEAS", name: "Munim Khan", role: "Co-Ambassador", phone: null, photo: "/ambassadors/munim-khan-pieas.webp" },
   { institute: "PIEAS", name: "Munir Hussain", role: "Co-Ambassador", phone: null, photo: "/ambassadors/munir-hussain-pieas.webp" },
@@ -244,7 +243,7 @@ export const AMBASSADORS: AmbassadorSeed[] = [
   { institute: "Institute of Space Technology", name: "Atika Jawad", role: "Co-Ambassador", phone: null, photo: "/ambassadors/atika-jawad-institute-of-space-technology.webp" },
   { institute: "Institute of Space Technology", name: "Fatima Asghar", role: "Co-Ambassador", phone: null, photo: "/ambassadors/fatima-asghar-institute-of-space-technology.webp" },
   { institute: "Institute of Space Technology", name: "Fatima Naseer", role: "Co-Ambassador", phone: null, photo: "/ambassadors/fatima-naseer-institute-of-space-technology.webp" },
-  { institute: "Institute of Space Technology", name: "Haleema Aurangzeb", role: "Co-Ambassador", phone: null, photo: "/ambassadors/haleema-aurangzeb-institute-of-space-technology.webp" },
+  { institute: "Institute of Space Technology", name: "Haleema Aurangzeb", role: "Co-Ambassador", phone: null, photo: "/ambassadors/haleema-aurangzeb-ist.webp" },
   { institute: "Institute of Space Technology", name: "Hamna Aurangzeb", role: "Co-Ambassador", phone: null, photo: "/ambassadors/hamna-aurangzeb-institute-of-space-technology.webp" },
   { institute: "Institute of Space Technology", name: "Mian Abdullah", role: "Co-Ambassador", phone: null, photo: "/ambassadors/mian-abdullah-institute-of-space-technology.webp" },
   { institute: "Institute of Space Technology", name: "Muhammad Abdullah", role: "Co-Ambassador", phone: null, photo: "/ambassadors/muhammad-abdullah-institute-of-space-technology.webp" },
@@ -323,7 +322,7 @@ export const AMBASSADORS: AmbassadorSeed[] = [
   // Siddique Public School
   { institute: "Siddique Public School", name: "Khuzema", role: "Head Ambassador", phone: "+92 337 5825572", photo: null, coupon: "CYE-SPS" },
   // Fazaia College
-  { institute: "Fazaia College", name: "Zainab Fatima", role: "Head Ambassador", phone: "+92 331 7397495", photo: "/ambassadors/zainab-fatima-fazaia-college.webp", coupon: "CYE-FAZAIA" },
+  { institute: "Fazaia College", name: "Zainab Fatima", role: "Head Ambassador", phone: "+92 345 5310038", photo: "/ambassadors/zainab-fatima-fazaia-college.webp", coupon: "CYE-FAZAIA" },
   { institute: "Fazaia College", name: "Hania Fatima", role: "Co-Ambassador", phone: null, photo: "/ambassadors/hania-fatima-fazaia-college.webp" },
   { institute: "Fazaia College", name: "Hasnain Alam", role: "Co-Ambassador", phone: null, photo: "/ambassadors/hasnain-alam-fazaia-college.webp" },
   { institute: "Fazaia College", name: "Huda Urooj", role: "Co-Ambassador", phone: null, photo: "/ambassadors/huda-urooj-fazaia-college.webp" },
@@ -339,6 +338,7 @@ export const AMBASSADORS: AmbassadorSeed[] = [
   // Shifa Tameer-e-Millat University
   { institute: "Shifa Tameer-e-Millat University", name: "Jaam Muhammad Ali Laar", role: "Head Ambassador", phone: "+92 335 5543855", photo: "/ambassadors/jaam-muhammad-ali-laar-shifa-tameer-e-millat-university.webp", coupon: "CYE-SHIFA" },
   { institute: "Shifa Tameer-e-Millat University", name: "Ayesha Batool", role: "Co-Ambassador", phone: null, photo: "/ambassadors/ayesha-batool-shifa-tameer-e-millat-university.webp" },
+  { institute: "Shifa Tameer-e-Millat University", name: "Yusra Zafar", role: "Co-Ambassador", phone: null, photo: null },
   // NUMS
   { institute: "NUMS", name: "Uzair Ali", role: "Head Ambassador", phone: "+92 314 3829917", photo: "/ambassadors/uzair-ali-nums.webp", coupon: "CYE-NUMS" },
   { institute: "NUMS", name: "Alishba Naz", role: "Co-Ambassador", phone: null, photo: "/ambassadors/alishba-naz-nums.webp" },
