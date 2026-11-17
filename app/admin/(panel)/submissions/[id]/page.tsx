@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { deleteSubmission, removeTeamMember, resendPass, updateSubmission } from "@/app/admin/actions";
 import { AddMemberForm } from "@/components/admin/AddMemberForm";
+import { ChangeCompetitionForm } from "@/components/admin/ChangeCompetitionForm";
 import { PreEventForm } from "@/components/admin/PreEventForm";
 import { SubmissionForm } from "@/components/admin/SubmissionForm";
 import { formatDate, PageHeader, StatusBadge } from "@/components/admin/StatusBadge";
@@ -39,6 +40,16 @@ export default async function SubmissionPage({ params }: { params: Promise<{ id:
           .from(s.competitions)
           .where(eq(s.competitions.name, row.subject))
           .limit(1)
+      : [];
+
+  // Competitions a registration can be moved to (a team that applied to the wrong one).
+  const choices =
+    row.type === "competition"
+      ? await requireDb()
+          .select({ name: s.competitions.name, fee: s.competitions.fee, teamMin: s.competitions.teamMin, teamMax: s.competitions.teamMax })
+          .from(s.competitions)
+          .where(eq(s.competitions.active, true))
+          .orderBy(asc(s.competitions.sortOrder), asc(s.competitions.id))
       : [];
 
   // Gender is edited in the sidebar form (the column is the source of truth), so it is not repeated here.
@@ -139,6 +150,24 @@ export default async function SubmissionPage({ params }: { params: Promise<{ id:
               <p className="mt-2 text-xs text-slate-500">
                 Check the marks or GPA on the card against the claimed {typeof data.percentage === "number" ? `${data.percentage}%` : "result"}, then set the status to Approved or Rejected.
               </p>
+            </section>
+          ) : null}
+
+          {row.type === "competition" && row.subject ? (
+            <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+              <h2 className="font-heading text-base font-bold text-cye-blue">Competition</h2>
+              <p className="mt-1 text-sm text-slate-600">
+                Registered for <strong className="text-slate-800">{row.subject}</strong>. Applied to the wrong one? Move the team here instead of asking them to register again: the
+                payment slip, coupon and passes stay with it.
+              </p>
+              <div className="mt-4 max-w-xl">
+                <ChangeCompetitionForm
+                  id={row.id}
+                  current={row.subject}
+                  size={members?.length || Number((row.data as { size?: unknown }).size) || 1}
+                  competitions={choices}
+                />
+              </div>
             </section>
           ) : null}
 
