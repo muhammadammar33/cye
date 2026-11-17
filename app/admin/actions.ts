@@ -11,14 +11,15 @@ import { CONTENT_TAG } from "@/lib/content";
 import { db, requireDb, schema as s } from "@/lib/db";
 import { SUBMISSION_STATUSES, type SubmissionStatus } from "@/lib/db/schema";
 import { DEFAULT_SETTINGS } from "@/lib/defaults";
-import { normalizeCoupon } from "@/lib/coupons";
+import { discountedFee, normalizeCoupon } from "@/lib/coupons";
+import { CHOICE_FIELDS, choiceFor } from "@/lib/competitionOptions";
 import { ENTITIES, isEntity, type FieldDef } from "@/lib/admin/entities";
 import { PAYMENT_STATUSES, PRE_EVENT_LABELS, PRE_EVENT_RESULTS, STATUS_LABELS, TYPE_NAMES, type PreEventResult } from "@/lib/admin/labels";
 import { applyPreEventResults, matchResults, saveResults, type CsvMatch, type CsvProblem } from "@/lib/preEvents";
 import { member as memberSchema } from "@/lib/submissions";
 import { GENDERS } from "@/data/event";
 import { logActivity } from "@/lib/admin/log";
-import { emailPasses, issueForSubmissions, issueManualPass, passByToken, passOrigin, revokeForSubmissions } from "@/lib/passes";
+import { emailPasses, holdersFor, issueForSubmissions, issueManualPass, passByToken, passOrigin, revokeForSubmissions } from "@/lib/passes";
 import { MANUAL_PASS_CATEGORIES, PASS_CATEGORIES, PASS_FOR_TYPE, type PassCategory } from "@/lib/passCategories";
 
 export type ActionState = { error?: string; ok?: string } | undefined;
@@ -579,4 +580,75 @@ export async function removeTeamMember(id: number, index: number, email: string)
     `${gone.name} (${gone.email})${cancelled.length ? `; cancelled ${cancelled.map((c) => c.code).join(", ")}` : ""}`,
   );
   revalidatePath("/admin", "layout");
+}
+
+/* ------------------------ change competition ------------------------ */
+
+/**
+ * Moves a registration to another competition (e.g. a team that applied to the wrong one). The team must fit
+ * the new competition's size limits, and a competition with a required choice (Speech language, Arts category)
+ * needs it picked. The fee becomes the new competition's, keeping any coupon discount. The pre-event result is
+ * cleared, as it belonged to the old competition. Approved teams keep their passes (same links, nothing
+ * emailed), relabelled with the new competition; members without a pass yet get one.
+ */
+export async function changeCompetition(id: number, _prev: ActionState, form: FormData): Promise<ActionState> {
+  const me = await requireAdmin();
+  const database = requireDb();
+  const [sub] = await database.select().from(s.submissions).where(eq(s.submissions.id, id)).limit(1);
+  if (!sub || sub.type !== "competition") return { error: "Not a competition registration." };
+  const target = String(form.get("competition") ?? "");
+  if (!target || target === sub.subject) return { error: "Choose a different competition." };
+  const [comp] = await database.select().from(s.competitions).where(eq(s.competitions.name, target)).limit(1);
+  if (!comp) return { error: "That competition no longer exists." };
+
+  const members = Array.isArray(sub.data.members) ? (sub.data.members as Member[]) : [];
+  const size = members.length || Number(sub.data.size) || 1;
+  if (size < comp.teamMin || size > comp.teamMax) {
+    const allowed = comp.teamMin === comp.teamMax ? `${comp.teamMin}` : `${comp.teamMin} to ${comp.teamMax}`;
+    return { error: `${comp.name} allows ${allowed} member${comp.teamMax === 1 ? "" : "s"}; this team has ${size}. Add or remove members first.` };
+  }
+  const data: Record<string, unknown> = { ...sub.data };
+  const choice = choiceFor(comp.name);
+  for (const field of CHOICE_FIELDS) if (field !== choice?.field) delete data[field];
+  if (choice) {
+    const picked = String(form.get("choice") ?? "");
+    if (!choice.options.includes(picked)) return { error: `${comp.name}: ${choice.prompt}.` };
+    data[choice.field] = picked;
+  }
+
+  // The new fee, with the coupon (if any) applied again.
+  const before = String(sub.data.fee ?? "");
+  if (data.coupon) {
+    const after = discountedFee(comp.fee);
+    data.feeBeforeCoupon = comp.fee;
+    data.fee = after ?? comp.fee;
+  } else {
+    data.fee = comp.fee;
+  }
+  data.competition = comp.name;
+
+  const moved = { ...sub, subject: comp.name, data };
+  await database
+    .update(s.submissions)
+    .set({ subject: comp.name, data, preEventResult: null, preEventAbsent: null })
+    .where(eq(s.submissions.id, id));
+
+  // Relabel the team's valid Competitor passes; the QR links stay the same.
+  const details = new Map(holdersFor(moved).map((h) => [`${h.email.toLowerCase()}|${h.name.toLowerCase()}`, h.detail]));
+  const passes = await database
+    .select({ id: s.passes.id, name: s.passes.name, email: s.passes.email })
+    .from(s.passes)
+    .where(and(eq(s.passes.submissionId, id), eq(s.passes.category, "competition"), isNull(s.passes.revokedAt)));
+  for (const p of passes) {
+    const detail = details.get(`${p.email.toLowerCase()}|${p.name.toLowerCase()}`);
+    if (detail !== undefined) await database.update(s.passes).set({ detail }).where(eq(s.passes.id, p.id));
+  }
+
+  const feeNote = before === String(data.fee) ? `fee unchanged (${String(data.fee)})` : `fee ${before || "not set"} → ${String(data.fee)}`;
+  await logActivity(me, "Changed competition", `#${id} team ${String(sub.data.team || sub.name)}`, `${sub.subject} → ${comp.name}; ${feeNote}`);
+  const note = sub.status === "approved" ? await syncPasses(me, [id], "approved") : "";
+  revalidatePath("/admin", "layout");
+  return {
+    ok: `Moved to ${comp.name}; ${feeNote}.${passes.length ? ` ${passes.length} pass${passes.length === 1 ? "" : "es"} updated.` : ""}${note}`,
+  };
 }
