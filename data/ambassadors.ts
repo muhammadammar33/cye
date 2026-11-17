@@ -252,18 +252,17 @@ export const AMBASSADORS: AmbassadorSeed[] = [
   // Ibadat International University
   { institute: "Ibadat International University", name: "Seham", role: "Head Ambassador", phone: "+92 343 8070077", photo: null, coupon: "CYE-IBADAT" },
   // FUUAST
-  { institute: "FUUAST", name: "Ali Asghar", role: "Head Ambassador", phone: "+92 333 1045023", photo: null, coupon: "CYE-FUUAST" },
+  { institute: "FUUAST", name: "Muhammad Ali Raza", role: "Head Ambassador", phone: "+92 333 1045023", photo: "/ambassadors/muhammad-ali-raza-fuuast.webp", coupon: "CYE-FUUAST" },
   { institute: "FUUAST", name: "Abdur Rehman", role: "Co-Ambassador", phone: null, photo: "/ambassadors/abdur-rehman-fuuast.webp" },
   { institute: "FUUAST", name: "Amina Naem", role: "Co-Ambassador", phone: null, photo: "/ambassadors/amina-naem-fuuast.webp" },
   { institute: "FUUAST", name: "Aziz-Ul-Hassan", role: "Co-Ambassador", phone: null, photo: "/ambassadors/aziz-ul-hassan-fuuast.webp" },
   { institute: "FUUAST", name: "Malaika Mehboob", role: "Co-Ambassador", phone: null, photo: "/ambassadors/malaika-mehboob-fuuast.webp" },
   { institute: "FUUAST", name: "Malka Rehman", role: "Co-Ambassador", phone: null, photo: "/ambassadors/malka-rehman-fuuast.webp" },
-  { institute: "FUUAST", name: "Muhammad Ali Raza", role: "Co-Ambassador", phone: null, photo: "/ambassadors/muhammad-ali-raza-fuuast.webp" },
   { institute: "FUUAST", name: "Syed Abdullah", role: "Co-Ambassador", phone: null, photo: "/ambassadors/syed-abdullah-fuuast.webp" },
   // Iqra University, Chak Shahzad
   { institute: "Iqra University, Chak Shahzad", name: "Anas Ur Rehman", role: "Head Ambassador", phone: "+92 332 9520618", photo: null, coupon: "CYE-IQRA-CS" },
   // Quaid-i-Azam University
-  { institute: "Quaid-i-Azam University", name: "M Salman", role: "Head Ambassador", phone: "+92 312 9902994", photo: null, coupon: "CYE-QAU" },
+  { institute: "Quaid-i-Azam University", name: "Muhammad Sulaiman Javed", role: "Head Ambassador", phone: "+92 312 9902994", photo: null, coupon: "CYE-QAU" },
   // International Islamic University
   { institute: "International Islamic University", name: "Malik Kamran", role: "Head Ambassador", phone: "+92 344 1368538", photo: "/ambassadors/malik-kamran-international-islamic-university.webp", coupon: "CYE-IIUI" },
   { institute: "International Islamic University", name: "Adeeba Nisar", role: "Co-Ambassador", phone: null, photo: "/ambassadors/adeeba-nisar-international-islamic-university.webp" },
@@ -387,7 +386,7 @@ export const AMBASSADORS: AmbassadorSeed[] = [
   // Fatima Jinnah Women University
   { institute: "Fatima Jinnah Women University", name: "Minahil", role: "Head Ambassador", phone: "+92 312 5781223", photo: null, coupon: "CYE-FJWU" },
   // Riphah International University, Gulberg
-  { institute: "Riphah International University, Gulberg", name: "Areeba Rashid", role: "Head Ambassador", phone: "+92 310 5535952", photo: null, coupon: "CYE-RIPHAH-GLB" },
+  { institute: "Riphah International University, Gulberg", name: "Ariba Rehman", role: "Head Ambassador", phone: "+92 310 5535952", photo: null, coupon: "CYE-RIPHAH-GLB" },
   // APS
   { institute: "APS", name: "M. Abdul Rehman", role: "Head Ambassador", phone: null, photo: "/ambassadors/m-abdul-rehman-aps.webp", coupon: "CYE-APS" },
   { institute: "APS", name: "Ehan Farooq", role: "Co-Ambassador", phone: null, photo: "/ambassadors/ehan-farooq-aps.webp" },

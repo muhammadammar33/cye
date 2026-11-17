@@ -199,6 +199,27 @@ async function applyPatches(db: Db) {
     console.log("[db-setup] applied patch 2026-11-e-gaming");
   }
 
+  if (!applied.has("2026-11-ambassador-names")) {
+    // Name corrections sent by the ambassadors. Only rows still carrying the old name change, so admin edits are kept.
+    const head = (institute: string, from: string) =>
+      and(eq(s.ambassadors.institute, institute), eq(s.ambassadors.role, "Head Ambassador"), eq(s.ambassadors.name, from));
+    await db.update(s.ambassadors).set({ name: "Ariba Rehman" }).where(head("Riphah International University, Gulberg", "Areeba Rashid"));
+    await db.update(s.ambassadors).set({ name: "Muhammad Sulaiman Javed" }).where(head("Quaid-i-Azam University", "M Salman"));
+    // FUUAST: Muhammad Ali Raza is the head (he was listed as a co-ambassador, and the head as Ali Asghar).
+    const moved = await db
+      .update(s.ambassadors)
+      .set({ name: "Muhammad Ali Raza", photo: "/ambassadors/muhammad-ali-raza-fuuast.webp" })
+      .where(head("FUUAST", "Ali Asghar"))
+      .returning({ id: s.ambassadors.id });
+    if (moved.length) {
+      await db
+        .delete(s.ambassadors)
+        .where(and(eq(s.ambassadors.institute, "FUUAST"), eq(s.ambassadors.role, "Co-Ambassador"), eq(s.ambassadors.name, "Muhammad Ali Raza")));
+    }
+    applied.add("2026-11-ambassador-names");
+    console.log("[db-setup] applied patch 2026-11-ambassador-names");
+  }
+
   if (!applied.has("2026-10-remove-debate")) {
     await db.delete(s.competitions).where(byName("Debate"));
     applied.add("2026-10-remove-debate");
