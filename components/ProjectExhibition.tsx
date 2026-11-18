@@ -1,5 +1,6 @@
 import { Award, Medal, Trophy } from "lucide-react";
-import { GENDERS, PROJECT_PRIZES, VERTICALS } from "@/data/event";
+import { FOCAL_PERSONS, GENDERS, PROJECT_PRIZES, VERTICALS } from "@/data/event";
+import { FocalPerson } from "@/components/ui/FocalPerson";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Card } from "@/components/ui/Card";
 import { ClosedNotice } from "@/components/ui/ClosedNotice";
@@ -59,6 +60,12 @@ export async function ProjectExhibition() {
             Share a link to your project document (Google Drive, Dropbox, or similar). Shortlisted teams get an
             exhibition space on expo day.
           </p>
+          <FocalPerson
+            className="mt-4"
+            title="Focal person, Project Exhibition"
+            name={FOCAL_PERSONS.projectExhibition.name}
+            phone={FOCAL_PERSONS.projectExhibition.phone}
+          />
           <div className="mt-6">
             {REGISTRATION_OPEN.projects ? (
               <InterestForm

@@ -385,6 +385,7 @@ export const VISITOR_PERKS = [
 export const FOCAL_PERSONS = {
   talentTribute: { title: "Incharge Talent Tribute", name: "Ahmad Yaseen", phone: "+92 332 2442925" },
   lawyersConference: { title: "Lawyers Conference", name: "Haris Abdul Rehman", phone: "+92 313 5237249" },
+  projectExhibition: { title: "Project Exhibition", name: "Abdullah Asad", phone: "+92 321 5111080" },
   govtColleges: { title: "Government colleges", name: "Raja Yahya", phone: "+92 332 3791577" },
   medicalColleges: { title: "Medical colleges", name: "Gohar Ayub", phone: "+92 306 9152593" },
 };
