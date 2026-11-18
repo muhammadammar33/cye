@@ -63,7 +63,7 @@ export async function LawyersConference() {
               </p>
               <p className="flex items-center gap-2">
                 <Users className="h-4 w-4 text-cye-orange" aria-hidden />
-                Open to law students and lawyers · free entry
+                Open to law students, lawyers and young people from every field · free entry
               </p>
             </div>
             <FocalPerson title="Focal person, Lawyers Conference" name={focal.name} phone={focal.phone} />
@@ -85,8 +85,8 @@ export async function LawyersConference() {
                     { name: "email", label: "Email", type: "email", required: true, autoComplete: "email" },
                     { name: "phone", label: "Phone", type: "tel", required: true, autoComplete: "tel" },
                     { name: "gender", label: "Gender", type: "select", required: true, options: [...GENDERS], placeholder: "Select gender" },
-                    { name: "status", label: "I am a", type: "select", required: true, options: [...LAWYERS_CONFERENCE.statuses], placeholder: "Law student or lawyer" },
-                    { name: "institution", label: "University / law firm / bar", required: true, autoComplete: "organization" },
+                    { name: "status", label: "I am a", type: "select", required: true, options: [...LAWYERS_CONFERENCE.statuses], placeholder: "Choose one" },
+                    { name: "institution", label: "University / organisation / bar", required: true, autoComplete: "organization" },
                     ...CONSENT_FIELDS,
                   ]}
                 />

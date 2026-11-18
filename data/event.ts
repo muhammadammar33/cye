@@ -450,5 +450,5 @@ export const LAWYERS_CONFERENCE = {
     { name: "Mr. Ahmer Bilal Soofi", role: "Former Federal Minister for Law & Justice" },
     { name: "Justice (R) Shaukat Aziz Siddiqui", role: "Former Judge, Islamabad High Court" },
   ],
-  statuses: ["Law student", "Lawyer"] as const,
+  statuses: ["Law student", "Lawyer", "Student / professional (other field)"] as const,
 };

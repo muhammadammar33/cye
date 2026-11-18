@@ -67,7 +67,7 @@ export const SCHEMAS = {
   }),
   lawyers: z.object({
     name: text(), email, phone, gender,
-    status: z.enum(LAWYERS_CONFERENCE.statuses, { message: "Choose law student or lawyer" }),
+    status: z.enum(LAWYERS_CONFERENCE.statuses, { message: "Choose law student, lawyer or other field" }),
     institution: text(),
     ...consents,
   }),
