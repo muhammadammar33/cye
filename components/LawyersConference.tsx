@@ -19,15 +19,16 @@ export async function LawyersConference() {
       <Container>
         <FadeIn>
           <Breadcrumbs current="Lawyers Conference" />
-          <div className="mx-auto max-w-3xl text-center">
+          <div className="mx-auto max-w-5xl text-center">
             <p className="font-heading text-xs font-bold uppercase tracking-[0.28em] text-cye-orange">
               {LAWYERS_CONFERENCE.format} · Lawyers Conference
             </p>
-            <h1 className="mt-3 font-heading text-4xl font-black uppercase tracking-tight text-cye-blue sm:text-5xl lg:text-6xl">
-              {LAWYERS_CONFERENCE.headline}
-              <span className="mt-3 block text-xl tracking-normal text-cye-orange sm:text-2xl lg:text-3xl">{LAWYERS_CONFERENCE.subtitle}</span>
+            {/* Each line stays on one line: the size follows the width of this box (container query units). */}
+            <h1 className="@container mt-3 font-heading font-black uppercase text-cye-blue">
+              <span className="block whitespace-nowrap text-[min(4rem,6.2cqw)] leading-[1.1] tracking-tight">{LAWYERS_CONFERENCE.headline}</span>
+              <span className="mt-2 block whitespace-nowrap text-[min(2rem,3.4cqw)] leading-tight text-cye-orange">{LAWYERS_CONFERENCE.subtitle}</span>
             </h1>
-            <p className="mt-5 text-base leading-relaxed text-cye-ink/70 sm:text-lg">{LAWYERS_CONFERENCE.about}</p>
+            <p className="mx-auto mt-5 max-w-3xl text-base leading-relaxed text-cye-ink/70 sm:text-lg">{LAWYERS_CONFERENCE.about}</p>
             <p className="mt-3 text-sm font-semibold text-cye-blue">Free entry · registration confirms your seat</p>
           </div>
         </FadeIn>

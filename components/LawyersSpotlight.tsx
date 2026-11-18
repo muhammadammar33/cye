@@ -16,9 +16,10 @@ export function LawyersSpotlight() {
             <p className="font-heading text-xs font-bold uppercase tracking-[0.28em] text-[#ffc9ad]">
               Lawyers Conference · {LAWYERS_CONFERENCE.format}
             </p>
-            <h2 className="mt-3 font-heading text-3xl font-black uppercase leading-tight tracking-tight sm:text-5xl">
-              {LAWYERS_CONFERENCE.headline}
-              <span className="mt-2 block text-xl tracking-normal text-[#ffc9ad] sm:text-2xl">{LAWYERS_CONFERENCE.subtitle}</span>
+            {/* Each line stays on one line: the size follows the column width (container query units). */}
+            <h2 className="@container mt-3 font-heading font-black uppercase">
+              <span className="block whitespace-nowrap text-[min(3.5rem,6.2cqw)] leading-[1.1] tracking-tight">{LAWYERS_CONFERENCE.headline}</span>
+              <span className="mt-2 block whitespace-nowrap text-[min(1.75rem,3.4cqw)] leading-tight text-[#ffc9ad]">{LAWYERS_CONFERENCE.subtitle}</span>
             </h2>
             <p className="mt-4 max-w-2xl text-base leading-relaxed text-white/80">{LAWYERS_CONFERENCE.about}</p>
             <ul className="mt-6 grid gap-3 sm:grid-cols-3">
