@@ -137,6 +137,7 @@ export function normalize(type: SubmissionType, raw: Record<string, unknown>, co
       const c = d as z.infer<typeof SCHEMAS.competition>;
       const comp = competitions.find((x) => x.name === c.competition);
       if (!comp) return { error: "competition: Unknown competition" };
+      if (comp.onSpot) return { error: `competition: ${comp.name} has no online registration. Entries are taken on the spot on event day.` };
       if (c.size < comp.teamMin || c.size > comp.teamMax) return { error: `size: ${comp.name} allows ${comp.teamMin} to ${comp.teamMax} members` };
       if (c.members.length !== c.size) return { error: "members: Add details for every team member" };
       if (c.size > 1 && !c.team) return { error: "team: Team name is required" };

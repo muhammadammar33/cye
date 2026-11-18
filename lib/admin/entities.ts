@@ -45,6 +45,7 @@ export const ENTITIES = {
       { name: "prize1", label: "1st prize", kind: "text", help: "e.g. PKR 50,000. Leave all three empty to hide prizes." },
       { name: "prize2", label: "2nd prize", kind: "text" },
       { name: "prize3", label: "3rd prize", kind: "text" },
+      { name: "onSpot", label: "On-spot registration only", kind: "checkbox", help: "Entries are taken on event day. The card shows a note instead of Register, and online registration is refused." },
       { name: "preEvent", label: "Has campus pre-event", kind: "checkbox", help: "Teams are shortlisted at campus pre-events. Competitor passes are only sent once a team is marked Qualified (Admin > Pre-events)." },
       order,
       active,

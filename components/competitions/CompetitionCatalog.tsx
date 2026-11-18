@@ -1,8 +1,8 @@
 "use client";
 
-import { FileText, Phone, Trophy, Users, Wallet } from "lucide-react";
+import { FileText, MapPin, Phone, Trophy, Users, Wallet } from "lucide-react";
 import { useState } from "react";
-import { VERTICALS } from "@/data/event";
+import { EVENT, VERTICALS } from "@/data/event";
 import type { Competition } from "@/lib/content";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -160,14 +160,22 @@ export function CompetitionCatalog({ competitions, onSelect }: { competitions: C
                   </div>
                 ) : null}
               </dl>
-              <Button
-                href="#competition-register"
-                onClick={() => onSelect(item.name)}
-                variant="secondary"
-                className="mt-5 w-full"
-              >
-                Register
-              </Button>
+              {item.onSpot ? (
+                // No online registration: entries are taken at the venue on event day.
+                <p className="mt-5 flex min-h-12 w-full items-center justify-center gap-1.5 rounded-full border-2 border-dashed border-cye-orange/50 bg-cye-orange/5 px-4 py-2 text-center text-xs font-bold uppercase leading-snug tracking-wide text-cye-orange">
+                  <MapPin className="h-4 w-4 shrink-0" aria-hidden />
+                  On-spot registration on event day, {EVENT.date.replace(/ \d{4}$/, "")}
+                </p>
+              ) : (
+                <Button
+                  href="#competition-register"
+                  onClick={() => onSelect(item.name)}
+                  variant="secondary"
+                  className="mt-5 w-full"
+                >
+                  Register
+                </Button>
+              )}
               {item.rulebook ? (
                 <a
                   href={item.rulebook}

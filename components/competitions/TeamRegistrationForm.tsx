@@ -111,7 +111,7 @@ export function TeamRegistrationForm({
           <option value="" disabled>
             Select a competition
           </option>
-          {competitions.map((item) => (
+          {competitions.filter((item) => !item.onSpot).map((item) => (
             <option key={item.name} value={item.name}>
               {item.name} | {item.fee} | {teamLabel(item.teamMin, item.teamMax)}
             </option>
