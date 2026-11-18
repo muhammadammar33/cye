@@ -2,7 +2,7 @@ import Image from "next/image";
 import { CalendarDays, MapPin } from "lucide-react";
 import { PassBackground } from "@/components/PassBackground";
 import { EVENT } from "@/data/event";
-import { PASS_CATEGORIES, type PassCategory } from "@/lib/passCategories";
+import { entryIdFor, PASS_CATEGORIES, type PassCategory } from "@/lib/passCategories";
 
 type PassForCard = { token: string; code: string | null; category: string; name: string; detail: string | null; institution: string | null; createdAt: Date };
 
@@ -104,7 +104,7 @@ export function PassCard({ pass, valid }: { pass: PassForCard; valid: boolean })
         {/* Venue */}
         <footer className="relative mt-4">
           <p className="relative z-10 px-6 text-center text-[11px] font-bold leading-tight text-cye-blue">
-            Original student card required for entry
+            Original {entryIdFor(pass.category)} required for entry
           </p>
           <div className="relative -mt-1 h-24 [mask-image:linear-gradient(to_bottom,transparent,black_45%)]">
             <Image src="/brand/pass-venue-building.webp" alt={`${EVENT.venue}, ${EVENT.city}`} fill sizes="380px" className="object-cover object-center" />

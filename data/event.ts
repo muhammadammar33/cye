@@ -188,6 +188,7 @@ export const EMAILS = {
   startups: "startups@capitalyouthexpo.com",
   visitors: "info@capitalyouthexpo.com",
   talent: "info@capitalyouthexpo.com",
+  lawyers: "info@capitalyouthexpo.com",
 };
 
 // Flip a flag to false to close that form and show a "registration closed" notice instead.
@@ -199,6 +200,7 @@ export const REGISTRATION_OPEN = {
   volunteers: true,
   ambassadors: true,
   talent: true,
+  lawyers: true,
 };
 
 export type NavItem = {
@@ -213,6 +215,7 @@ export const REGISTER_LINKS: NavItem[] = [
   { href: "/projects", label: "Project Exhibition", desc: "Showcase your project for the prize pool" },
   { href: "/startups", label: "Startup Arena", desc: "Pitch your startup to investors" },
   { href: "/talent-tribute", label: "Talent Tribute", desc: "Honouring students with 80% or above" },
+  { href: "/lawyers-conference", label: "Lawyers Conference", desc: "Panel discussion on Pakistan's constitutional future" },
   { href: "/visitors", label: "Visitor Pass", desc: "Register to attend the expo" },
   { href: "/ambassadors", label: "Campus Ambassador", desc: "Represent CYE at your institution" },
   { href: "/volunteers", label: "Volunteer", desc: "Join the team behind the expo" },
@@ -430,3 +433,17 @@ export const VOLUNTEER_ROLES = [
   { name: "Registration Desk", desc: "Check-in, badges, and attendee support." },
   { name: "Stage Management", desc: "Sessions, competitions, and speaker flow." },
 ];
+
+/** Lawyers Conference: a free panel discussion at the expo. Registration confirms a seat; approved participants get a pass. */
+export const LAWYERS_CONFERENCE = {
+  topic: "Amend, Adapt or Abandon? Debating the Constitutional Future of Pakistan",
+  format: "Panel Discussion",
+  /** Auditorium seats; registration closes by itself once this many registrations are in (rejected ones don't count). */
+  capacity: 150,
+  guests: [
+    { name: "Dr. Aziz ur Rehman", role: "Chairman, Intellectual Property Organisation of Pakistan (IPO)" },
+    { name: "Mr. Ahmer Bilal Soofi", role: "Former Federal Minister for Law & Justice" },
+    { name: "Justice (R) Shaukat Aziz Siddiqui", role: "Former Judge, Islamabad High Court" },
+  ],
+  statuses: ["Law student", "Lawyer"] as const,
+};

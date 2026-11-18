@@ -99,6 +99,13 @@
       "when": 1794868494513,
       "tag": "0013_ambassador_coupons",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1794998683682,
+      "tag": "0014_lawyers_conference",
+      "breakpoints": true
     }
   ]
 }

@@ -3,7 +3,7 @@ import { AUDIENCE, EVENT, VERTICALS } from "@/data/event";
 import type { SubmissionType } from "@/lib/db/schema";
 import type { PaymentSettings } from "@/lib/defaults";
 import { whatsappLink } from "@/lib/phone";
-import { PASS_CATEGORIES, type PassCategory } from "@/lib/passCategories";
+import { entryIdFor, PASS_CATEGORIES, type PassCategory } from "@/lib/passCategories";
 
 type Mail = { to: string | string[]; subject: string; html: string; replyTo?: string };
 
@@ -142,6 +142,7 @@ const NEXT_STEPS: Record<SubmissionType, string> = {
   volunteer: "Our team will review your application. Selected volunteers receive their event pass by email and an invitation to a short briefing before expo day.",
   sponsor: "Our partnerships team will contact you shortly with the sponsorship deck and to discuss the package that suits you best.",
   contact: "Our team will get back to you as soon as possible, usually within two working days.",
+  lawyers: "Your seat request for the Lawyers Conference panel discussion is in. Once our team confirms your registration, you receive your Lawyers Conference pass by email. Seats are limited to the auditorium's capacity.",
   talent: "Our team will verify your result card. Students who qualify receive their Talent Tribute pass by email, with details of the ceremony at the expo.",
 };
 
@@ -240,17 +241,17 @@ function passCardHtml(ctx: EmailContext, pass: PassForEmail) {
     <p style="margin:6px 0 0">${diamonds(cat.color)}</p>
     ${pass.createdAt ? `<p style="margin:4px 0 0;font-size:11px;color:#6b7280">Issued ${esc(ISSUED.format(pass.createdAt))}</p>` : ""}
     <p style="margin:12px 0 0;font-size:13px;color:#1b4694"><strong>${esc(EVENT.date)}</strong> · ${esc(EVENT.venue)}, ${esc(EVENT.city)}</p>
-    <p style="margin:8px 0 10px;font-size:12px;font-weight:bold;color:#1b4694">Original student card required for entry</p>
+    <p style="margin:8px 0 10px;font-size:12px;font-weight:bold;color:#1b4694">Original ${entryIdFor(pass.category)} required for entry</p>
   </td></tr>
   <tr><td style="padding:0;line-height:0"><img src="${esc(ctx.origin)}/brand/email-pass-venue.jpg" width="600" alt="${esc(EVENT.venue)}, ${esc(EVENT.city)}" style="display:block;width:100%;height:auto;border:0"></td></tr>
 </table>`;
   return card;
 }
 
-const ENTRANCE_TIPS = `<p style="margin:0 0 8px"><strong style="color:${BLUE}">At the entrance</strong></p>
+const entranceTips = (category: string) => `<p style="margin:0 0 8px"><strong style="color:${BLUE}">At the entrance</strong></p>
 <ul style="margin:0 0 16px;padding-left:20px;font-size:14px;color:#374151">
   <li style="margin-bottom:4px">Show the QR code on your phone, or a printout of this pass.</li>
-  <li style="margin-bottom:4px">Bring your student card.</li>
+  <li style="margin-bottom:4px">Bring your ${entryIdFor(category)}.</li>
   <li>This pass is for you only and can't be shared.</li>
 </ul>`;
 
@@ -266,7 +267,7 @@ export function passEmail(ctx: EmailContext, pass: PassForEmail) {
     body: `<p style="margin:0 0 12px">Dear ${esc(pass.name)},</p>
 <p style="margin:0 0 12px">Your place at <strong>${esc(EVENT.name)}</strong> is confirmed. This is your personal entry pass.</p>
 ${card}
-${ENTRANCE_TIPS}
+${entranceTips(pass.category)}
 <p style="margin:0 0 16px;text-align:center">${button(link, "Open my pass", cat.color)}</p>
 <p style="margin:0 0 4px;font-size:13px;color:#6b7280">If the QR code doesn't show, open the pass with the button above. You can print it or save it as a PDF from there.</p>
 <p style="margin:16px 0 0">See you there,<br><strong>Team ${esc(EVENT.name)}</strong></p>`,
@@ -306,7 +307,7 @@ export function preEventEmail(ctx: EmailContext, n: PreEventNotice) {
 ${apology}
 ${outcome}
 ${passCardHtml(ctx, n.pass)}
-${ENTRANCE_TIPS}
+${entranceTips("visitor")}
 <p style="margin:0 0 16px;text-align:center">${button(link, "Open my Visitor pass", PASS_CATEGORIES.visitor.color)}</p>
 <p style="margin:0 0 4px;font-size:13px;color:#6b7280">Questions? Simply reply to this email.</p>
 <p style="margin:16px 0 0">Regards,<br><strong>Team ${esc(EVENT.name)}</strong></p>`,
