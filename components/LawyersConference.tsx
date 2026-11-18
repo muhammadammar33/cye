@@ -6,7 +6,6 @@ import { Container } from "@/components/ui/Container";
 import { FadeIn } from "@/components/ui/FadeIn";
 import { FocalPerson } from "@/components/ui/FocalPerson";
 import { InterestForm } from "@/components/ui/InterestForm";
-import { SectionHeading } from "@/components/ui/SectionHeading";
 import { getSettings } from "@/lib/content";
 import { CONSENT_FIELDS } from "@/lib/consent";
 import { lawyersSeatsLeft } from "@/lib/lawyersConference";
@@ -20,11 +19,17 @@ export async function LawyersConference() {
       <Container>
         <FadeIn>
           <Breadcrumbs current="Lawyers Conference" />
-          <SectionHeading
-            eyebrow={`${LAWYERS_CONFERENCE.format} · Lawyers Conference`}
-            title={LAWYERS_CONFERENCE.topic}
-            description="A panel discussion at Capital Youth Expo 2026 for law students and lawyers. Entry is free; registration confirms your seat."
-          />
+          <div className="mx-auto max-w-3xl text-center">
+            <p className="font-heading text-xs font-bold uppercase tracking-[0.28em] text-cye-orange">
+              {LAWYERS_CONFERENCE.format} · Lawyers Conference
+            </p>
+            <h1 className="mt-3 font-heading text-4xl font-black uppercase tracking-tight text-cye-blue sm:text-5xl lg:text-6xl">
+              {LAWYERS_CONFERENCE.headline}
+              <span className="mt-3 block text-xl tracking-normal text-cye-orange sm:text-2xl lg:text-3xl">{LAWYERS_CONFERENCE.subtitle}</span>
+            </h1>
+            <p className="mt-5 text-base leading-relaxed text-cye-ink/70 sm:text-lg">{LAWYERS_CONFERENCE.about}</p>
+            <p className="mt-3 text-sm font-semibold text-cye-blue">Free entry · registration confirms your seat</p>
+          </div>
         </FadeIn>
         <div className="mt-12 grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
           <FadeIn className="space-y-6">
@@ -58,7 +63,7 @@ export async function LawyersConference() {
               </p>
               <p className="flex items-center gap-2">
                 <Users className="h-4 w-4 text-cye-orange" aria-hidden />
-                Open to law students and lawyers · free entry
+                Open to law students, lawyers and young people from every field · free entry
               </p>
             </div>
             <FocalPerson title="Focal person, Lawyers Conference" name={focal.name} phone={focal.phone} />
@@ -80,8 +85,8 @@ export async function LawyersConference() {
                     { name: "email", label: "Email", type: "email", required: true, autoComplete: "email" },
                     { name: "phone", label: "Phone", type: "tel", required: true, autoComplete: "tel" },
                     { name: "gender", label: "Gender", type: "select", required: true, options: [...GENDERS], placeholder: "Select gender" },
-                    { name: "status", label: "I am a", type: "select", required: true, options: [...LAWYERS_CONFERENCE.statuses], placeholder: "Law student or lawyer" },
-                    { name: "institution", label: "University / law firm / bar", required: true, autoComplete: "organization" },
+                    { name: "status", label: "I am a", type: "select", required: true, options: [...LAWYERS_CONFERENCE.statuses], placeholder: "Choose one" },
+                    { name: "institution", label: "University / organisation / bar", required: true, autoComplete: "organization" },
                     ...CONSENT_FIELDS,
                   ]}
                 />

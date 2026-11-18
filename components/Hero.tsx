@@ -159,6 +159,9 @@ export function Hero() {
             <Link href="/startups" className="text-cye-blue hover:text-cye-orange">
               Startup Arena
             </Link>
+            <Link href="/lawyers-conference" className="text-cye-blue hover:text-cye-orange">
+              Lawyers Conference
+            </Link>
             <Link href="/ambassadors" className="text-cye-blue hover:text-cye-orange">
               Campus Ambassador
             </Link>

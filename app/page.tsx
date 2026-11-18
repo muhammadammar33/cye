@@ -8,6 +8,7 @@ import { Gallery } from "@/components/Gallery";
 import { GetInvolved } from "@/components/GetInvolved";
 import { Guests } from "@/components/Guests";
 import { Hero } from "@/components/Hero";
+import { LawyersSpotlight } from "@/components/LawyersSpotlight";
 import { SiteChrome } from "@/components/SiteChrome";
 import { Sponsorship } from "@/components/Sponsorship";
 import { Stalls } from "@/components/Stalls";
@@ -28,6 +29,7 @@ export default async function HomePage() {
         <Audience />
         <Verticals />
         <GetInvolved />
+        <LawyersSpotlight />
         <Achievements />
         <Gallery />
         <AdvisoryBoard />
