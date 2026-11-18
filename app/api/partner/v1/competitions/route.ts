@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
         name: c.name,
         category: c.vertical,
         audience: c.audience,
-        fee: c.fee,
+        fee: c.onSpot ? null : c.fee,
         teamMin: c.teamMin,
         teamMax: c.teamMax,
         description: c.desc,
