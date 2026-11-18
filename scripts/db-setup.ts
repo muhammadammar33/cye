@@ -297,6 +297,13 @@ async function applyPatches(db: Db) {
     console.log("[db-setup] applied patch 2026-11-ambassador-fixes-6");
   }
 
+  if (!applied.has("2026-11-e-gaming-on-spot")) {
+    // E-Gaming entries are taken on the spot on event day: no online registration.
+    await db.update(s.competitions).set({ onSpot: true }).where(sql`${s.competitions.name} like 'E-Gaming:%'`);
+    applied.add("2026-11-e-gaming-on-spot");
+    console.log("[db-setup] applied patch 2026-11-e-gaming-on-spot");
+  }
+
   if (!applied.has("2026-10-remove-debate")) {
     await db.delete(s.competitions).where(byName("Debate"));
     applied.add("2026-10-remove-debate");

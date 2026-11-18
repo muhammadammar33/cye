@@ -1,0 +1,1 @@
+ALTER TABLE "competitions" ADD COLUMN "on_spot" boolean DEFAULT false NOT NULL;

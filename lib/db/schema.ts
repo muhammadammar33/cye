@@ -93,6 +93,8 @@ export const competitions = pgTable("competitions", {
   prize3: text("prize_3"),
   /** Teams are shortlisted at campus pre-events; Competitor passes go only to teams marked Qualified. */
   preEvent: boolean("pre_event").default(false).notNull(),
+  /** Entries are taken on the spot on event day: no online registration (the card shows a note instead). */
+  onSpot: boolean("on_spot").default(false).notNull(),
   ...content,
 });
 

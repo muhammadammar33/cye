@@ -1,8 +1,8 @@
 "use client";
 
-import { FileText, Phone, Trophy, Users, Wallet } from "lucide-react";
+import { FileText, MapPin, Phone, Trophy, Users, Wallet } from "lucide-react";
 import { useState } from "react";
-import { VERTICALS } from "@/data/event";
+import { EVENT, VERTICALS } from "@/data/event";
 import type { Competition } from "@/lib/content";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -92,14 +92,17 @@ export function CompetitionCatalog({ competitions, onSelect }: { competitions: C
               </p>
               <p className="mt-3 flex-1 text-sm leading-relaxed text-cye-ink/70">{item.desc}</p>
               <dl className="mt-4 grid grid-cols-2 gap-2 text-xs">
-                <div className="rounded-2xl bg-cye-mist px-3 py-2">
-                  <dt className="flex items-center gap-1 font-semibold uppercase tracking-wide text-cye-ink/45">
-                    <Wallet className="h-3.5 w-3.5 text-cye-orange" aria-hidden />
-                    Fee
-                  </dt>
-                  <dd className="mt-0.5 min-h-[2lh] font-heading font-bold leading-snug text-cye-blue">{item.fee}</dd>
-                </div>
-                <div className="rounded-2xl bg-cye-mist px-3 py-2">
+                {/* On-spot competitions show no fee: entries and payment happen at the venue. */}
+                {item.onSpot ? null : (
+                  <div className="rounded-2xl bg-cye-mist px-3 py-2">
+                    <dt className="flex items-center gap-1 font-semibold uppercase tracking-wide text-cye-ink/45">
+                      <Wallet className="h-3.5 w-3.5 text-cye-orange" aria-hidden />
+                      Fee
+                    </dt>
+                    <dd className="mt-0.5 min-h-[2lh] font-heading font-bold leading-snug text-cye-blue">{item.fee}</dd>
+                  </div>
+                )}
+                <div className={cn("rounded-2xl bg-cye-mist px-3 py-2", item.onSpot && "col-span-2")}>
                   <dt className="flex items-center gap-1 font-semibold uppercase tracking-wide text-cye-ink/45">
                     <Users className="h-3.5 w-3.5 text-cye-orange" aria-hidden />
                     Team
@@ -160,14 +163,22 @@ export function CompetitionCatalog({ competitions, onSelect }: { competitions: C
                   </div>
                 ) : null}
               </dl>
-              <Button
-                href="#competition-register"
-                onClick={() => onSelect(item.name)}
-                variant="secondary"
-                className="mt-5 w-full"
-              >
-                Register
-              </Button>
+              {item.onSpot ? (
+                // No online registration: entries are taken at the venue on event day.
+                <p className="mt-5 flex min-h-12 w-full items-center justify-center gap-1.5 rounded-full border-2 border-dashed border-cye-orange/50 bg-cye-orange/5 px-4 py-2 text-center text-xs font-bold uppercase leading-snug tracking-wide text-cye-orange">
+                  <MapPin className="h-4 w-4 shrink-0" aria-hidden />
+                  On-spot registration on event day, {EVENT.date.replace(/ \d{4}$/, "")}
+                </p>
+              ) : (
+                <Button
+                  href="#competition-register"
+                  onClick={() => onSelect(item.name)}
+                  variant="secondary"
+                  className="mt-5 w-full"
+                >
+                  Register
+                </Button>
+              )}
               {item.rulebook ? (
                 <a
                   href={item.rulebook}

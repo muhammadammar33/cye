@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
         name: c.name,
         category: c.vertical,
         audience: c.audience,
-        fee: c.fee,
+        fee: c.onSpot ? null : c.fee,
         teamMin: c.teamMin,
         teamMax: c.teamMax,
         description: c.desc,
@@ -31,6 +31,8 @@ export async function GET(req: NextRequest) {
         requiredChoice: choice ? { field: choice.field, options: choice.options } : null,
         // Prize money for 1st, 2nd and 3rd place (empty when not announced).
         prizes: c.prizes,
+        // Entries are taken on the spot on event day; POST /registrations refuses them.
+        onSpotOnly: Boolean(c.onSpot),
         focalPerson: c.focalName ? { name: c.focalName, phone: c.focalPhone || null } : null,
       };
     }),
