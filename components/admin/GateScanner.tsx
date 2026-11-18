@@ -4,7 +4,7 @@ import { Camera, CameraOff, LayoutDashboard, LogOut, Minus, Monitor, Plus, Searc
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { logout } from "@/app/admin/actions";
 import { gateCheckIn, gateSearch, gateSetCompanions, gateStats, gateUndo, type GatePass, type GateResult, type GateStats } from "@/app/admin/gate/actions";
-import { PASS_CATEGORIES, type PassCategory } from "@/lib/passCategories";
+import { entryIdFor, PASS_CATEGORIES, type PassCategory } from "@/lib/passCategories";
 
 const TIME = new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", day: "numeric", month: "short", timeZone: "Asia/Karachi" });
 const catOf = (c: string) => PASS_CATEGORIES[c as PassCategory] ?? { label: c, color: "#334155" };
@@ -304,7 +304,7 @@ function ResultScreen({ shown, onDone, onUndo, onTeam }: { shown: Shown; onDone:
   const askTeam = shown.result === "checked_in" && pass?.askTeam;
   const cat = pass ? catOf(pass.category) : null;
   const look = {
-    checked_in: { bg: "#15803d", title: "Checked in", note: "Check their student card." },
+    checked_in: { bg: "#15803d", title: "Checked in", note: `Check their ${entryIdFor(pass?.category ?? "")}.` },
     already: {
       bg: "#b45309",
       title: "Already checked in",

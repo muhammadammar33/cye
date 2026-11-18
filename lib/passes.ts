@@ -46,6 +46,8 @@ export function holdersFor(sub: Submission): Holder[] {
       return one(str(d.level));
     case "volunteer":
       return one(sub.subject ? `Volunteer: ${sub.subject}` : null);
+    case "lawyers":
+      return one(["Lawyers Conference", str(d.status)].filter(Boolean).join(" · "));
     case "ambassador":
     case "visitor":
       return one(null);

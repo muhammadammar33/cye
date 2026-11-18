@@ -9,6 +9,7 @@ import type { SubmissionType } from "@/lib/db/schema";
 import { confirmationEmail, sendEmail, teamEmail } from "@/lib/email";
 import { COUPON_PERCENT, discountedFee } from "@/lib/coupons";
 import { findCoupon } from "@/lib/couponLookup";
+import { lawyersSeatsLeft } from "@/lib/lawyersConference";
 import { slipModeFor } from "@/lib/payment";
 import { GATE, INBOX, normalize, TYPE_LABELS } from "@/lib/submissions";
 
@@ -35,6 +36,9 @@ export async function createSubmission(opts: {
   const settings = await getSettings();
   const gate = GATE[type];
   if (gate && !settings.registration_open[gate]) return { ok: false, error: "This registration is closed.", status: 403 };
+  if (type === "lawyers" && (await lawyersSeatsLeft()) <= 0) {
+    return { ok: false, error: "All seats for the Lawyers Conference are taken. Registration is now closed.", status: 403 };
+  }
 
   const competitions = await getCompetitions();
   const result = normalize(type, opts.data, competitions);

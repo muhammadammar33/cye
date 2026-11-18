@@ -28,6 +28,7 @@ export const TYPE_NAMES: Record<SubmissionType, string> = {
   sponsor: "Sponsors & stalls",
   contact: "Contact messages",
   talent: "Talent Tribute",
+  lawyers: "Lawyers Conference",
 };
 
 /** Payment verification for competition registrations (empty = not checked yet). */
