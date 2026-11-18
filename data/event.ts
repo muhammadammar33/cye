@@ -437,6 +437,11 @@ export const VOLUNTEER_ROLES = [
 /** Lawyers Conference: a free panel discussion at the expo. Registration confirms a seat; approved participants get a pass. */
 export const LAWYERS_CONFERENCE = {
   topic: "Amend, Adapt or Abandon? Debating the Constitutional Future of Pakistan",
+  /** The topic shown as a headline and a subtitle underneath. */
+  headline: "Amend, Adapt or Abandon?",
+  subtitle: "Debating the Constitutional Future of Pakistan",
+  about:
+    "A high-level panel of eminent jurists, senior advocates and legal minds debates whether Pakistan's constitutional framework is best served by amendment, adaptation or a fundamental rethink. The session explores constitutional continuity, institutional balance, democratic governance and the rule of law. Open to law students and young people from every field, it includes an interactive Q&A with the speakers.",
   format: "Panel Discussion",
   /** Auditorium seats; registration closes by itself once this many registrations are in (rejected ones don't count). */
   capacity: 150,
