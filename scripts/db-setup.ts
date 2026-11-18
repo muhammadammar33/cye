@@ -304,6 +304,70 @@ async function applyPatches(db: Db) {
     console.log("[db-setup] applied patch 2026-11-e-gaming-on-spot");
   }
 
+  if (!applied.has("2026-11-ambassador-fixes-7")) {
+    // Updates sent by the ambassadors team (Nov 19). Each step only changes rows still in their old state.
+    const A = s.ambassadors;
+    for (const [from, to] of [["Riphah International University (Female)", "Riphah I-14 Females"], ["Riphah International University (Male)", "Riphah I-14 Males"], ["NSU", "National Skills University"]]) {
+      await db.update(A).set({ institute: to }).where(eq(A.institute, from));
+    }
+    await db
+      .update(A)
+      .set({ name: "Muhammad Zain Malik", phone: "+92 305 9917678", photo: "/ambassadors/muhammad-zain-malik-national-skills-university.webp" })
+      .where(and(eq(A.institute, "National Skills University"), eq(A.role, "Head Ambassador"), eq(A.name, "Aliha Ansar")));
+    await db.update(A).set({ phone: "+92 315 5518575" }).where(and(eq(A.institute, "APS"), eq(A.role, "Head Ambassador"), isNull(A.phone)));
+    const photos: [institute: string, name: string, photo: string][] = [
+      ["Riphah International University, Gulberg", "Ariba Rehman", "/ambassadors/ariba-rehman-riphah-international-university-gulberg.webp"],
+      ["Fatima Jinnah Women University", "Minahil Gul", "/ambassadors/minahil-gul-fatima-jinnah-women-university.webp"],
+      ["SZABMU", "Syed Nihal Abbas", "/ambassadors/syed-nihal-abbas-szabmu.webp"],
+      ["Shifa Tameer-e-Millat University", "Yusra Zafar", "/ambassadors/yusra-zafar-shifa-tameer-e-millat-university.webp"],
+    ];
+    for (const [institute, name, photo] of photos) {
+      await db.update(A).set({ photo }).where(and(eq(A.institute, institute), eq(A.name, name), isNull(A.photo)));
+    }
+    // New co-ambassadors, added after the institute's others; skipped if already there.
+    const added: [institute: string, name: string, photo: string][] = [
+      ["Riphah International University, Gulberg", "Aliza Jamil", "/ambassadors/aliza-jamil-riphah-international-university-gulberg.webp"],
+      ["Riphah International University, Gulberg", "Alveena Zaheer", "/ambassadors/alveena-zaheer-riphah-international-university-gulberg.webp"],
+      ["Riphah International University, Gulberg", "Bebi Kalsoom Hussain", "/ambassadors/bebi-kalsoom-hussain-riphah-international-university-gulberg.webp"],
+      ["Riphah International University, Gulberg", "Emaan Shahid", "/ambassadors/emaan-shahid-riphah-international-university-gulberg.webp"],
+      ["Riphah International University, Gulberg", "Maryam", "/ambassadors/maryam-riphah-international-university-gulberg.webp"],
+      ["Riphah International University, Gulberg", "Meerab Javed", "/ambassadors/meerab-javed-riphah-international-university-gulberg.webp"],
+      ["Riphah International University, Gulberg", "Mehkan Tariq", "/ambassadors/mehkan-tariq-riphah-international-university-gulberg.webp"],
+      ["Fatima Jinnah Women University", "Aima Baig", "/ambassadors/aima-baig-fatima-jinnah-women-university.webp"],
+      ["Fatima Jinnah Women University", "Aleena", "/ambassadors/aleena-fatima-jinnah-women-university.webp"],
+      ["Fatima Jinnah Women University", "Fatima", "/ambassadors/fatima-fatima-jinnah-women-university.webp"],
+      ["Fatima Jinnah Women University", "Ismat", "/ambassadors/ismat-fatima-jinnah-women-university.webp"],
+      ["Fatima Jinnah Women University", "Kanzal Eman", "/ambassadors/kanzal-eman-fatima-jinnah-women-university.webp"],
+      ["SZABMU", "Syeda Alizay Fatima", "/ambassadors/syeda-alizay-fatima-szabmu.webp"],
+      ["SZABMU", "Waleed Qasim", "/ambassadors/waleed-qasim-szabmu.webp"],
+      ["National Skills University", "Allah Yar", "/ambassadors/allah-yar-national-skills-university.webp"],
+      ["National Skills University", "Maaz Khan", "/ambassadors/maaz-khan-national-skills-university.webp"],
+      ["National Skills University", "Muhammad Aliyan Hasan", "/ambassadors/muhammad-aliyan-hasan-national-skills-university.webp"],
+      ["National Skills University", "Noor Ul Eman", "/ambassadors/noor-ul-eman-national-skills-university.webp"],
+      ["National Skills University", "Syed Taqi", "/ambassadors/syed-taqi-national-skills-university.webp"],
+      ["National Skills University", "Tayyba Zahoor", "/ambassadors/tayyba-zahoor-national-skills-university.webp"],
+      ["Health Services Academy", "Fasih Dawar", "/ambassadors/fasih-dawar-health-services-academy.webp"],
+      ["Health Services Academy", "Khalil Rehman", "/ambassadors/khalil-rehman-health-services-academy.webp"],
+      ["Health Services Academy", "Swaiba Shakeel", "/ambassadors/swaiba-shakeel-health-services-academy.webp"],
+      ["Health Services Academy", "Zeshan Adeel", "/ambassadors/zeshan-adeel-health-services-academy.webp"],
+    ];
+    for (const [institute, name, photo] of added) {
+      const [exists] = await db.select({ id: A.id }).from(A).where(and(eq(A.institute, institute), eq(A.name, name))).limit(1);
+      if (exists) continue;
+      const [last] = await db.select({ order: sql<number>`max(${A.sortOrder})` }).from(A).where(eq(A.institute, institute));
+      await db.insert(A).values({ name, institute, role: "Co-Ambassador", photo, sortOrder: Number(last?.order ?? 0) });
+    }
+    applied.add("2026-11-ambassador-fixes-7");
+    console.log("[db-setup] applied patch 2026-11-ambassador-fixes-7");
+  }
+
+  if (!applied.has("2026-11-close-ambassador-applications")) {
+    // Ambassador applications are closed: the /ambassadors page shows the directory only.
+    await db.execute(sql`update settings set value = value || '{"ambassadors": false}'::jsonb where key = 'registration_open'`);
+    applied.add("2026-11-close-ambassador-applications");
+    console.log("[db-setup] applied patch 2026-11-close-ambassador-applications");
+  }
+
   if (!applied.has("2026-10-remove-debate")) {
     await db.delete(s.competitions).where(byName("Debate"));
     applied.add("2026-10-remove-debate");

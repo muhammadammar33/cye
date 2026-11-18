@@ -5,7 +5,7 @@ import { SiteChrome } from "@/components/SiteChrome";
 export const metadata: Metadata = {
   title: "Campus Ambassadors | Capital Youth Expo 2026",
   description:
-    "Meet the Capital Youth Expo 2026 Campus Ambassadors at your institute, or apply to become one and represent CYE on campus.",
+    "Meet the Capital Youth Expo 2026 Campus Ambassadors at your institute and WhatsApp your head ambassador.",
 };
 
 export default function AmbassadorsPage() {
