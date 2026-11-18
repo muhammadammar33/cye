@@ -13,9 +13,9 @@ const PATHS = [
   },
   {
     href: "/ambassadors",
-    title: "Campus Ambassador",
-    desc: "Represent CYE 2026 at your institution and drive campus registrations.",
-    cta: "Apply now",
+    title: "Campus Ambassadors",
+    desc: "Meet the CYE ambassadors at your campus and WhatsApp your head ambassador with any question.",
+    cta: "Meet the ambassadors",
   },
   {
     href: "/volunteers",
@@ -26,7 +26,7 @@ const PATHS = [
   {
     href: "/projects",
     title: "Project Exhibition",
-    desc: "Showcase your project to judges, industry leaders, and visitors, and compete for the prize pool.",
+    desc: "Showcase your project to judges, industry leaders, and visitors at the expo.",
     cta: "Submit a project",
   },
   {
@@ -51,7 +51,7 @@ export function GetInvolved() {
           <SectionHeading
             eyebrow="Get involved"
             title="Compete, Showcase, or Join the Team"
-            description="Competition teams, project and startup founders, visitors, campus ambassadors, and volunteers each have their own registration page."
+            description="Competition teams, project and startup founders, visitors and volunteers each have their own registration page, and every campus has its own ambassadors."
           />
         </FadeIn>
         <div className="mt-12 grid gap-5 md:grid-cols-3">

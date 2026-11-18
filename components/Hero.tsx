@@ -163,7 +163,7 @@ export function Hero() {
               Lawyers Conference
             </Link>
             <Link href="/ambassadors" className="text-cye-blue hover:text-cye-orange">
-              Campus Ambassador
+              Campus Ambassadors
             </Link>
             <Link href="/volunteers" className="text-cye-blue hover:text-cye-orange">
               Volunteer

@@ -198,7 +198,7 @@ export const REGISTRATION_OPEN = {
   startups: true,
   visitors: true,
   volunteers: true,
-  ambassadors: true,
+  ambassadors: false,
   talent: true,
   lawyers: true,
 };
@@ -212,12 +212,12 @@ export type NavItem = {
 export const REGISTER_LINKS: NavItem[] = [
   { href: "/competitions", label: "Competitions", desc: "Enter a competition solo or as a team" },
   { href: "/article-writing", label: "Article Writing", desc: "National Article Writing Competition 2026" },
-  { href: "/projects", label: "Project Exhibition", desc: "Showcase your project for the prize pool" },
+  { href: "/projects", label: "Project Exhibition", desc: "Showcase your project at the expo" },
   { href: "/startups", label: "Startup Arena", desc: "Pitch your startup to investors" },
   { href: "/talent-tribute", label: "Talent Tribute", desc: "Honouring students with 80% or above" },
   { href: "/lawyers-conference", label: "Lawyers Conference", desc: "Panel discussion on Pakistan's constitutional future" },
   { href: "/visitors", label: "Visitor Pass", desc: "Register to attend the expo" },
-  { href: "/ambassadors", label: "Campus Ambassador", desc: "Represent CYE at your institution" },
+  { href: "/ambassadors", label: "Campus Ambassadors", desc: "Find the CYE ambassadors at your campus" },
   { href: "/volunteers", label: "Volunteer", desc: "Join the team behind the expo" },
 ];
 
