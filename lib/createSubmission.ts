@@ -48,7 +48,11 @@ export async function createSubmission(opts: {
     ? { name: chosen.focalName, phone: chosen.focalPhone, topic: chosen.name }
     : type === "talent"
       ? { name: FOCAL_PERSONS.talentTribute.name, phone: FOCAL_PERSONS.talentTribute.phone, topic: "Talent Tribute" }
-      : undefined;
+      : type === "project"
+        ? { name: FOCAL_PERSONS.projectExhibition.name, phone: FOCAL_PERSONS.projectExhibition.phone, topic: "the Project Exhibition" }
+        : type === "lawyers"
+          ? { name: FOCAL_PERSONS.lawyersConference.name, phone: FOCAL_PERSONS.lawyersConference.phone, topic: "the Lawyers Conference" }
+          : undefined;
 
   // Basic flood guard: one submission per email and form per minute.
   const recent = await db
