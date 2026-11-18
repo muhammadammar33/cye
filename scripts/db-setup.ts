@@ -368,6 +368,19 @@ async function applyPatches(db: Db) {
     console.log("[db-setup] applied patch 2026-11-close-ambassador-applications");
   }
 
+  if (!applied.has("2026-11-merge-impcc")) {
+    // IMPCC H-8/4 and IMPCC H-8 are one college: one card, IMPCC H-8, with Mustafa Fahad as head ambassador.
+    // Sanaullah stays on as a co-ambassador; both coupon codes keep working.
+    const A = s.ambassadors;
+    await db.update(A).set({ institute: "IMPCC H-8" }).where(eq(A.institute, "IMPCC H-8/4"));
+    await db
+      .update(A)
+      .set({ role: "Co-Ambassador" })
+      .where(and(eq(A.institute, "IMPCC H-8"), eq(A.name, "Sanaullah"), eq(A.role, "Head Ambassador")));
+    applied.add("2026-11-merge-impcc");
+    console.log("[db-setup] applied patch 2026-11-merge-impcc");
+  }
+
   if (!applied.has("2026-10-remove-debate")) {
     await db.delete(s.competitions).where(byName("Debate"));
     applied.add("2026-10-remove-debate");

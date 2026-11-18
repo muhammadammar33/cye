@@ -366,12 +366,12 @@ export const AMBASSADORS: AmbassadorSeed[] = [
   { institute: "NUMS", name: "Zainab Hafeez", role: "Co-Ambassador", phone: null, photo: "/ambassadors/zainab-hafeez-nums.webp" },
   // Rawal
   { institute: "Rawal", name: "Najam Ahmad", role: "Head Ambassador", phone: "+92 345 9366064", photo: null, coupon: "CYE-RAWAL" },
-  // IMPCC H-8/4
-  { institute: "IMPCC H-8/4", name: "Mustafa Fahad", role: "Head Ambassador", phone: "+92 315 1927031", photo: "/ambassadors/mustafa-fahad-impcc-h-8-4.webp", coupon: "CYE-IMPCC-H84" },
+  // IMPCC H-8 (IMPCC H-8/4 merged in; Mustafa Fahad is head)
+  { institute: "IMPCC H-8", name: "Mustafa Fahad", role: "Head Ambassador", phone: "+92 315 1927031", photo: "/ambassadors/mustafa-fahad-impcc-h-8-4.webp", coupon: "CYE-IMPCC-H84" },
   // ICB G-6/3
   { institute: "ICB G-6/3", name: "Salman Hayat", role: "Head Ambassador", phone: "+92 330 0002950", photo: "/ambassadors/salman-hayat-icb-g-6-3.webp", coupon: "CYE-ICB-G63" },
   // IMPCC H-8
-  { institute: "IMPCC H-8", name: "Sanaullah", role: "Head Ambassador", phone: "+92 319 9777620", photo: "/ambassadors/sanaullah-impcc-h-8.webp", coupon: "CYE-IMPCC-H8" },
+  { institute: "IMPCC H-8", name: "Sanaullah", role: "Co-Ambassador", phone: "+92 319 9777620", photo: "/ambassadors/sanaullah-impcc-h-8.webp", coupon: "CYE-IMPCC-H8" },
   { institute: "IMPCC H-8", name: "Rafay Farooq", role: "Co-Ambassador", phone: null, photo: "/ambassadors/rafay-farooq-impcc-h-8.webp" },
   // IMCB H-9
   { institute: "IMCB H-9", name: "Muhammad Awais", role: "Head Ambassador", phone: "+92 339 5784659", photo: "/ambassadors/muhammad-awais-imcb-h-9.webp", coupon: "CYE-IMCB-H9" },
