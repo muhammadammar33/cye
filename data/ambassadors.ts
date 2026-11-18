@@ -384,7 +384,7 @@ export const AMBASSADORS: AmbassadorSeed[] = [
   { institute: "University of Wah", name: "Noor Ullah", role: "Co-Ambassador", phone: null, photo: "/ambassadors/noor-ullah-university-of-wah.webp" },
   { institute: "University of Wah", name: "Syed Ashir", role: "Co-Ambassador", phone: null, photo: "/ambassadors/syed-ashir-university-of-wah.webp" },
   // Fatima Jinnah Women University
-  { institute: "Fatima Jinnah Women University", name: "Minahil", role: "Head Ambassador", phone: "+92 312 5781223", photo: null, coupon: "CYE-FJWU" },
+  { institute: "Fatima Jinnah Women University", name: "Minahil Gul", role: "Head Ambassador", phone: "+92 312 5781223", photo: null, coupon: "CYE-FJWU" },
   // Riphah International University, Gulberg
   { institute: "Riphah International University, Gulberg", name: "Ariba Rehman", role: "Head Ambassador", phone: "+92 310 5535952", photo: null, coupon: "CYE-RIPHAH-GLB" },
   // APS
