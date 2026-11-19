@@ -17,6 +17,7 @@ import { ENTITIES, isEntity, type FieldDef } from "@/lib/admin/entities";
 import { PAYMENT_STATUSES, PRE_EVENT_LABELS, PRE_EVENT_RESULTS, STATUS_LABELS, TYPE_NAMES, type PreEventResult } from "@/lib/admin/labels";
 import { applyPreEventResults, matchResults, saveResults, type CsvMatch, type CsvProblem } from "@/lib/preEvents";
 import { member as memberSchema } from "@/lib/submissions";
+import { parseFilters, whereFor } from "@/lib/admin/submissionQuery";
 import { GENDERS } from "@/data/event";
 import { logActivity } from "@/lib/admin/log";
 import { emailPasses, holdersFor, issueForSubmissions, issueManualPass, passByToken, passOrigin, revokeForSubmissions } from "@/lib/passes";
@@ -150,16 +151,34 @@ export async function setSubmissionField(id: number, field: InlineField, value: 
   return { ok: `Saved.${note}` };
 }
 
+/**
+ * Rows a bulk action applies to: the ticked rows, or with allMatching=1 every submission matching the list's
+ * filter (re-run here from the filter the page sent, so nothing outside it is touched).
+ */
+async function bulkIds(form: FormData) {
+  if (form.get("allMatching") === "1") {
+    const params = new URLSearchParams(String(form.get("filters") ?? "").replace(/^\?/, ""));
+    const record: Record<string, string | string[]> = {};
+    for (const key of new Set(params.keys())) record[key] = params.getAll(key).length > 1 ? params.getAll(key) : (params.get(key) ?? "");
+    const rows = await requireDb().select({ id: s.submissions.id }).from(s.submissions).where(whereFor(parseFilters(record)));
+    return rows.map((r) => r.id);
+  }
+  return form.getAll("ids").map(Number).filter(Number.isInteger);
+}
+
+/** Short list of ids for the activity log. */
+const idList = (ids: number[]) => (ids.length > 30 ? `${ids.slice(0, 30).map((n) => `#${n}`).join(", ")} and ${ids.length - 30} more` : ids.map((n) => `#${n}`).join(", "));
+
 export async function bulkSetStatus(form: FormData) {
   const me = await requireAdmin();
   const status = String(form.get("bulkStatus")) as SubmissionStatus;
-  const ids = form.getAll("ids").map(Number).filter(Number.isInteger);
+  const ids = await bulkIds(form);
   if (!SUBMISSION_STATUSES.includes(status) || ids.length === 0) return;
   await requireDb().update(s.submissions).set({ status }).where(inArray(s.submissions.id, ids));
   await logActivity(
     me,
     "Bulk status change",
-    `${ids.length} submission${ids.length === 1 ? "" : "s"}: ${ids.map((n) => `#${n}`).join(", ")}`,
+    `${ids.length} submission${ids.length === 1 ? "" : "s"}: ${idList(ids)}`,
     `Marked as ${STATUS_LABELS[status]}`,
   );
   await syncPasses(me, ids, status);
@@ -448,13 +467,13 @@ const preEventValue = (raw: unknown) => ((PRE_EVENT_RESULTS as readonly string[]
 export async function bulkSetPreEvent(form: FormData) {
   const me = await requireAdmin();
   const result = preEventValue(form.get("bulkPreEvent"));
-  const ids = form.getAll("ids").map(Number).filter(Number.isInteger);
+  const ids = await bulkIds(form);
   if (!ids.length) return;
   await requireDb()
     .update(s.submissions)
     .set({ preEventResult: result })
     .where(and(inArray(s.submissions.id, ids), eq(s.submissions.type, "competition")));
-  await logActivity(me, "Pre-event results", `${ids.length} registration${ids.length === 1 ? "" : "s"}: ${ids.map((n) => `#${n}`).join(", ")}`, `Marked ${PRE_EVENT_LABELS[result ?? ""]}`);
+  await logActivity(me, "Pre-event results", `${ids.length} registration${ids.length === 1 ? "" : "s"}: ${idList(ids)}`, `Marked ${PRE_EVENT_LABELS[result ?? ""]}`);
   if (result === "qualified") await syncPasses(me, ids, "approved");
   revalidatePath("/admin", "layout");
 }

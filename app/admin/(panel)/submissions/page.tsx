@@ -7,6 +7,7 @@ import { inputClass, SubmitButton } from "@/components/admin/ui";
 import { PAYMENT_STATUSES, PRE_EVENT_LABELS, PRE_EVENT_RESULTS, STATUS_LABELS, TYPE_NAMES } from "@/lib/admin/labels";
 import { filterQuery, institutionOptions, parseFilters, whereFor } from "@/lib/admin/submissionQuery";
 import { GenderSelect, PaymentSelect, PreEventSelect, UniversityFilter } from "@/components/admin/SubmissionFilters";
+import { SelectAllCheckbox, SelectAllMatching } from "@/components/admin/BulkSelect";
 import { GENDERS } from "@/data/event";
 import { requireDb, schema as s } from "@/lib/db";
 import { SUBMISSION_STATUSES, SUBMISSION_TYPES } from "@/lib/db/schema";
@@ -97,11 +98,14 @@ export default async function SubmissionsPage({ searchParams }: { searchParams: 
       </form>
 
       <form action={bulkSetStatus}>
+        <SelectAllMatching matching={total} filters={filterQuery(filters)} />
         <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
           <table className="w-full min-w-[980px] text-left text-sm">
             <thead className="border-b border-slate-200 bg-slate-50 text-xs font-bold uppercase tracking-wider text-slate-500">
               <tr>
-                <th className="w-10 px-4 py-3" />
+                <th className="w-10 px-4 py-3">
+                  <SelectAllCheckbox />
+                </th>
                 <th className="px-4 py-3">Name</th>
                 <th className="px-4 py-3">Gender</th>
                 <th className="px-4 py-3">Payment</th>
