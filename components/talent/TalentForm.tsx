@@ -4,7 +4,7 @@ import { CheckCircle2, FileUp, Loader2, Send, XCircle } from "lucide-react";
 import { FormEvent, useState } from "react";
 import { GENDERS, TALENT_LEVELS } from "@/data/event";
 import { Field, fieldClass } from "@/components/ui/Field";
-import { FormError, FormSuccess, Honeypot, type FormState } from "@/components/ui/FormStatus";
+import { FormError, FormSuccess, Honeypot, type FormState, HONEYPOT_FIELD } from "@/components/ui/FormStatus";
 import { compressImage } from "@/lib/compressImage";
 import { CONSENT_FIELDS } from "@/lib/consent";
 import { checkResult, ELIGIBLE_PERCENT, GPA_SCALES, minGpa, type ResultType } from "@/lib/eligibility";
@@ -49,7 +49,7 @@ export function TalentForm({ inbox }: { inbox: string }) {
       ...Object.fromEntries(CONSENT_FIELDS.filter((f) => form.get(f.name)).map((f) => [f.name, "on"])),
     };
     setState({ status: "sending" });
-    const result = await submitForm("talent", data, get("company_website"), upload);
+    const result = await submitForm("talent", data, get(HONEYPOT_FIELD), upload);
     setState(result.ok ? { status: "sent" } : { status: "error", error: `${result.error} If this keeps happening, email ${inbox}.` });
   }
 

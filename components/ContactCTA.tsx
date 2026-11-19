@@ -5,7 +5,7 @@ import { CalendarDays, Loader2, MapPin, Send } from "lucide-react";
 import { EVENT } from "@/data/event";
 import { Container } from "@/components/ui/Container";
 import { FadeIn } from "@/components/ui/FadeIn";
-import { FormError, FormSuccess, Honeypot, type FormState } from "@/components/ui/FormStatus";
+import { FormError, FormSuccess, Honeypot, type FormState, HONEYPOT_FIELD } from "@/components/ui/FormStatus";
 import { submitForm } from "@/lib/submit";
 
 export function ContactCTA({ tiers, inbox }: { tiers: string[]; inbox: string }) {
@@ -20,7 +20,7 @@ export function ContactCTA({ tiers, inbox }: { tiers: string[]; inbox: string })
     const result = await submitForm(
       "sponsor",
       { name: get("name"), organization: get("organization"), email: get("email"), tier: get("tier"), message: get("message") },
-      get("company_website"),
+      get(HONEYPOT_FIELD),
     );
     setState(result.ok ? { status: "sent" } : { status: "error", error: `${result.error} If this keeps happening, email ${inbox}.` });
   }
