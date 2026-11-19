@@ -36,7 +36,9 @@ async function main() {
   await seed(s.ambassadors, AMBASSADORS.map((a, i) => ({ ...a, sortOrder: i })), "ambassadors");
   await seed(s.competitions, E.COMPETITIONS.map((c, i) => ({
     name: c.name, vertical: c.vertical, audience: c.audience, fee: c.fee,
-    teamMin: c.teamMin, teamMax: c.teamMax, description: c.desc, rulebook: c.rulebook, focalName: c.focalName, focalPhone: c.focalPhone, prize1: c.prizes[0], prize2: c.prizes[1], prize3: c.prizes[2], sortOrder: i,
+    teamMin: c.teamMin, teamMax: c.teamMax, description: c.desc, rulebook: c.rulebook, focalName: c.focalName, focalPhone: c.focalPhone,
+    focalName2: "focalName2" in c ? c.focalName2 : null, focalPhone2: "focalPhone2" in c ? c.focalPhone2 : null,
+    prize1: c.prizes[0], prize2: c.prizes[1], prize3: c.prizes[2], sortOrder: i,
   })), "competitions");
   await seed(s.guests, E.GUESTS.map((g, i) => ({
     name: g.name, role: g.role, photo: g.photo ? `/guests/${g.photo}.webp` : null, sortOrder: i,
@@ -379,6 +381,34 @@ async function applyPatches(db: Db) {
       .where(and(eq(A.institute, "IMPCC H-8"), eq(A.name, "Sanaullah"), eq(A.role, "Head Ambassador")));
     applied.add("2026-11-merge-impcc");
     console.log("[db-setup] applied patch 2026-11-merge-impcc");
+  }
+
+  if (!applied.has("2026-11-merge-business-innovation")) {
+    // Business Innovation is merged into Pitch Your Idea (same PKR 1,500 fee): its registrations move over (fee,
+    // coupon and payment slip unchanged; pre-event result cleared; passes relabelled) and it leaves the website.
+    const from = "Business Innovation";
+    const to = "Pitch Your Idea (SparkTank)";
+    const subs = await db.select().from(s.submissions).where(and(eq(s.submissions.type, "competition"), eq(s.submissions.subject, from)));
+    for (const sub of subs) {
+      const data = { ...(sub.data as Record<string, unknown>), competition: to, mergedFrom: from };
+      await db.update(s.submissions).set({ subject: to, data, preEventResult: null, preEventAbsent: null }).where(eq(s.submissions.id, sub.id));
+    }
+    if (subs.length) {
+      await db
+        .update(s.passes)
+        .set({ detail: sql`replace(${s.passes.detail}, ${from}, ${to})` })
+        .where(and(inArray(s.passes.submissionId, subs.map((x) => x.id)), eq(s.passes.category, "competition")));
+    }
+    const big = subs.filter((x) => Array.isArray((x.data as { members?: unknown[] }).members) && (x.data as { members: unknown[] }).members.length > 4);
+    console.log(`[db-setup] merged ${subs.length} Business Innovation registrations into ${to} (${big.length} with 5 members: ${big.map((x) => `#${x.id}`).join(", ") || "none"})`);
+    await db.update(s.competitions).set({ active: false }).where(byName(from));
+    // Raffae Rafique Malik manages Pitch Your Idea with Danish Faheem.
+    await db
+      .update(s.competitions)
+      .set({ focalName2: "Raffae Rafique Malik", focalPhone2: "+92 313 5008558" })
+      .where(and(byName(to), isNull(s.competitions.focalName2)));
+    applied.add("2026-11-merge-business-innovation");
+    console.log("[db-setup] applied patch 2026-11-merge-business-innovation");
   }
 
   if (!applied.has("2026-10-remove-debate")) {

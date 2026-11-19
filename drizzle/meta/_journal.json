@@ -113,6 +113,13 @@
       "when": 1795013469757,
       "tag": "0015_competition_on_spot",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1795125870881,
+      "tag": "0016_competition_second_focal",
+      "breakpoints": true
     }
   ]
 }

@@ -87,6 +87,9 @@ export const competitions = pgTable("competitions", {
   /** Competition focal person shown to participants, e.g. "Syed Hamza Ali" and "+92 349 9181998". */
   focalName: text("focal_name"),
   focalPhone: text("focal_phone"),
+  /** Optional second focal person, shown next to the first. */
+  focalName2: text("focal_name_2"),
+  focalPhone2: text("focal_phone_2"),
   /** Prize money for 1st, 2nd and 3rd place, e.g. "PKR 50,000". Empty ones are hidden. */
   prize1: text("prize_1"),
   prize2: text("prize_2"),
