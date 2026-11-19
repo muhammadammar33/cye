@@ -36,12 +36,13 @@ export async function POST(req: NextRequest) {
   if (!SUBMISSION_TYPES.includes(type) || !body.data || typeof body.data !== "object") {
     return json({ ok: false, error: "Invalid request." }, 400);
   }
-  // Honeypot: bots fill the hidden field; pretend success.
-  if (body.hp) return json({ ok: true });
-
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || null;
   const origin = process.env.SITE_URL?.replace(/\/$/, "") || req.nextUrl.origin;
-  const result = await createSubmission({ type, data: body.data, slip, ip, origin });
+  // Hidden anti-spam field filled: usually a bot, but browser autofill can fill it for real people too. Never drop
+  // the submission: it is checked like any other and kept (archived, no emails) so the team can recover it.
+  const suspected = typeof body.hp === "string" && body.hp.trim() !== "";
+  if (suspected) console.warn(`[submissions] anti-spam field filled on a ${type} submission; kept as archived`);
+  const result = await createSubmission({ type, data: body.data, slip, ip, origin, suspected });
   if (!result.ok) return json({ ok: false, error: result.error }, result.status);
   return json({ ok: true, id: result.id });
 }

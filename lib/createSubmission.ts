@@ -29,6 +29,8 @@ export async function createSubmission(opts: {
   ip: string | null;
   origin: string;
   source?: string;
+  /** The hidden anti-spam field was filled: keep it archived with a note and send no emails. */
+  suspected?: boolean;
 }): Promise<CreateResult> {
   const { type, slip } = opts;
   if (!db) return { ok: false, error: "Submissions are temporarily unavailable. Please email us instead.", status: 503 };
@@ -100,11 +102,18 @@ export async function createSubmission(opts: {
     return { ok: false, error: "Invalid request.", status: 400 };
   }
   if (opts.source) result.data.source = opts.source;
+  if (opts.suspected) {
+    result.data.spamCheck = "The hidden anti-spam field was filled (a bot, or browser autofill). No emails were sent. If this is a real person, set the status and email them.";
+  }
 
   const [row] = await db
     .insert(s.submissions)
-    .values({ type, name: result.name, email: result.email, phone: result.phone, institution: result.institution, gender: result.gender, subject: result.subject, data: result.data, ip: opts.ip })
+    .values({
+      type, name: result.name, email: result.email, phone: result.phone, institution: result.institution, gender: result.gender,
+      subject: result.subject, data: result.data, ip: opts.ip, ...(opts.suspected ? { status: "archived" as const } : {}),
+    })
     .returning({ id: s.submissions.id });
+  if (opts.suspected) return { ok: true, id: row.id, slipStored: Boolean(result.data.paymentSlip) };
 
   const kind = TYPE_LABELS[type];
   const adminUrl = `${opts.origin}/admin/submissions/${row.id}`;

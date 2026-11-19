@@ -6,7 +6,7 @@ import { EDUCATION_LEVELS, GENDERS } from "@/data/event";
 import { teamLabel } from "@/components/competitions/CompetitionCatalog";
 import { Field, fieldClass } from "@/components/ui/Field";
 import { FocalPerson } from "@/components/ui/FocalPerson";
-import { FormError, FormSuccess, Honeypot, type FormState } from "@/components/ui/FormStatus";
+import { FormError, FormSuccess, Honeypot, type FormState, HONEYPOT_FIELD } from "@/components/ui/FormStatus";
 import type { Competition } from "@/lib/content";
 import { compressImage } from "@/lib/compressImage";
 import { CONSENT_FIELDS } from "@/lib/consent";
@@ -76,7 +76,7 @@ export function TeamRegistrationForm({
     }
     setState({ status: "sending" });
     const slip = slipFile ? await compressImage(slipFile) : undefined;
-    const result = await submitForm("competition", data, get("company_website"), slip);
+    const result = await submitForm("competition", data, get(HONEYPOT_FIELD), slip);
     setState(result.ok ? { status: "sent" } : { status: "error", error: `${result.error} If this keeps happening, email ${inbox}.` });
   }
 

@@ -3,7 +3,7 @@
 import { FormEvent, useState } from "react";
 import { Loader2, Send } from "lucide-react";
 import { Field, fieldClass } from "@/components/ui/Field";
-import { FormError, FormSuccess, Honeypot, type FormState } from "@/components/ui/FormStatus";
+import { FormError, FormSuccess, Honeypot, HONEYPOT_FIELD, type FormState } from "@/components/ui/FormStatus";
 import type { SubmissionType } from "@/lib/db/schema";
 import { cn } from "@/lib/cn";
 import { submitForm } from "@/lib/submit";
@@ -46,7 +46,7 @@ export function InterestForm({
       }
     }
     setState({ status: "sending" });
-    const result = await submitForm(type, data, String(form.get("company_website") ?? ""));
+    const result = await submitForm(type, data, String(form.get(HONEYPOT_FIELD) ?? ""));
     setState(result.ok ? { status: "sent" } : { status: "error", error: `${result.error} If this keeps happening, email ${to}.` });
   }
 

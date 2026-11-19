@@ -3,13 +3,26 @@ import { CheckCircle2 } from "lucide-react";
 export type FormState = { status: "idle" | "sending" } | { status: "sent" } | { status: "error"; error: string };
 
 /** Hidden honeypot input: real visitors never see or fill it. */
+/**
+ * Name of the hidden anti-spam field. Deliberately meaningless: names like "company_website" get filled by
+ * browser autofill and password managers, which made real registrations look like bots.
+ */
+export const HONEYPOT_FIELD = "cye_hp_x7";
+
 export function Honeypot() {
   return (
     <div aria-hidden className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
-      <label>
-        Leave this empty
-        <input type="text" name="company_website" tabIndex={-1} autoComplete="off" />
-      </label>
+      <input
+        type="text"
+        name={HONEYPOT_FIELD}
+        tabIndex={-1}
+        autoComplete="off"
+        data-lpignore="true"
+        data-1p-ignore="true"
+        data-bwignore="true"
+        data-form-type="other"
+        defaultValue=""
+      />
     </div>
   );
 }
