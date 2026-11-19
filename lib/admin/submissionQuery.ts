@@ -14,7 +14,7 @@ export type PaymentFilter = (typeof PAYMENT_FILTERS)[number];
 export const PRE_EVENT_FILTERS = [...PRE_EVENT_RESULTS, "pending", "has_absent"] as const;
 export type PreEventFilter = (typeof PRE_EVENT_FILTERS)[number];
 
-export type SubmissionFilters = { type?: SubmissionType; status?: SubmissionStatus; gender?: GenderFilter; payment?: PaymentFilter; pre?: PreEventFilter; q?: string; uni?: string[] };
+export type SubmissionFilters = { type?: SubmissionType; status?: SubmissionStatus; gender?: GenderFilter; payment?: PaymentFilter; pre?: PreEventFilter; q?: string; uni?: string[]; comp?: string };
 
 /**
  * Institution names as typed by applicants, folded so "COMSATS", " comsats " and "Comsats." count as one.
@@ -31,6 +31,7 @@ export function parseFilters(params: Record<string, string | string[] | undefine
   const payment = one(params.payment);
   const pre = one(params.pre);
   const q = one(params.q)?.trim();
+  const comp = one(params.comp)?.trim();
   const uni = [...new Set(many(params.uni).map((u) => u.trim().toLowerCase()).filter(Boolean))].slice(0, 200);
   return {
     type: SUBMISSION_TYPES.includes(type as SubmissionType) ? (type as SubmissionType) : undefined,
@@ -40,6 +41,7 @@ export function parseFilters(params: Record<string, string | string[] | undefine
     pre: PRE_EVENT_FILTERS.includes(pre as PreEventFilter) ? (pre as PreEventFilter) : undefined,
     q: q || undefined,
     uni: uni.length ? uni : undefined,
+    comp: comp || undefined,
   };
 }
 
@@ -70,10 +72,15 @@ export function whereFor(f: SubmissionFilters): SQL | undefined {
     else if (f.pre === "has_absent") parts.push(sql`jsonb_array_length(coalesce(${s.submissions.preEventAbsent}, '[]'::jsonb)) > 0`);
     else parts.push(eq(s.submissions.preEventResult, f.pre));
   }
+  if (f.comp) {
+    // A competition registration stores the competition's name as its subject.
+    parts.push(eq(s.submissions.type, "competition"));
+    parts.push(eq(s.submissions.subject, f.comp));
+  }
   if (f.uni?.length) parts.push(inArray(institutionKey, f.uni));
   if (f.q) {
     const like = `%${f.q.replace(/[%_]/g, "\\$&")}%`;
-    parts.push(or(ilike(s.submissions.name, like), ilike(s.submissions.email, like), ilike(s.submissions.subject, like), ilike(s.submissions.institution, like), ilike(s.submissions.phone, like), ilike(sql`${s.submissions.data}->>'coupon'`, like))!);
+    parts.push(or(ilike(s.submissions.name, like), ilike(s.submissions.email, like), ilike(s.submissions.subject, like), ilike(s.submissions.institution, like), ilike(s.submissions.phone, like), ilike(sql`${s.submissions.data}->>'coupon'`, like), ilike(sql`${s.submissions.data}->>'mergedFrom'`, like))!);
   }
   return parts.length ? and(...parts) : undefined;
 }
@@ -105,4 +112,14 @@ export async function institutionOptions(type?: SubmissionType): Promise<Institu
     .groupBy(institutionKey)
     .orderBy(asc(institutionKey));
   return rows;
+}
+
+/** Competitions that have registrations, with how many each has. */
+export async function competitionOptions() {
+  return requireDb()
+    .select({ name: sql<string>`${s.submissions.subject}`, count: sql<number>`count(*)::int` })
+    .from(s.submissions)
+    .where(and(eq(s.submissions.type, "competition"), sql`nullif(btrim(${s.submissions.subject}), '') is not null`))
+    .groupBy(s.submissions.subject)
+    .orderBy(asc(s.submissions.subject));
 }

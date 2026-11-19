@@ -5,8 +5,9 @@ import { bulkSetPreEvent, bulkSetStatus } from "@/app/admin/actions";
 import { formatDate, PageHeader, StatusBadge } from "@/components/admin/StatusBadge";
 import { inputClass, SubmitButton } from "@/components/admin/ui";
 import { PAYMENT_STATUSES, PRE_EVENT_LABELS, PRE_EVENT_RESULTS, STATUS_LABELS, TYPE_NAMES } from "@/lib/admin/labels";
-import { filterQuery, institutionOptions, parseFilters, whereFor } from "@/lib/admin/submissionQuery";
+import { competitionOptions, filterQuery, institutionOptions, parseFilters, whereFor } from "@/lib/admin/submissionQuery";
 import { GenderSelect, PaymentSelect, PreEventSelect, UniversityFilter } from "@/components/admin/SubmissionFilters";
+import { SelectAllCheckbox, SelectAllMatching } from "@/components/admin/BulkSelect";
 import { GENDERS } from "@/data/event";
 import { requireDb, schema as s } from "@/lib/db";
 import { SUBMISSION_STATUSES, SUBMISSION_TYPES } from "@/lib/db/schema";
@@ -19,11 +20,12 @@ export default async function SubmissionsPage({ searchParams }: { searchParams: 
   const page = Math.max(1, Number(params.page) || 1);
   const db = requireDb();
   const where = whereFor(filters);
-  const [rows, [{ total }], universities, preEventComps] = await Promise.all([
+  const [rows, [{ total }], universities, preEventComps, competitions] = await Promise.all([
     db.select().from(s.submissions).where(where).orderBy(desc(s.submissions.createdAt)).limit(PAGE_SIZE).offset((page - 1) * PAGE_SIZE),
     db.select({ total: count() }).from(s.submissions).where(where),
     institutionOptions(filters.type),
     db.select({ name: s.competitions.name }).from(s.competitions).where(eq(s.competitions.preEvent, true)),
+    competitionOptions(),
   ]);
   // Competitions that shortlist at campus pre-events show a Pre-event column picker.
   const preEvent = new Set(preEventComps.map((c) => c.name));
@@ -32,7 +34,7 @@ export default async function SubmissionsPage({ searchParams }: { searchParams: 
   return (
     <>
       <PageHeader
-        title={filters.type ? TYPE_NAMES[filters.type] : "All submissions"}
+        title={filters.comp ?? (filters.type ? TYPE_NAMES[filters.type] : "All submissions")}
         description={`${total.toLocaleString()} result${total === 1 ? "" : "s"}`}
         actions={
           <a href={`/admin/submissions/export${filterQuery(filters)}`} className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">
@@ -42,7 +44,7 @@ export default async function SubmissionsPage({ searchParams }: { searchParams: 
         }
       />
 
-      <form className="mb-4 grid gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-[1fr_1fr_0.9fr_1fr_1fr_1.3fr_1.4fr_auto]">
+      <form className="mb-4 grid gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-[1fr_1.3fr_1fr_0.9fr_1fr_1fr_1.3fr_1.4fr_auto]">
         <select name="type" defaultValue={filters.type ?? ""} className={inputClass} aria-label="Form">
           <option value="">All forms</option>
           {SUBMISSION_TYPES.map((t) => (
@@ -50,6 +52,15 @@ export default async function SubmissionsPage({ searchParams }: { searchParams: 
               {TYPE_NAMES[t]}
             </option>
           ))}
+        </select>
+        <select name="comp" defaultValue={filters.comp ?? ""} className={inputClass} aria-label="Competition">
+          <option value="">Any competition</option>
+          {competitions.map((c) => (
+            <option key={c.name} value={c.name}>
+              {c.name} ({c.count})
+            </option>
+          ))}
+          {filters.comp && !competitions.some((c) => c.name === filters.comp) ? <option value={filters.comp}>{filters.comp} (0)</option> : null}
         </select>
         <select name="status" defaultValue={filters.status ?? ""} className={inputClass} aria-label="Status">
           <option value="">Any status</option>
@@ -97,11 +108,14 @@ export default async function SubmissionsPage({ searchParams }: { searchParams: 
       </form>
 
       <form action={bulkSetStatus}>
+        <SelectAllMatching matching={total} filters={filterQuery(filters)} />
         <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
           <table className="w-full min-w-[980px] text-left text-sm">
             <thead className="border-b border-slate-200 bg-slate-50 text-xs font-bold uppercase tracking-wider text-slate-500">
               <tr>
-                <th className="w-10 px-4 py-3" />
+                <th className="w-10 px-4 py-3">
+                  <SelectAllCheckbox />
+                </th>
                 <th className="px-4 py-3">Name</th>
                 <th className="px-4 py-3">Gender</th>
                 <th className="px-4 py-3">Payment</th>

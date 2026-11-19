@@ -12,6 +12,7 @@ import { compressImage } from "@/lib/compressImage";
 import { CONSENT_FIELDS } from "@/lib/consent";
 import { submitForm } from "@/lib/submit";
 import { choiceFor } from "@/lib/competitionOptions";
+import { focalsOf } from "@/lib/focals";
 import { CouponField, type AppliedCoupon } from "@/components/competitions/CouponField";
 import { discountedFee } from "@/lib/coupons";
 
@@ -87,10 +88,10 @@ export function TeamRegistrationForm({
         {slipMode === "off"
           ? "Fee payment details follow once your registration is confirmed."
           : "Our team will verify your payment and confirm your registration."}
-        {competition?.focalName ? (
+        {competition && focalsOf(competition).length ? (
           <>
-            {" "}For questions about {selected}, contact {competition.focalName}
-            {competition.focalPhone ? ` on ${competition.focalPhone}` : ""}.
+            {" "}For questions about {selected}, contact{" "}
+            {focalsOf(competition).map((f) => `${f.name}${f.phone ? ` on ${f.phone}` : ""}`).join(" or ")}.
           </>
         ) : null}
       </FormSuccess>
@@ -118,7 +119,11 @@ export function TeamRegistrationForm({
           ))}
         </select>
       </Field>
-      {competition?.focalName ? <FocalPerson className="sm:col-span-2" title={`Focal person for ${competition.name}`} name={competition.focalName} phone={competition.focalPhone} /> : null}
+      {competition
+        ? focalsOf(competition).map((f) => (
+            <FocalPerson key={f.name} className="sm:col-span-2" title={`Focal person for ${competition.name}`} name={f.name} phone={f.phone} />
+          ))
+        : null}
       <Field label="Team size">
         <select
           name="size"

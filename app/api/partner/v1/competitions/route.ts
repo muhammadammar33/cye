@@ -1,6 +1,7 @@
 import type { NextRequest } from "next/server";
 import { getCompetitions, getSettings } from "@/lib/content";
 import { choiceFor } from "@/lib/competitionOptions";
+import { focalsOf } from "@/lib/focals";
 import { authorize, json, logPartnerCall, siteOrigin } from "@/lib/partner";
 
 export const dynamic = "force-dynamic";
@@ -34,6 +35,8 @@ export async function GET(req: NextRequest) {
         // Entries are taken on the spot on event day; POST /registrations refuses them.
         onSpotOnly: Boolean(c.onSpot),
         focalPerson: c.focalName ? { name: c.focalName, phone: c.focalPhone || null } : null,
+        // All focal persons (some competitions have two).
+        focalPersons: focalsOf(c),
       };
     }),
   });

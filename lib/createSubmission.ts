@@ -47,7 +47,7 @@ export async function createSubmission(opts: {
   if ("error" in result) return { ok: false, error: result.error, status: 422 };
   const chosen = type === "competition" ? competitions.find((c) => c.name === result.subject) : undefined;
   const focal = chosen?.focalName
-    ? { name: chosen.focalName, phone: chosen.focalPhone, topic: chosen.name }
+    ? { name: chosen.focalName, phone: chosen.focalPhone, topic: chosen.name, also: chosen.focalName2 ? { name: chosen.focalName2, phone: chosen.focalPhone2 ?? null } : undefined }
     : type === "talent"
       ? { name: FOCAL_PERSONS.talentTribute.name, phone: FOCAL_PERSONS.talentTribute.phone, topic: "Talent Tribute" }
       : type === "project"
