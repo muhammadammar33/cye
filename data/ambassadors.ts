@@ -268,6 +268,7 @@ export const AMBASSADORS: AmbassadorSeed[] = [
   { institute: "Quaid-i-Azam University", name: "Saba Amir", role: "Co-Ambassador", phone: null, photo: "/ambassadors/saba-amir-quaid-i-azam-university.webp" },
   { institute: "Quaid-i-Azam University", name: "Zain Yaqoob", role: "Co-Ambassador", phone: null, photo: "/ambassadors/zain-yaqoob-quaid-i-azam-university.webp" },
   { institute: "Quaid-i-Azam University", name: "Maryam Nadeem", role: "Co-Ambassador", phone: null, photo: "/ambassadors/maryam-nadeem-quaid-i-azam-university.webp" },
+  { institute: "Quaid-i-Azam University", name: "Eman Fatima", role: "Co-Ambassador", phone: null, photo: "/ambassadors/eman-fatima-quaid-i-azam-university.webp" },
   // International Islamic University
   { institute: "International Islamic University", name: "Malik Kamran", role: "Head Ambassador", phone: "+92 344 1368538", photo: "/ambassadors/malik-kamran-international-islamic-university.webp", coupon: "CYE-IIUI" },
   { institute: "International Islamic University", name: "Adeeba Nisar", role: "Co-Ambassador", phone: null, photo: "/ambassadors/adeeba-nisar-international-islamic-university.webp" },
