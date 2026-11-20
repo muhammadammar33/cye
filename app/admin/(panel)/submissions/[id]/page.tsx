@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { deleteSubmission, removeTeamMember, resendPass, updateSubmission } from "@/app/admin/actions";
 import { AddMemberForm } from "@/components/admin/AddMemberForm";
 import { ChangeCompetitionForm } from "@/components/admin/ChangeCompetitionForm";
+import { TeamNameForm } from "@/components/admin/TeamNameForm";
 import { PreEventForm } from "@/components/admin/PreEventForm";
 import { SubmissionForm } from "@/components/admin/SubmissionForm";
 import { formatDate, PageHeader, StatusBadge } from "@/components/admin/StatusBadge";
@@ -161,6 +162,9 @@ export default async function SubmissionPage({ params }: { params: Promise<{ id:
                 payment slip, coupon and passes stay with it.
               </p>
               <div className="mt-4 max-w-xl">
+                <TeamNameForm id={row.id} current={typeof (row.data as { team?: unknown }).team === "string" ? String((row.data as { team?: unknown }).team) : ""} solo={(members?.length ?? 1) <= 1} />
+              </div>
+              <div className="mt-4 max-w-xl border-t border-slate-100 pt-4">
                 <ChangeCompetitionForm
                   id={row.id}
                   current={row.subject}

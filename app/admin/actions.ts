@@ -603,6 +603,43 @@ export async function removeTeamMember(id: number, index: number, email: string)
 
 /* ------------------------ change competition ------------------------ */
 
+/** Relabels a team's valid Competitor passes after its details change; the QR links stay the same. Returns them. */
+async function relabelPasses(sub: typeof s.submissions.$inferSelect) {
+  const database = requireDb();
+  const details = new Map(holdersFor(sub).map((h) => [`${h.email.toLowerCase()}|${h.name.toLowerCase()}`, h.detail]));
+  const passes = await database
+    .select({ id: s.passes.id, name: s.passes.name, email: s.passes.email })
+    .from(s.passes)
+    .where(and(eq(s.passes.submissionId, sub.id), eq(s.passes.category, "competition"), isNull(s.passes.revokedAt)));
+  for (const p of passes) {
+    const detail = details.get(`${p.email.toLowerCase()}|${p.name.toLowerCase()}`);
+    if (detail !== undefined) await database.update(s.passes).set({ detail }).where(eq(s.passes.id, p.id));
+  }
+  return passes;
+}
+
+/** Renames a competition team. Its passes keep their links and are relabelled with the new name; nothing is emailed. */
+export async function renameTeam(id: number, _prev: ActionState, form: FormData): Promise<ActionState> {
+  const me = await requireAdmin();
+  const database = requireDb();
+  const [sub] = await database.select().from(s.submissions).where(eq(s.submissions.id, id)).limit(1);
+  if (!sub || sub.type !== "competition") return { error: "Not a competition registration." };
+  const name = String(form.get("team") ?? "").replace(/\s+/g, " ").trim();
+  const before = typeof sub.data.team === "string" ? sub.data.team : "";
+  const members = Array.isArray(sub.data.members) ? sub.data.members.length : 0;
+  if (!name && members > 1) return { error: "A team of more than one needs a team name." };
+  if (name.length > 120) return { error: "Keep the team name under 120 characters." };
+  if (name === before) return { error: "That is already the team name." };
+
+  const data: Record<string, unknown> = { ...sub.data, team: name };
+  if (!name) delete data.team;
+  await database.update(s.submissions).set({ data }).where(eq(s.submissions.id, id));
+  const passes = await relabelPasses({ ...sub, data });
+  await logActivity(me, "Renamed team", `#${id} ${sub.subject}`, `${before || "(no name)"} → ${name || "(no name)"}`);
+  revalidatePath("/admin", "layout");
+  return { ok: `Team renamed to ${name || "(no name)"}.${passes.length ? ` ${passes.length} pass${passes.length === 1 ? "" : "es"} updated.` : ""}` };
+}
+
 /**
  * Moves a registration to another competition (e.g. a team that applied to the wrong one). The team must fit
  * the new competition's size limits, and a competition with a required choice (Speech language, Arts category)
@@ -652,16 +689,7 @@ export async function changeCompetition(id: number, _prev: ActionState, form: Fo
     .set({ subject: comp.name, data, preEventResult: null, preEventAbsent: null })
     .where(eq(s.submissions.id, id));
 
-  // Relabel the team's valid Competitor passes; the QR links stay the same.
-  const details = new Map(holdersFor(moved).map((h) => [`${h.email.toLowerCase()}|${h.name.toLowerCase()}`, h.detail]));
-  const passes = await database
-    .select({ id: s.passes.id, name: s.passes.name, email: s.passes.email })
-    .from(s.passes)
-    .where(and(eq(s.passes.submissionId, id), eq(s.passes.category, "competition"), isNull(s.passes.revokedAt)));
-  for (const p of passes) {
-    const detail = details.get(`${p.email.toLowerCase()}|${p.name.toLowerCase()}`);
-    if (detail !== undefined) await database.update(s.passes).set({ detail }).where(eq(s.passes.id, p.id));
-  }
+  const passes = await relabelPasses(moved);
 
   const feeNote = before === String(data.fee) ? `fee unchanged (${String(data.fee)})` : `fee ${before || "not set"} → ${String(data.fee)}`;
   await logActivity(me, "Changed competition", `#${id} team ${String(sub.data.team || sub.name)}`, `${sub.subject} → ${comp.name}; ${feeNote}`);
