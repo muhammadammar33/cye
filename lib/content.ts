@@ -1,10 +1,11 @@
 import "server-only";
-import { asc, eq } from "drizzle-orm";
+import { and, asc, eq, notInArray, sql } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
 import { AMBASSADORS } from "@/data/ambassadors";
 import * as E from "@/data/event";
 import { db, schema as s } from "@/lib/db";
 import { DEFAULT_SETTINGS, type SiteSettings } from "@/lib/defaults";
+import { MIN_NOTICE_HIDE_AT, minRegistrations } from "@/lib/minRegistrations";
 
 /** Cache tag for every piece of site content; admin edits expire it. */
 export const CONTENT_TAG = "content";
@@ -63,6 +64,38 @@ export const getCompetitions = cached(
     ),
   fallback.competitions,
 );
+
+const countRegistrations = unstable_cache(
+  async () =>
+    need()
+      .select({ name: s.submissions.subject, count: sql<number>`count(*)::int` })
+      .from(s.submissions)
+      .where(and(eq(s.submissions.type, "competition"), notInArray(s.submissions.status, ["archived", "rejected"])))
+      .groupBy(s.submissions.subject),
+  ["cye", DEPLOY_ID, "registration-counts"],
+  { revalidate: 600 },
+);
+
+/**
+ * Competitions with at least 80% of their minimum registrations (prize pool ÷ fee); the site stops showing the
+ * minimum note for them. Archived (including suspected spam) and rejected registrations don't count. Counts refresh
+ * every 10 minutes and are never sent to the page, only the names.
+ */
+export async function getNearMinimum(competitions: Competition[]): Promise<string[]> {
+  if (!db) return [];
+  try {
+    const counts = new Map((await countRegistrations()).map((r) => [r.name, r.count]));
+    return competitions
+      .filter((c) => {
+        const min = minRegistrations(c.prizes, c.fee);
+        return min !== null && (counts.get(c.name) ?? 0) >= min * MIN_NOTICE_HIDE_AT;
+      })
+      .map((c) => c.name);
+  } catch (err) {
+    console.error("[content] registration counts failed", err);
+    return [];
+  }
+}
 
 /** Groups ambassadors by institute, in the order each institute first appears; the head leads each group. */
 function groupAmbassadors(rows: (Ambassador & { institute: string })[]): AmbassadorGroup[] {

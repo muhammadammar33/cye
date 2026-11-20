@@ -26,8 +26,10 @@ export function Competitions({
   inbox,
   payment,
   slipMode,
+  nearMinimum,
 }: {
   competitions: Competition[];
+  nearMinimum?: string[];
   open: boolean;
   inbox: string;
   payment: PaymentSettings;
@@ -62,7 +64,7 @@ export function Competitions({
           <ComingSoon />
         ) : (
           <>
-        <CompetitionCatalog competitions={competitions} onSelect={setSelected} />
+        <CompetitionCatalog competitions={competitions} onSelect={setSelected} nearMinimum={nearMinimum} />
         <FadeIn delay={0.1} className="mx-auto mt-12 max-w-2xl rounded-3xl border border-white/80 bg-white p-6 shadow-card sm:p-8">
           <div id="competition-register" className="scroll-mt-28">
             <h3 className="font-heading text-xl font-extrabold text-cye-blue">Competition registration</h3>

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Competitions } from "@/components/Competitions";
 import { SiteChrome } from "@/components/SiteChrome";
-import { getCompetitions, getSettings } from "@/lib/content";
+import { getCompetitions, getNearMinimum, getSettings } from "@/lib/content";
 import { slipModeFor } from "@/lib/payment";
 
 export const metadata: Metadata = {
@@ -12,11 +12,13 @@ export const metadata: Metadata = {
 
 export default async function CompetitionsPage() {
   const [competitions, settings] = await Promise.all([getCompetitions(), getSettings()]);
+  const nearMinimum = await getNearMinimum(competitions);
   return (
     <SiteChrome>
       <main id="main">
         <Competitions
           competitions={competitions}
+          nearMinimum={nearMinimum}
           open={settings.registration_open.competitions}
           inbox={settings.inboxes.competitions}
           payment={settings.payment}
