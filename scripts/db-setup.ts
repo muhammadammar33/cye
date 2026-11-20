@@ -427,6 +427,102 @@ async function applyPatches(db: Db) {
     console.log("[db-setup] applied patch 2026-11-ambassador-photo-sulaiman");
   }
 
+  if (!applied.has("2026-11-qau-sohail-ahmed")) {
+    const A = s.ambassadors;
+    const institute = "Quaid-i-Azam University";
+    const [exists] = await db.select({ id: A.id }).from(A).where(and(eq(A.institute, institute), eq(A.name, "Sohail Ahmed"))).limit(1);
+    if (!exists) {
+      const [last] = await db.select({ order: sql<number>`max(${A.sortOrder})` }).from(A).where(eq(A.institute, institute));
+      await db.insert(A).values({ name: "Sohail Ahmed", institute, role: "Co-Ambassador", photo: "/ambassadors/sohail-ahmed-quaid-i-azam-university.webp", sortOrder: Number(last?.order ?? 0) + 1 });
+    }
+    applied.add("2026-11-qau-sohail-ahmed");
+    console.log("[db-setup] applied patch 2026-11-qau-sohail-ahmed");
+  }
+
+  if (!applied.has("2026-11-qau-amna-qaiser")) {
+    const A = s.ambassadors;
+    const institute = "Quaid-i-Azam University";
+    const [exists] = await db.select({ id: A.id }).from(A).where(and(eq(A.institute, institute), eq(A.name, "Amna Qaiser"))).limit(1);
+    if (!exists) {
+      const [last] = await db.select({ order: sql<number>`max(${A.sortOrder})` }).from(A).where(eq(A.institute, institute));
+      await db.insert(A).values({ name: "Amna Qaiser", institute, role: "Co-Ambassador", photo: "/ambassadors/amna-qaiser-quaid-i-azam-university.webp", sortOrder: Number(last?.order ?? 0) + 1 });
+    }
+    applied.add("2026-11-qau-amna-qaiser");
+    console.log("[db-setup] applied patch 2026-11-qau-amna-qaiser");
+  }
+
+  if (!applied.has("2026-11-qau-aamna-naeem")) {
+    const A = s.ambassadors;
+    const institute = "Quaid-i-Azam University";
+    const [exists] = await db.select({ id: A.id }).from(A).where(and(eq(A.institute, institute), eq(A.name, "Aamna Naeem"))).limit(1);
+    if (!exists) {
+      const [last] = await db.select({ order: sql<number>`max(${A.sortOrder})` }).from(A).where(eq(A.institute, institute));
+      await db.insert(A).values({ name: "Aamna Naeem", institute, role: "Co-Ambassador", photo: "/ambassadors/aamna-naeem-quaid-i-azam-university.webp", sortOrder: Number(last?.order ?? 0) + 1 });
+    }
+    applied.add("2026-11-qau-aamna-naeem");
+    console.log("[db-setup] applied patch 2026-11-qau-aamna-naeem");
+  }
+
+  if (!applied.has("2026-11-qau-saba-amir")) {
+    const A = s.ambassadors;
+    const institute = "Quaid-i-Azam University";
+    const [exists] = await db.select({ id: A.id }).from(A).where(and(eq(A.institute, institute), eq(A.name, "Saba Amir"))).limit(1);
+    if (!exists) {
+      const [last] = await db.select({ order: sql<number>`max(${A.sortOrder})` }).from(A).where(eq(A.institute, institute));
+      await db.insert(A).values({ name: "Saba Amir", institute, role: "Co-Ambassador", photo: "/ambassadors/saba-amir-quaid-i-azam-university.webp", sortOrder: Number(last?.order ?? 0) + 1 });
+    }
+    applied.add("2026-11-qau-saba-amir");
+    console.log("[db-setup] applied patch 2026-11-qau-saba-amir");
+  }
+
+  if (!applied.has("2026-11-qau-zain-yaqoob")) {
+    const A = s.ambassadors;
+    const institute = "Quaid-i-Azam University";
+    const [exists] = await db.select({ id: A.id }).from(A).where(and(eq(A.institute, institute), eq(A.name, "Zain Yaqoob"))).limit(1);
+    if (!exists) {
+      const [last] = await db.select({ order: sql<number>`max(${A.sortOrder})` }).from(A).where(eq(A.institute, institute));
+      await db.insert(A).values({ name: "Zain Yaqoob", institute, role: "Co-Ambassador", photo: "/ambassadors/zain-yaqoob-quaid-i-azam-university.webp", sortOrder: Number(last?.order ?? 0) + 1 });
+    }
+    applied.add("2026-11-qau-zain-yaqoob");
+    console.log("[db-setup] applied patch 2026-11-qau-zain-yaqoob");
+  }
+
+  if (!applied.has("2026-11-qau-maryam-nadeem")) {
+    const A = s.ambassadors;
+    const institute = "Quaid-i-Azam University";
+    const [exists] = await db.select({ id: A.id }).from(A).where(and(eq(A.institute, institute), eq(A.name, "Maryam Nadeem"))).limit(1);
+    if (!exists) {
+      const [last] = await db.select({ order: sql<number>`max(${A.sortOrder})` }).from(A).where(eq(A.institute, institute));
+      await db.insert(A).values({ name: "Maryam Nadeem", institute, role: "Co-Ambassador", photo: "/ambassadors/maryam-nadeem-quaid-i-azam-university.webp", sortOrder: Number(last?.order ?? 0) + 1 });
+    }
+    applied.add("2026-11-qau-maryam-nadeem");
+    console.log("[db-setup] applied patch 2026-11-qau-maryam-nadeem");
+  }
+
+  if (!applied.has("2026-11-qau-eman-fatima")) {
+    const A = s.ambassadors;
+    const institute = "Quaid-i-Azam University";
+    const [exists] = await db.select({ id: A.id }).from(A).where(and(eq(A.institute, institute), eq(A.name, "Eman Fatima"))).limit(1);
+    if (!exists) {
+      const [last] = await db.select({ order: sql<number>`max(${A.sortOrder})` }).from(A).where(eq(A.institute, institute));
+      await db.insert(A).values({ name: "Eman Fatima", institute, role: "Co-Ambassador", photo: "/ambassadors/eman-fatima-quaid-i-azam-university.webp", sortOrder: Number(last?.order ?? 0) + 1 });
+    }
+    applied.add("2026-11-qau-eman-fatima");
+    console.log("[db-setup] applied patch 2026-11-qau-eman-fatima");
+  }
+
+  if (!applied.has("2026-11-qau-sundus-kawish")) {
+    const A = s.ambassadors;
+    const institute = "Quaid-i-Azam University";
+    const [exists] = await db.select({ id: A.id }).from(A).where(and(eq(A.institute, institute), eq(A.name, "Sundus Kawish"))).limit(1);
+    if (!exists) {
+      const [last] = await db.select({ order: sql<number>`max(${A.sortOrder})` }).from(A).where(eq(A.institute, institute));
+      await db.insert(A).values({ name: "Sundus Kawish", institute, role: "Co-Ambassador", photo: "/ambassadors/sundus-kawish-quaid-i-azam-university.webp", sortOrder: Number(last?.order ?? 0) + 1 });
+    }
+    applied.add("2026-11-qau-sundus-kawish");
+    console.log("[db-setup] applied patch 2026-11-qau-sundus-kawish");
+  }
+
   if (!applied.has("2026-10-remove-debate")) {
     await db.delete(s.competitions).where(byName("Debate"));
     applied.add("2026-10-remove-debate");

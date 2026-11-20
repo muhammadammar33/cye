@@ -262,6 +262,14 @@ export const AMBASSADORS: AmbassadorSeed[] = [
   { institute: "Iqra University, Chak Shahzad", name: "Anas Ur Rehman", role: "Head Ambassador", phone: "+92 332 9520618", photo: null, coupon: "CYE-IQRA-CS" },
   // Quaid-i-Azam University
   { institute: "Quaid-i-Azam University", name: "Muhammad Sulaiman Javed", role: "Head Ambassador", phone: "+92 312 9902994", photo: "/ambassadors/muhammad-sulaiman-javed-quaid-i-azam-university.webp", coupon: "CYE-QAU" },
+  { institute: "Quaid-i-Azam University", name: "Sohail Ahmed", role: "Co-Ambassador", phone: null, photo: "/ambassadors/sohail-ahmed-quaid-i-azam-university.webp" },
+  { institute: "Quaid-i-Azam University", name: "Amna Qaiser", role: "Co-Ambassador", phone: null, photo: "/ambassadors/amna-qaiser-quaid-i-azam-university.webp" },
+  { institute: "Quaid-i-Azam University", name: "Aamna Naeem", role: "Co-Ambassador", phone: null, photo: "/ambassadors/aamna-naeem-quaid-i-azam-university.webp" },
+  { institute: "Quaid-i-Azam University", name: "Saba Amir", role: "Co-Ambassador", phone: null, photo: "/ambassadors/saba-amir-quaid-i-azam-university.webp" },
+  { institute: "Quaid-i-Azam University", name: "Zain Yaqoob", role: "Co-Ambassador", phone: null, photo: "/ambassadors/zain-yaqoob-quaid-i-azam-university.webp" },
+  { institute: "Quaid-i-Azam University", name: "Maryam Nadeem", role: "Co-Ambassador", phone: null, photo: "/ambassadors/maryam-nadeem-quaid-i-azam-university.webp" },
+  { institute: "Quaid-i-Azam University", name: "Eman Fatima", role: "Co-Ambassador", phone: null, photo: "/ambassadors/eman-fatima-quaid-i-azam-university.webp" },
+  { institute: "Quaid-i-Azam University", name: "Sundus Kawish", role: "Co-Ambassador", phone: null, photo: "/ambassadors/sundus-kawish-quaid-i-azam-university.webp" },
   // International Islamic University
   { institute: "International Islamic University", name: "Malik Kamran", role: "Head Ambassador", phone: "+92 344 1368538", photo: "/ambassadors/malik-kamran-international-islamic-university.webp", coupon: "CYE-IIUI" },
   { institute: "International Islamic University", name: "Adeeba Nisar", role: "Co-Ambassador", phone: null, photo: "/ambassadors/adeeba-nisar-international-islamic-university.webp" },
