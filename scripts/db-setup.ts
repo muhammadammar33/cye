@@ -418,6 +418,15 @@ async function applyPatches(db: Db) {
     console.log("[db-setup] applied patch 2026-11-graphic-design-live");
   }
 
+  if (!applied.has("2026-11-ambassador-photo-sulaiman")) {
+    await db
+      .update(s.ambassadors)
+      .set({ photo: "/ambassadors/muhammad-sulaiman-javed-quaid-i-azam-university.webp" })
+      .where(and(eq(s.ambassadors.institute, "Quaid-i-Azam University"), eq(s.ambassadors.name, "Muhammad Sulaiman Javed")));
+    applied.add("2026-11-ambassador-photo-sulaiman");
+    console.log("[db-setup] applied patch 2026-11-ambassador-photo-sulaiman");
+  }
+
   if (!applied.has("2026-10-remove-debate")) {
     await db.delete(s.competitions).where(byName("Debate"));
     applied.add("2026-10-remove-debate");

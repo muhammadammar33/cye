@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/Card";
 import { FadeIn } from "@/components/ui/FadeIn";
 import { cn } from "@/lib/cn";
 import { focalsOf } from "@/lib/focals";
+import { minRegistrations } from "@/lib/minRegistrations";
 import { whatsappLink } from "@/lib/phone";
 
 const PLACES = ["1st", "2nd", "3rd"];
@@ -18,18 +19,6 @@ function prizePool(prizes: string[]) {
   const amounts = prizes.map((p) => Number(p.replace(/[^\d]/g, "")));
   if (amounts.length < 2 || amounts.some((n) => !n)) return null;
   return `PKR ${amounts.reduce((a, b) => a + b, 0).toLocaleString("en-US")}`;
-}
-
-/**
- * Registrations needed for the registration fees to cover the prize pool (pool ÷ fee, rounded up), e.g. Naat:
- * PKR 30,000 ÷ PKR 500 = 60. Null when the pool or the fee has no single amount.
- */
-function minRegistrations(prizes: string[], fee: string) {
-  const amounts = prizes.map((p) => Number(p.replace(/[^\d]/g, "")));
-  if (amounts.length < 2 || amounts.some((n) => !n)) return null;
-  const fees = fee.match(/\d[\d,]*/g);
-  const perEntry = fees?.length === 1 ? Number(fees[0].replace(/,/g, "")) : 0;
-  return perEntry ? Math.ceil(amounts.reduce((a, b) => a + b, 0) / perEntry) : null;
 }
 
 export const VERTICAL_ACCENT: Record<string, string> = {
@@ -47,7 +36,8 @@ export function teamLabel(min: number, max: number) {
   return `${min}–${max} members`;
 }
 
-export function CompetitionCatalog({ competitions, onSelect }: { competitions: Competition[]; onSelect: (name: string) => void }) {
+/** `nearMinimum`: competitions with 80% or more of their minimum registrations; their minimum note is hidden. */
+export function CompetitionCatalog({ competitions, onSelect, nearMinimum = [] }: { competitions: Competition[]; onSelect: (name: string) => void; nearMinimum?: string[] }) {
   const [filter, setFilter] = useState("All");
   // Verticals first (in their usual order), then any extra categories such as Literary; empty ones are skipped.
   const filters = [
@@ -131,7 +121,7 @@ export function CompetitionCatalog({ competitions, onSelect }: { competitions: C
                         </span>
                       ))}
                     </dd>
-                    {minRegistrations(item.prizes, item.fee) ? (
+                    {minRegistrations(item.prizes, item.fee) && !nearMinimum.includes(item.name) ? (
                       <p className="mt-2 flex gap-1 text-[11px] font-medium leading-snug text-red-600">
                         <span aria-hidden>★</span>
                         <span>
