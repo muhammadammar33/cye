@@ -411,6 +411,13 @@ async function applyPatches(db: Db) {
     console.log("[db-setup] applied patch 2026-11-merge-business-innovation");
   }
 
+  if (!applied.has("2026-11-graphic-design-live")) {
+    // Graphic Design was hidden in admin; it is open for registration again.
+    await db.update(s.competitions).set({ active: true }).where(byName("Graphic Design"));
+    applied.add("2026-11-graphic-design-live");
+    console.log("[db-setup] applied patch 2026-11-graphic-design-live");
+  }
+
   if (!applied.has("2026-10-remove-debate")) {
     await db.delete(s.competitions).where(byName("Debate"));
     applied.add("2026-10-remove-debate");
