@@ -475,6 +475,18 @@ async function applyPatches(db: Db) {
     console.log("[db-setup] applied patch 2026-11-qau-saba-amir");
   }
 
+  if (!applied.has("2026-11-qau-zain-yaqoob")) {
+    const A = s.ambassadors;
+    const institute = "Quaid-i-Azam University";
+    const [exists] = await db.select({ id: A.id }).from(A).where(and(eq(A.institute, institute), eq(A.name, "Zain Yaqoob"))).limit(1);
+    if (!exists) {
+      const [last] = await db.select({ order: sql<number>`max(${A.sortOrder})` }).from(A).where(eq(A.institute, institute));
+      await db.insert(A).values({ name: "Zain Yaqoob", institute, role: "Co-Ambassador", photo: "/ambassadors/zain-yaqoob-quaid-i-azam-university.webp", sortOrder: Number(last?.order ?? 0) + 1 });
+    }
+    applied.add("2026-11-qau-zain-yaqoob");
+    console.log("[db-setup] applied patch 2026-11-qau-zain-yaqoob");
+  }
+
   if (!applied.has("2026-10-remove-debate")) {
     await db.delete(s.competitions).where(byName("Debate"));
     applied.add("2026-10-remove-debate");
