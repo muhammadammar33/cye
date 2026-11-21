@@ -35,7 +35,7 @@ export function LawyersSpotlight() {
           <FadeIn delay={0.08} className="rounded-3xl bg-white p-6 text-cye-ink shadow-card sm:p-8">
             <p className="flex items-center gap-2 font-heading text-sm font-bold uppercase tracking-wider text-cye-orange">
               <Ticket className="h-4 w-4" aria-hidden />
-              Free entry · {LAWYERS_CONFERENCE.capacity} seats only
+              Free entry · limited seats
             </p>
             <div className="mt-4 space-y-2 text-sm font-medium text-cye-ink/75">
               <p className="flex items-center gap-2">
