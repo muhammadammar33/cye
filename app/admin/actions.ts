@@ -570,6 +570,62 @@ export async function addTeamMember(id: number, _prev: ActionState, form: FormDa
   return { ok: `Added ${parsed.data.name}.${note || (sub.status === "approved" ? "" : " Their pass is sent when the team is approved.")}` };
 }
 
+/**
+ * Edits a member's details (same checks as the registration form). Editing the lead also updates the
+ * registration's contact details. The member's pass keeps its link and takes the new details; if the email
+ * changed, the pass is emailed to the new address.
+ */
+export async function editTeamMember(id: number, index: number, originalEmail: string, _prev: ActionState, form: FormData): Promise<ActionState> {
+  const me = await requireAdmin();
+  const database = requireDb();
+  const [sub] = await database.select().from(s.submissions).where(eq(s.submissions.id, id)).limit(1);
+  if (!sub || sub.type !== "competition") return { error: "Not a competition registration." };
+  const members = Array.isArray(sub.data.members) ? (sub.data.members as Member[]) : [];
+  const old = members[index];
+  if (!old || (old.email ?? "").toLowerCase() !== originalEmail.toLowerCase()) return { error: "The team changed meanwhile. Reload the page and try again." };
+  const parsed = memberSchema.safeParse(Object.fromEntries(["name", "email", "phone", "institution", "gender"].map((k) => [k, String(form.get(k) ?? "")])));
+  if (!parsed.success) {
+    const issue = parsed.error.issues[0];
+    return { error: `${issue.path.join(".") || "Member"}: ${issue.message}` };
+  }
+  const next = parsed.data;
+  if (members.some((m, i) => i !== index && m.email?.toLowerCase() === next.email.toLowerCase())) return { error: "That email is already on this team." };
+  const changed = (["name", "email", "phone", "institution", "gender"] as const).filter((k) => String(old[k] ?? "") !== String(next[k] ?? ""));
+  if (!changed.length) return { error: "Nothing changed." };
+
+  const list = members.map((m, i) => (i === index ? { ...m, ...next } : m));
+  const update: Partial<typeof s.submissions.$inferInsert> = { data: { ...sub.data, members: list } };
+  // The lead's details are also the registration's contact details.
+  if (index === 0) Object.assign(update, { name: next.name, email: next.email, phone: next.phone, institution: next.institution, gender: next.gender });
+  const oldEmail = (old.email ?? "").toLowerCase();
+  if (oldEmail !== next.email.toLowerCase() && sub.preEventAbsent?.includes(oldEmail)) {
+    update.preEventAbsent = sub.preEventAbsent.map((e) => (e === oldEmail ? next.email.toLowerCase() : e));
+  }
+  await database.update(s.submissions).set(update).where(eq(s.submissions.id, id));
+
+  // The member's valid pass keeps its QR link and takes the new details.
+  const [pass] = await database
+    .update(s.passes)
+    .set({ name: next.name, email: next.email, institution: next.institution })
+    .where(and(eq(s.passes.submissionId, id), eq(s.passes.category, "competition"), eq(s.passes.email, old.email), eq(s.passes.name, old.name), isNull(s.passes.revokedAt)))
+    .returning();
+  let note = "";
+  if (pass && oldEmail !== next.email.toLowerCase()) {
+    const sent = await emailPasses([pass], await passOrigin());
+    note = sent ? ` Pass ${pass.code} emailed to ${next.email}.` : ` Pass ${pass.code} updated, but the email to ${next.email} failed; use Resend.`;
+  } else if (pass) {
+    note = ` Pass ${pass.code} updated.`;
+  }
+  await logActivity(
+    me,
+    "Edited team member",
+    `#${id} ${sub.subject}, team ${String(sub.data.team || sub.name)}`,
+    changed.map((k) => `${k}: ${String(old[k] ?? "") || "(empty)"} → ${String(next[k] ?? "")}`).join("; "),
+  );
+  revalidatePath("/admin", "layout");
+  return { ok: `Saved ${next.name}.${note}` };
+}
+
 /** Removes a member (not the team lead) and cancels their pass. */
 export async function removeTeamMember(id: number, index: number, email: string) {
   const me = await requireAdmin();
