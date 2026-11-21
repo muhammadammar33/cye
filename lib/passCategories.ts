@@ -12,6 +12,7 @@ export const PASS_CATEGORIES = {
   focal: { label: "Focal Person", prefix: "F", color: "#be185d" },
   team: { label: "Event Team", prefix: "E", color: "#111827" },
   lawyers: { label: "Lawyers Conference", prefix: "LC", color: "#881337" },
+  medical: { label: "Medical Conference", prefix: "MC", color: "#0891b2" },
 } as const;
 
 export type PassCategory = keyof typeof PASS_CATEGORIES;
@@ -21,7 +22,7 @@ export const PASS_CATEGORY_KEYS = Object.keys(PASS_CATEGORIES) as PassCategory[]
  * Row order on the attendance display. Neighbouring rows are clearly different colours (checked with the
  * dataviz palette validator); every row is also labelled, so the type never depends on colour alone.
  */
-export const DISPLAY_ORDER: PassCategory[] = ["competition", "visitor", "talent", "volunteer", "startup", "ambassador", "focal", "project", "lawyers", "team"];
+export const DISPLAY_ORDER: PassCategory[] = ["competition", "visitor", "talent", "volunteer", "startup", "ambassador", "focal", "project", "lawyers", "medical", "team"];
 
 /** Pass categories an admin issues by hand (no form submission behind them). */
 export const MANUAL_PASS_CATEGORIES = ["focal", "team"] as const satisfies readonly PassCategory[];
@@ -42,10 +43,12 @@ export const PASS_FOR_TYPE: Partial<Record<SubmissionType, PassCategory>> = {
   project: "project",
   startup: "startup",
   lawyers: "lawyers",
+  medical: "medical",
 };
 
-/** The ID to bring to the gate: lawyers may bring a bar card instead of a student card. */
-export const entryIdFor = (category: string) => (category === "lawyers" ? "student card or bar card" : "student card");
+/** The ID to bring to the gate: lawyers may bring a bar card, and doctors a professional ID, instead of a student card. */
+export const entryIdFor = (category: string) =>
+  category === "lawyers" ? "student card or bar card" : category === "medical" ? "student card or professional ID card" : "student card";
 
 export const isPassCategory = (value: string): value is PassCategory => value in PASS_CATEGORIES;
 

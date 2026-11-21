@@ -143,6 +143,7 @@ const NEXT_STEPS: Record<SubmissionType, string> = {
   sponsor: "Our partnerships team will contact you shortly with the sponsorship deck and to discuss the package that suits you best.",
   contact: "Our team will get back to you as soon as possible, usually within two working days.",
   lawyers: "Your seat request for the Lawyers Conference panel discussion is in. Once our team confirms your registration, you receive your Lawyers Conference pass by email. Seats are limited to the auditorium's capacity.",
+  medical: "Your seat request for the Medical Conference panel discussion is in. Once our team confirms your registration, you receive your Medical Conference pass by email. Seats are limited to the auditorium's capacity.",
   talent: "Our team will verify your result card. Students who qualify receive their Talent Tribute pass by email, with details of the ceremony at the expo.",
 };
 
