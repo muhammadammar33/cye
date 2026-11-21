@@ -6,6 +6,7 @@ import { deleteSubmission, removeTeamMember, resendPass, updateSubmission } from
 import { AddMemberForm } from "@/components/admin/AddMemberForm";
 import { ChangeCompetitionForm } from "@/components/admin/ChangeCompetitionForm";
 import { TeamNameForm } from "@/components/admin/TeamNameForm";
+import { EditMemberForm } from "@/components/admin/EditMemberForm";
 import { PreEventForm } from "@/components/admin/PreEventForm";
 import { SubmissionForm } from "@/components/admin/SubmissionForm";
 import { formatDate, PageHeader, StatusBadge } from "@/components/admin/StatusBadge";
@@ -203,7 +204,11 @@ export default async function SubmissionPage({ params }: { params: Promise<{ id:
                       <td className="px-5 py-2.5">{m.phone}</td>
                       <td className="px-5 py-2.5">{m.institution}</td>
                       <td className="px-5 py-2.5">{m.gender ?? ""}</td>
-                      <td className="px-5 py-2.5 text-right">
+                      <td className="px-5 py-2.5">
+                        <div className="flex items-center justify-end gap-1.5">
+                        {row.type === "competition" ? (
+                          <EditMemberForm id={row.id} index={i} lead={i === 0} member={{ name: m.name, email: m.email, phone: m.phone, institution: m.institution, gender: m.gender }} />
+                        ) : null}
                         {i > 0 && competition && members.length > competition.teamMin ? (
                           <ConfirmForm
                             action={removeTeamMember.bind(null, row.id, i, m.email)}
@@ -214,6 +219,7 @@ export default async function SubmissionPage({ params }: { params: Promise<{ id:
                             </button>
                           </ConfirmForm>
                         ) : null}
+                        </div>
                       </td>
                     </tr>
                   ))}

@@ -7,7 +7,7 @@ import { redirect } from "next/navigation";
 import { after } from "next/server";
 import { endSession, requireAdmin, requireGateAccess, startSession } from "@/lib/auth";
 import { uploadImage } from "@/lib/blob";
-import { CONTENT_TAG } from "@/lib/content";
+import { CONTENT_TAG, getSettings } from "@/lib/content";
 import { db, requireDb, schema as s } from "@/lib/db";
 import { SUBMISSION_STATUSES, type SubmissionStatus } from "@/lib/db/schema";
 import { DEFAULT_SETTINGS } from "@/lib/defaults";
@@ -20,6 +20,9 @@ import { member as memberSchema } from "@/lib/submissions";
 import { parseFilters, whereFor } from "@/lib/admin/submissionQuery";
 import { GENDERS } from "@/data/event";
 import { logActivity } from "@/lib/admin/log";
+import { judgeEmail, sendEmail } from "@/lib/email";
+import { focalsOf } from "@/lib/focals";
+import { fillJudgeTemplate } from "@/lib/judgeEmail";
 import { emailPasses, holdersFor, issueForSubmissions, issueManualPass, passByToken, passOrigin, revokeForSubmissions } from "@/lib/passes";
 import { MANUAL_PASS_CATEGORIES, PASS_CATEGORIES, PASS_FOR_TYPE, type PassCategory } from "@/lib/passCategories";
 
@@ -570,6 +573,62 @@ export async function addTeamMember(id: number, _prev: ActionState, form: FormDa
   return { ok: `Added ${parsed.data.name}.${note || (sub.status === "approved" ? "" : " Their pass is sent when the team is approved.")}` };
 }
 
+/**
+ * Edits a member's details (same checks as the registration form). Editing the lead also updates the
+ * registration's contact details. The member's pass keeps its link and takes the new details; if the email
+ * changed, the pass is emailed to the new address.
+ */
+export async function editTeamMember(id: number, index: number, originalEmail: string, _prev: ActionState, form: FormData): Promise<ActionState> {
+  const me = await requireAdmin();
+  const database = requireDb();
+  const [sub] = await database.select().from(s.submissions).where(eq(s.submissions.id, id)).limit(1);
+  if (!sub || sub.type !== "competition") return { error: "Not a competition registration." };
+  const members = Array.isArray(sub.data.members) ? (sub.data.members as Member[]) : [];
+  const old = members[index];
+  if (!old || (old.email ?? "").toLowerCase() !== originalEmail.toLowerCase()) return { error: "The team changed meanwhile. Reload the page and try again." };
+  const parsed = memberSchema.safeParse(Object.fromEntries(["name", "email", "phone", "institution", "gender"].map((k) => [k, String(form.get(k) ?? "")])));
+  if (!parsed.success) {
+    const issue = parsed.error.issues[0];
+    return { error: `${issue.path.join(".") || "Member"}: ${issue.message}` };
+  }
+  const next = parsed.data;
+  if (members.some((m, i) => i !== index && m.email?.toLowerCase() === next.email.toLowerCase())) return { error: "That email is already on this team." };
+  const changed = (["name", "email", "phone", "institution", "gender"] as const).filter((k) => String(old[k] ?? "") !== String(next[k] ?? ""));
+  if (!changed.length) return { error: "Nothing changed." };
+
+  const list = members.map((m, i) => (i === index ? { ...m, ...next } : m));
+  const update: Partial<typeof s.submissions.$inferInsert> = { data: { ...sub.data, members: list } };
+  // The lead's details are also the registration's contact details.
+  if (index === 0) Object.assign(update, { name: next.name, email: next.email, phone: next.phone, institution: next.institution, gender: next.gender });
+  const oldEmail = (old.email ?? "").toLowerCase();
+  if (oldEmail !== next.email.toLowerCase() && sub.preEventAbsent?.includes(oldEmail)) {
+    update.preEventAbsent = sub.preEventAbsent.map((e) => (e === oldEmail ? next.email.toLowerCase() : e));
+  }
+  await database.update(s.submissions).set(update).where(eq(s.submissions.id, id));
+
+  // The member's valid pass keeps its QR link and takes the new details.
+  const [pass] = await database
+    .update(s.passes)
+    .set({ name: next.name, email: next.email, institution: next.institution })
+    .where(and(eq(s.passes.submissionId, id), eq(s.passes.category, "competition"), eq(s.passes.email, old.email), eq(s.passes.name, old.name), isNull(s.passes.revokedAt)))
+    .returning();
+  let note = "";
+  if (pass && oldEmail !== next.email.toLowerCase()) {
+    const sent = await emailPasses([pass], await passOrigin());
+    note = sent ? ` Pass ${pass.code} emailed to ${next.email}.` : ` Pass ${pass.code} updated, but the email to ${next.email} failed; use Resend.`;
+  } else if (pass) {
+    note = ` Pass ${pass.code} updated.`;
+  }
+  await logActivity(
+    me,
+    "Edited team member",
+    `#${id} ${sub.subject}, team ${String(sub.data.team || sub.name)}`,
+    changed.map((k) => `${k}: ${String(old[k] ?? "") || "(empty)"} → ${String(next[k] ?? "")}`).join("; "),
+  );
+  revalidatePath("/admin", "layout");
+  return { ok: `Saved ${next.name}.${note}` };
+}
+
 /** Removes a member (not the team lead) and cancels their pass. */
 export async function removeTeamMember(id: number, index: number, email: string) {
   const me = await requireAdmin();
@@ -698,4 +757,40 @@ export async function changeCompetition(id: number, _prev: ActionState, form: Fo
   return {
     ok: `Moved to ${comp.name}; ${feeNote}.${passes.length ? ` ${passes.length} pass${passes.length === 1 ? "" : "es"} updated.` : ""}${note}`,
   };
+}
+
+/* --------------------------- judge emails --------------------------- */
+
+const emailAddress = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/**
+ * Emails a judge an invitation for a competition. The subject and message come from the template on the page
+ * (editable); placeholders are filled here with the judge's name and the competition's focal person(s).
+ */
+export async function sendJudgeEmail(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const me = await requireAdmin();
+  const name = String(form.get("competition") ?? "");
+  const judge = String(form.get("judge") ?? "").replace(/\s+/g, " ").trim();
+  const to = String(form.get("email") ?? "").trim().toLowerCase();
+  const subjectTpl = String(form.get("subject") ?? "").trim();
+  const messageTpl = String(form.get("message") ?? "").trim();
+  if (!judge) return { error: "Enter the judge's name." };
+  if (!emailAddress.test(to)) return { error: "Enter a valid email address for the judge." };
+  if (!subjectTpl || subjectTpl.length > 200) return { error: "The subject must be 1 to 200 characters." };
+  if (!messageTpl || messageTpl.length > 6000) return { error: "The message must be 1 to 6,000 characters." };
+  const [comp] = await requireDb().select().from(s.competitions).where(eq(s.competitions.name, name)).limit(1);
+  if (!comp) return { error: "Choose a competition." };
+
+  const focals = focalsOf(comp);
+  const vars = { judge, competition: comp.name, focals };
+  const subject = fillJudgeTemplate(subjectTpl, vars);
+  const settings = await getSettings();
+  const html = judgeEmail(
+    { origin: await passOrigin(), social: settings.social_links },
+    { subject, message: fillJudgeTemplate(messageTpl, vars), competition: comp.name, rulebook: comp.rulebook, focals },
+  );
+  const sent = await sendEmail({ to, subject, html, replyTo: settings.inboxes.competitions });
+  await logActivity(me, sent ? "Emailed judge" : "Judge email failed", comp.name, `${judge} <${to}>: ${subject}`);
+  revalidatePath("/admin/judges");
+  return sent ? { ok: `Sent to ${judge} (${to}).` } : { error: `The email to ${to} could not be sent. Check the address and try again.` };
 }

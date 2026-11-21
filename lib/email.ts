@@ -277,6 +277,39 @@ ${entranceTips(pass.category)}
   });
 }
 
+/** A judge invitation: the admin's message (already filled in), with the competition details and focal person(s). */
+export function judgeEmail(
+  ctx: EmailContext,
+  j: { subject: string; message: string; competition: string; rulebook: string | null; focals: { name: string; phone: string | null }[] },
+) {
+  const paragraphs = j.message
+    .trim()
+    .split(/\n\s*\n/)
+    .map((p) => `<p style="margin:0 0 12px">${esc(p.trim()).replace(/\n/g, "<br>")}</p>`)
+    .join("\n");
+  const rulebook = j.rulebook ? (/^https?:/i.test(j.rulebook) ? j.rulebook : `${ctx.origin}${j.rulebook}`) : null;
+  const focal = j.focals.length
+    ? focalBlock({ name: j.focals[0].name, phone: j.focals[0].phone, topic: j.competition, also: j.focals[1] })
+    : "";
+  return layout(ctx, {
+    preheader: `${j.competition} · ${EVENT.date} · ${EVENT.venue}`,
+    eyebrow: "INVITATION TO JUDGE",
+    title: j.subject,
+    logoWidth: 150,
+    body: `${paragraphs}
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:16px 0;background:#f5f7fb;border-left:4px solid ${ORANGE};border-radius:8px">
+  <tr><td style="padding:14px 16px;font:14px/1.7 ${FONT};color:#374151">
+    <strong style="color:${BLUE}">Competition</strong> ${esc(j.competition)}<br>
+    <strong style="color:${BLUE}">Date</strong> ${esc(EVENT.date)}<br>
+    <strong style="color:${BLUE}">Venue</strong> ${esc(EVENT.venue)}, ${esc(EVENT.city)}
+  </td></tr>
+</table>
+${rulebook ? `<p style="margin:0 0 16px">${button(rulebook, `Read the ${j.competition} rule book`)}</p>` : ""}
+${focal}
+<p style="margin:16px 0 0">Regards,<br><strong>Team ${esc(EVENT.name)}</strong></p>`,
+  });
+}
+
 export type PreEventNotice = {
   name: string;
   competition: string;
