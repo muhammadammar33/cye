@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { sendJudgeEmail } from "@/app/admin/actions";
 import { FormMessage, inputClass, SubmitButton, useFormAction } from "@/components/admin/ui";
 import type { Focal } from "@/lib/focals";
-import { fillJudgeTemplate, JUDGE_MESSAGE, JUDGE_SUBJECT } from "@/lib/judgeEmail";
+import { boldParts, fillJudgeTemplate, JUDGE_MESSAGE, JUDGE_SUBJECT, splitEmails } from "@/lib/judgeEmail";
 
 type Option = { name: string; rulebook: string | null; focals: Focal[] };
 
@@ -15,6 +15,7 @@ export function JudgeEmailForm({ competitions }: { competitions: Option[] }) {
   const [competition, setCompetition] = useState("");
   const [judge, setJudge] = useState("");
   const [email, setEmail] = useState("");
+  const [cc, setCc] = useState("");
   const [subject, setSubject] = useState(JUDGE_SUBJECT);
   const [message, setMessage] = useState(JUDGE_MESSAGE);
   const chosen = competitions.find((c) => c.name === competition);
@@ -31,7 +32,8 @@ export function JudgeEmailForm({ competitions }: { competitions: Option[] }) {
   }, [state]);
 
   function confirmFirst(event: React.FormEvent<HTMLFormElement>) {
-    if (!window.confirm(`Send the invitation for ${competition} to ${judge} (${email})?`)) {
+    const ccList = splitEmails(cc);
+    if (!window.confirm(`Send the invitation for ${competition} to ${judge} (${email})${ccList.length ? `, cc ${ccList.join(", ")}` : ""}?`)) {
       event.preventDefault();
       return;
     }
@@ -81,6 +83,10 @@ export function JudgeEmailForm({ competitions }: { competitions: Option[] }) {
           </label>
         </div>
         <label className="block text-xs font-semibold text-slate-700">
+          CC <span className="font-normal text-slate-500">(optional; separate several with commas)</span>
+          <input name="cc" value={cc} onChange={(e) => setCc(e.target.value)} placeholder="focal.person@example.com, team@capitalyouthexpo.com" className={inputClass} />
+        </label>
+        <label className="block text-xs font-semibold text-slate-700">
           Subject
           <input name="subject" required maxLength={200} value={subject} onChange={(e) => setSubject(e.target.value)} className={inputClass} />
         </label>
@@ -90,7 +96,8 @@ export function JudgeEmailForm({ competitions }: { competitions: Option[] }) {
         </label>
         <p className="text-xs text-slate-500">
           Placeholders are filled in when the email is sent: <code>{"{judge}"}</code>, <code>{"{competition}"}</code>, <code>{"{focal}"}</code> (focal person and phone),{" "}
-          <code>{"{date}"}</code>, <code>{"{venue}"}</code>. The email also shows the date, venue, rule book and focal person&apos;s WhatsApp link. Replies go to the competitions inbox.
+          <code>{"{date}"}</code>, <code>{"{venue}"}</code>; filled-in details appear in <strong>bold</strong>. To make any other text bold, put it between double
+          asterisks, like <code>**reporting time 9 am**</code>. The email also shows the date, venue, rule book and focal person&apos;s WhatsApp link. Replies go to the competitions inbox.
         </p>
         <FormMessage state={state} />
         <div className="flex flex-wrap items-center gap-2">
@@ -115,12 +122,15 @@ export function JudgeEmailForm({ competitions }: { competitions: Option[] }) {
       <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm" aria-label="Preview">
         <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Preview</p>
         <p className="mt-2 text-xs text-slate-500">To: {email || "judge's email"}</p>
+        {splitEmails(cc).length ? <p className="text-xs text-slate-500">CC: {splitEmails(cc).join(", ")}</p> : null}
         <h2 className="mt-3 font-heading text-lg font-bold text-cye-blue">{fillJudgeTemplate(subject, vars)}</h2>
         <div className="mt-3 space-y-3 whitespace-pre-line text-sm leading-relaxed text-slate-700">
-          {fillJudgeTemplate(message, vars)
+          {fillJudgeTemplate(message, vars, true)
             .split(/\n\s*\n/)
             .map((p, i) => (
-              <p key={i}>{p.trim()}</p>
+              <p key={i}>
+                {boldParts(p.trim()).map((part, j) => (part.bold ? <strong key={j} className="text-slate-900">{part.text}</strong> : <span key={j}>{part.text}</span>))}
+              </p>
             ))}
         </div>
         {chosen ? (

@@ -523,6 +523,30 @@ async function applyPatches(db: Db) {
     console.log("[db-setup] applied patch 2026-11-qau-sundus-kawish");
   }
 
+  if (!applied.has("2026-11-arid-ambassadors")) {
+    // PMAS Arid Agriculture University: head ambassador (with coupon) and co-ambassadors, after every other institute.
+    const A = s.ambassadors;
+    const institute = "PMAS Arid Agriculture University";
+    const people: [name: string, role: string, phone: string | null, photo: string, coupon: string | null][] = [
+      ["Areeqa Yahya", "Head Ambassador", "+92 312 9496070", "/ambassadors/areeqa-yahya-pmas-arid-agriculture-university.webp", "CYE-ARID"],
+      ["Hammad Liaqat", "Co-Ambassador", null, "/ambassadors/hammad-liaqat-pmas-arid-agriculture-university.webp", null],
+      ["Javeria Haya", "Co-Ambassador", null, "/ambassadors/javeria-haya-pmas-arid-agriculture-university.webp", null],
+      ["Navira Ahmed", "Co-Ambassador", null, "/ambassadors/navira-ahmed-pmas-arid-agriculture-university.webp", null],
+      ["Salman Khan", "Co-Ambassador", null, "/ambassadors/salman-khan-pmas-arid-agriculture-university.webp", null],
+      ["Zaid Ali", "Co-Ambassador", null, "/ambassadors/zaid-ali-pmas-arid-agriculture-university.webp", null],
+    ];
+    const [last] = await db.select({ order: sql<number>`max(${A.sortOrder})` }).from(A);
+    let order = Number(last?.order ?? 0);
+    for (const [name, role, phone, photo, coupon] of people) {
+      const [exists] = await db.select({ id: A.id }).from(A).where(and(eq(A.institute, institute), eq(A.name, name))).limit(1);
+      if (exists) continue;
+      const [taken] = coupon ? await db.select({ id: A.id }).from(A).where(eq(A.coupon, coupon)).limit(1) : [];
+      await db.insert(A).values({ name, institute, role, phone, photo, coupon: taken ? null : coupon, sortOrder: ++order });
+    }
+    applied.add("2026-11-arid-ambassadors");
+    console.log("[db-setup] applied patch 2026-11-arid-ambassadors");
+  }
+
   if (!applied.has("2026-10-remove-debate")) {
     await db.delete(s.competitions).where(byName("Debate"));
     applied.add("2026-10-remove-debate");

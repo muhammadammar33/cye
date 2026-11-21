@@ -422,4 +422,11 @@ export const AMBASSADORS: AmbassadorSeed[] = [
   // APS
   { institute: "APS", name: "M. Abdul Rehman", role: "Head Ambassador", phone: "+92 315 5518575", photo: "/ambassadors/m-abdul-rehman-aps.webp", coupon: "CYE-APS" },
   { institute: "APS", name: "Ehan Farooq", role: "Co-Ambassador", phone: null, photo: "/ambassadors/ehan-farooq-aps.webp" },
+  // PMAS Arid Agriculture University
+  { institute: "PMAS Arid Agriculture University", name: "Areeqa Yahya", role: "Head Ambassador", phone: "+92 312 9496070", photo: "/ambassadors/areeqa-yahya-pmas-arid-agriculture-university.webp", coupon: "CYE-ARID" },
+  { institute: "PMAS Arid Agriculture University", name: "Hammad Liaqat", role: "Co-Ambassador", phone: null, photo: "/ambassadors/hammad-liaqat-pmas-arid-agriculture-university.webp" },
+  { institute: "PMAS Arid Agriculture University", name: "Javeria Haya", role: "Co-Ambassador", phone: null, photo: "/ambassadors/javeria-haya-pmas-arid-agriculture-university.webp" },
+  { institute: "PMAS Arid Agriculture University", name: "Navira Ahmed", role: "Co-Ambassador", phone: null, photo: "/ambassadors/navira-ahmed-pmas-arid-agriculture-university.webp" },
+  { institute: "PMAS Arid Agriculture University", name: "Salman Khan", role: "Co-Ambassador", phone: null, photo: "/ambassadors/salman-khan-pmas-arid-agriculture-university.webp" },
+  { institute: "PMAS Arid Agriculture University", name: "Zaid Ali", role: "Co-Ambassador", phone: null, photo: "/ambassadors/zaid-ali-pmas-arid-agriculture-university.webp" },
 ];
