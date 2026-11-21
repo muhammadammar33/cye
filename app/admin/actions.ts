@@ -7,7 +7,7 @@ import { redirect } from "next/navigation";
 import { after } from "next/server";
 import { endSession, requireAdmin, requireGateAccess, startSession } from "@/lib/auth";
 import { uploadImage } from "@/lib/blob";
-import { CONTENT_TAG } from "@/lib/content";
+import { CONTENT_TAG, getSettings } from "@/lib/content";
 import { db, requireDb, schema as s } from "@/lib/db";
 import { SUBMISSION_STATUSES, type SubmissionStatus } from "@/lib/db/schema";
 import { DEFAULT_SETTINGS } from "@/lib/defaults";
@@ -20,6 +20,9 @@ import { member as memberSchema } from "@/lib/submissions";
 import { parseFilters, whereFor } from "@/lib/admin/submissionQuery";
 import { GENDERS } from "@/data/event";
 import { logActivity } from "@/lib/admin/log";
+import { judgeEmail, sendEmail } from "@/lib/email";
+import { focalsOf } from "@/lib/focals";
+import { fillJudgeTemplate } from "@/lib/judgeEmail";
 import { emailPasses, holdersFor, issueForSubmissions, issueManualPass, passByToken, passOrigin, revokeForSubmissions } from "@/lib/passes";
 import { MANUAL_PASS_CATEGORIES, PASS_CATEGORIES, PASS_FOR_TYPE, type PassCategory } from "@/lib/passCategories";
 
@@ -754,4 +757,40 @@ export async function changeCompetition(id: number, _prev: ActionState, form: Fo
   return {
     ok: `Moved to ${comp.name}; ${feeNote}.${passes.length ? ` ${passes.length} pass${passes.length === 1 ? "" : "es"} updated.` : ""}${note}`,
   };
+}
+
+/* --------------------------- judge emails --------------------------- */
+
+const emailAddress = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/**
+ * Emails a judge an invitation for a competition. The subject and message come from the template on the page
+ * (editable); placeholders are filled here with the judge's name and the competition's focal person(s).
+ */
+export async function sendJudgeEmail(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const me = await requireAdmin();
+  const name = String(form.get("competition") ?? "");
+  const judge = String(form.get("judge") ?? "").replace(/\s+/g, " ").trim();
+  const to = String(form.get("email") ?? "").trim().toLowerCase();
+  const subjectTpl = String(form.get("subject") ?? "").trim();
+  const messageTpl = String(form.get("message") ?? "").trim();
+  if (!judge) return { error: "Enter the judge's name." };
+  if (!emailAddress.test(to)) return { error: "Enter a valid email address for the judge." };
+  if (!subjectTpl || subjectTpl.length > 200) return { error: "The subject must be 1 to 200 characters." };
+  if (!messageTpl || messageTpl.length > 6000) return { error: "The message must be 1 to 6,000 characters." };
+  const [comp] = await requireDb().select().from(s.competitions).where(eq(s.competitions.name, name)).limit(1);
+  if (!comp) return { error: "Choose a competition." };
+
+  const focals = focalsOf(comp);
+  const vars = { judge, competition: comp.name, focals };
+  const subject = fillJudgeTemplate(subjectTpl, vars);
+  const settings = await getSettings();
+  const html = judgeEmail(
+    { origin: await passOrigin(), social: settings.social_links },
+    { subject, message: fillJudgeTemplate(messageTpl, vars), competition: comp.name, rulebook: comp.rulebook, focals },
+  );
+  const sent = await sendEmail({ to, subject, html, replyTo: settings.inboxes.competitions });
+  await logActivity(me, sent ? "Emailed judge" : "Judge email failed", comp.name, `${judge} <${to}>: ${subject}`);
+  revalidatePath("/admin/judges");
+  return sent ? { ok: `Sent to ${judge} (${to}).` } : { error: `The email to ${to} could not be sent. Check the address and try again.` };
 }
