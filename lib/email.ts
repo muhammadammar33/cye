@@ -3,9 +3,10 @@ import { AUDIENCE, EVENT, VERTICALS } from "@/data/event";
 import type { SubmissionType } from "@/lib/db/schema";
 import type { PaymentSettings } from "@/lib/defaults";
 import { whatsappLink } from "@/lib/phone";
+import { boldParts } from "@/lib/judgeEmail";
 import { entryIdFor, PASS_CATEGORIES, type PassCategory } from "@/lib/passCategories";
 
-type Mail = { to: string | string[]; subject: string; html: string; replyTo?: string };
+type Mail = { to: string | string[]; subject: string; html: string; replyTo?: string; cc?: string[] };
 
 /** Absolute site origin for links and images in emails (the request origin, so previews work too). */
 export type EmailContext = { origin: string; social: Record<string, string> };
@@ -285,7 +286,7 @@ export function judgeEmail(
   const paragraphs = j.message
     .trim()
     .split(/\n\s*\n/)
-    .map((p) => `<p style="margin:0 0 12px">${esc(p.trim()).replace(/\n/g, "<br>")}</p>`)
+    .map((p) => `<p style="margin:0 0 12px">${boldParts(p.trim()).map((part) => (part.bold ? `<strong>${esc(part.text)}</strong>` : esc(part.text))).join("").replace(/\n/g, "<br>")}</p>`)
     .join("\n");
   const rulebook = j.rulebook ? (/^https?:/i.test(j.rulebook) ? j.rulebook : `${ctx.origin}${j.rulebook}`) : null;
   const focal = j.focals.length
@@ -390,6 +391,7 @@ export async function sendEmail(mail: Mail): Promise<boolean> {
         subject: mail.subject,
         html: mail.html,
         reply_to: mail.replyTo,
+        ...(mail.cc?.length ? { cc: mail.cc } : {}),
       }),
     });
     if (!res.ok) console.error(`[email] Resend ${res.status}: ${await res.text()}`);

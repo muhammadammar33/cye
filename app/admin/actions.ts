@@ -22,7 +22,7 @@ import { GENDERS } from "@/data/event";
 import { logActivity } from "@/lib/admin/log";
 import { judgeEmail, sendEmail } from "@/lib/email";
 import { focalsOf } from "@/lib/focals";
-import { fillJudgeTemplate } from "@/lib/judgeEmail";
+import { fillJudgeTemplate, splitEmails } from "@/lib/judgeEmail";
 import { emailPasses, holdersFor, issueForSubmissions, issueManualPass, passByToken, passOrigin, revokeForSubmissions } from "@/lib/passes";
 import { MANUAL_PASS_CATEGORIES, PASS_CATEGORIES, PASS_FOR_TYPE, type PassCategory } from "@/lib/passCategories";
 
@@ -776,6 +776,10 @@ export async function sendJudgeEmail(_prev: ActionState, form: FormData): Promis
   const messageTpl = String(form.get("message") ?? "").trim();
   if (!judge) return { error: "Enter the judge's name." };
   if (!emailAddress.test(to)) return { error: "Enter a valid email address for the judge." };
+  const cc = splitEmails(String(form.get("cc") ?? "")).filter((e) => e !== to);
+  const badCc = cc.find((e) => !emailAddress.test(e));
+  if (badCc) return { error: `CC: "${badCc}" is not a valid email address.` };
+  if (cc.length > 10) return { error: "CC up to 10 addresses." };
   if (!subjectTpl || subjectTpl.length > 200) return { error: "The subject must be 1 to 200 characters." };
   if (!messageTpl || messageTpl.length > 6000) return { error: "The message must be 1 to 6,000 characters." };
   const [comp] = await requireDb().select().from(s.competitions).where(eq(s.competitions.name, name)).limit(1);
@@ -787,10 +791,10 @@ export async function sendJudgeEmail(_prev: ActionState, form: FormData): Promis
   const settings = await getSettings();
   const html = judgeEmail(
     { origin: await passOrigin(), social: settings.social_links },
-    { subject, message: fillJudgeTemplate(messageTpl, vars), competition: comp.name, rulebook: comp.rulebook, focals },
+    { subject, message: fillJudgeTemplate(messageTpl, vars, true), competition: comp.name, rulebook: comp.rulebook, focals },
   );
-  const sent = await sendEmail({ to, subject, html, replyTo: settings.inboxes.competitions });
-  await logActivity(me, sent ? "Emailed judge" : "Judge email failed", comp.name, `${judge} <${to}>: ${subject}`);
+  const sent = await sendEmail({ to, cc, subject, html, replyTo: settings.inboxes.competitions });
+  await logActivity(me, sent ? "Emailed judge" : "Judge email failed", comp.name, `${judge} <${to}>: ${subject}${cc.length ? ` (cc ${cc.join(", ")})` : ""}`);
   revalidatePath("/admin/judges");
-  return sent ? { ok: `Sent to ${judge} (${to}).` } : { error: `The email to ${to} could not be sent. Check the address and try again.` };
+  return sent ? { ok: `Sent to ${judge} (${to})${cc.length ? `, cc ${cc.join(", ")}` : ""}.` } : { error: `The email to ${to} could not be sent. Check the address and try again.` };
 }
