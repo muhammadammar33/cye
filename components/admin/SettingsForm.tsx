@@ -13,6 +13,7 @@ const REG_LABELS: Record<string, string> = {
   ambassadors: "Campus Ambassador applications",
   talent: "Talent Tribute applications",
   lawyers: "Lawyers Conference registration",
+  medical: "Medical Conference registration",
 };
 
 export function SettingsForm({ settings }: { settings: SiteSettings }) {

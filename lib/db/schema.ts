@@ -11,6 +11,7 @@ export const SUBMISSION_TYPES = [
   "contact",
   "talent",
   "lawyers",
+  "medical",
 ] as const;
 export type SubmissionType = (typeof SUBMISSION_TYPES)[number];
 

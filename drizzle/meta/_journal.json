@@ -120,6 +120,13 @@
       "when": 1795125870881,
       "tag": "0016_competition_second_focal",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1795241183465,
+      "tag": "0017_medical_conference",
+      "breakpoints": true
     }
   ]
 }

@@ -189,6 +189,7 @@ export const EMAILS = {
   visitors: "info@capitalyouthexpo.com",
   talent: "info@capitalyouthexpo.com",
   lawyers: "info@capitalyouthexpo.com",
+  medical: "info@capitalyouthexpo.com",
 };
 
 // Flip a flag to false to close that form and show a "registration closed" notice instead.
@@ -201,6 +202,7 @@ export const REGISTRATION_OPEN = {
   ambassadors: false,
   talent: true,
   lawyers: true,
+  medical: true,
 };
 
 export type NavItem = {
@@ -216,6 +218,7 @@ export const REGISTER_LINKS: NavItem[] = [
   { href: "/startups", label: "Startup Arena", desc: "Pitch your startup to investors" },
   { href: "/talent-tribute", label: "Talent Tribute", desc: "Honouring students with 80% or above" },
   { href: "/lawyers-conference", label: "Lawyers Conference", desc: "Panel discussion on Pakistan's constitutional future" },
+  { href: "/medical-conference", label: "Medical Conference", desc: "Panel discussion for medical students and doctors" },
   { href: "/visitors", label: "Visitor Pass", desc: "Register to attend the expo" },
   { href: "/ambassadors", label: "Campus Ambassadors", desc: "Find the CYE ambassadors at your campus" },
   { href: "/volunteers", label: "Volunteer", desc: "Join the team behind the expo" },
@@ -450,4 +453,22 @@ export const LAWYERS_CONFERENCE = {
     { name: "Justice (R) Shaukat Aziz Siddiqui", role: "Former Judge, Islamabad High Court" },
   ],
   statuses: ["Law student", "Lawyer", "Student / professional (other field)"] as const,
+};
+
+/**
+ * Medical Conference: a free panel discussion at the expo, set up like the Lawyers Conference. Registration confirms
+ * a seat; approved participants get a pass. Guests are added to `guests` once confirmed.
+ */
+export const MEDICAL_CONFERENCE = {
+  topic: "Medicine, Research and the Future of Healthcare in Pakistan",
+  /** The topic shown as a headline and a subtitle underneath. */
+  headline: "Medical Conference",
+  subtitle: "Medicine, Research and the Future of Healthcare",
+  about:
+    "A panel of doctors, researchers and healthcare leaders discusses the challenges and opportunities shaping healthcare in Pakistan, from medical education and research to patient care and innovation. Open to medical students, doctors and young people from every field, it includes an interactive Q&A with the speakers.",
+  format: "Panel Discussion",
+  /** Auditorium seats; registration closes by itself once this many registrations are in (rejected ones don't count). */
+  capacity: 150,
+  guests: [] as { name: string; role: string }[],
+  statuses: ["Medical student", "Doctor / healthcare professional", "Student / professional (other field)"] as const,
 };

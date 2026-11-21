@@ -162,6 +162,9 @@ export function Hero() {
             <Link href="/lawyers-conference" className="text-cye-blue hover:text-cye-orange">
               Lawyers Conference
             </Link>
+            <Link href="/medical-conference" className="text-cye-blue hover:text-cye-orange">
+              Medical Conference
+            </Link>
             <Link href="/ambassadors" className="text-cye-blue hover:text-cye-orange">
               Campus Ambassadors
             </Link>

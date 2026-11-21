@@ -10,6 +10,7 @@ import { confirmationEmail, sendEmail, teamEmail } from "@/lib/email";
 import { COUPON_PERCENT, discountedFee } from "@/lib/coupons";
 import { findCoupon } from "@/lib/couponLookup";
 import { lawyersSeatsLeft } from "@/lib/lawyersConference";
+import { medicalSeatsLeft } from "@/lib/medicalConference";
 import { slipModeFor } from "@/lib/payment";
 import { GATE, INBOX, normalize, TYPE_LABELS } from "@/lib/submissions";
 
@@ -40,6 +41,9 @@ export async function createSubmission(opts: {
   if (gate && !settings.registration_open[gate]) return { ok: false, error: "This registration is closed.", status: 403 };
   if (type === "lawyers" && (await lawyersSeatsLeft()) <= 0) {
     return { ok: false, error: "All seats for the Lawyers Conference are taken. Registration is now closed.", status: 403 };
+  }
+  if (type === "medical" && (await medicalSeatsLeft()) <= 0) {
+    return { ok: false, error: "All seats for the Medical Conference are taken. Registration is now closed.", status: 403 };
   }
 
   const competitions = await getCompetitions();

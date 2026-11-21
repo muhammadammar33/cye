@@ -3,7 +3,7 @@ import { z } from "zod";
 import type { SubmissionType } from "@/lib/db/schema";
 import type { RegistrationKey } from "@/lib/defaults";
 import type { Competition } from "@/lib/content";
-import { GENDERS, LAWYERS_CONFERENCE, TALENT_LEVELS } from "@/data/event";
+import { GENDERS, LAWYERS_CONFERENCE, MEDICAL_CONFERENCE, TALENT_LEVELS } from "@/data/event";
 import { checkResult, ELIGIBLE_PERCENT, RESULT_TYPES } from "@/lib/eligibility";
 import { CHOICE_FIELDS, choiceFor } from "@/lib/competitionOptions";
 
@@ -71,6 +71,12 @@ export const SCHEMAS = {
     institution: text(),
     ...consents,
   }),
+  medical: z.object({
+    name: text(), email, phone, gender,
+    status: z.enum(MEDICAL_CONFERENCE.statuses, { message: "Choose medical student, doctor or other field" }),
+    institution: text(),
+    ...consents,
+  }),
 } satisfies Record<SubmissionType, z.ZodType>;
 
 /** Which registration switch in settings gates each form (sponsor/contact are always open). */
@@ -83,10 +89,11 @@ export const GATE: Partial<Record<SubmissionType, RegistrationKey>> = {
   volunteer: "volunteers",
   talent: "talent",
   lawyers: "lawyers",
+  medical: "medical",
 };
 
 /** Settings inbox that receives the team notification for each form. */
-export const INBOX: Record<SubmissionType, "competitions" | "projects" | "startups" | "visitors" | "ambassadors" | "volunteers" | "sponsors" | "info" | "talent" | "lawyers"> = {
+export const INBOX: Record<SubmissionType, "competitions" | "projects" | "startups" | "visitors" | "ambassadors" | "volunteers" | "sponsors" | "info" | "talent" | "lawyers" | "medical"> = {
   competition: "competitions",
   project: "projects",
   startup: "startups",
@@ -97,6 +104,7 @@ export const INBOX: Record<SubmissionType, "competitions" | "projects" | "startu
   contact: "info",
   talent: "talent",
   lawyers: "lawyers",
+  medical: "medical",
 };
 
 export const TYPE_LABELS: Record<SubmissionType, string> = {
@@ -110,6 +118,7 @@ export const TYPE_LABELS: Record<SubmissionType, string> = {
   contact: "Contact message",
   talent: "Talent Tribute application",
   lawyers: "Lawyers Conference registration",
+  medical: "Medical Conference registration",
 };
 
 export type Normalized = {
@@ -175,6 +184,7 @@ export function normalize(type: SubmissionType, raw: Record<string, unknown>, co
       };
     }
     case "lawyers":
+    case "medical":
       return { name: d.name as string, email: d.email as string, phone: d.phone as string, gender: d.gender as string, institution: d.institution as string, subject: d.status as string, data: d };
     case "visitor":
       return { name: d.name as string, email: d.email as string, phone: d.phone as string, gender: d.gender as string, institution: d.institution as string, subject: d.level as string, data: d };
