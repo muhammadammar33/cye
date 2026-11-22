@@ -5,7 +5,7 @@ import { bulkSetPreEvent, bulkSetStatus } from "@/app/admin/actions";
 import { formatDate, PageHeader, StatusBadge } from "@/components/admin/StatusBadge";
 import { inputClass, SubmitButton } from "@/components/admin/ui";
 import { PAYMENT_STATUSES, PRE_EVENT_LABELS, PRE_EVENT_RESULTS, STATUS_LABELS, TYPE_NAMES } from "@/lib/admin/labels";
-import { competitionOptions, filterQuery, institutionOptions, parseFilters, whereFor } from "@/lib/admin/submissionQuery";
+import { competitionOptions, couponOptions, filterQuery, institutionOptions, parseFilters, whereFor } from "@/lib/admin/submissionQuery";
 import { GenderSelect, PaymentSelect, PreEventSelect, UniversityFilter } from "@/components/admin/SubmissionFilters";
 import { SelectAllCheckbox, SelectAllMatching } from "@/components/admin/BulkSelect";
 import { GENDERS } from "@/data/event";
@@ -20,13 +20,15 @@ export default async function SubmissionsPage({ searchParams }: { searchParams: 
   const page = Math.max(1, Number(params.page) || 1);
   const db = requireDb();
   const where = whereFor(filters);
-  const [rows, [{ total }], universities, preEventComps, competitions] = await Promise.all([
+  const [rows, [{ total }], universities, preEventComps, competitions, coupons] = await Promise.all([
     db.select().from(s.submissions).where(where).orderBy(desc(s.submissions.createdAt)).limit(PAGE_SIZE).offset((page - 1) * PAGE_SIZE),
     db.select({ total: count() }).from(s.submissions).where(where),
     institutionOptions(filters.type),
     db.select({ name: s.competitions.name }).from(s.competitions).where(eq(s.competitions.preEvent, true)),
     competitionOptions(),
+    couponOptions(),
   ]);
+  const couponTotal = coupons.reduce((n, c) => n + c.count, 0);
   // Competitions that shortlist at campus pre-events show a Pre-event column picker.
   const preEvent = new Set(preEventComps.map((c) => c.name));
   const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
@@ -34,7 +36,7 @@ export default async function SubmissionsPage({ searchParams }: { searchParams: 
   return (
     <>
       <PageHeader
-        title={filters.comp ?? (filters.type ? TYPE_NAMES[filters.type] : "All submissions")}
+        title={filters.coupon ? (filters.coupon === "any" ? "Coupon registrations" : `Coupon ${filters.coupon}`) : (filters.comp ?? (filters.type ? TYPE_NAMES[filters.type] : "All submissions"))}
         description={`${total.toLocaleString()} result${total === 1 ? "" : "s"}`}
         actions={
           <a href={`/admin/submissions/export${filterQuery(filters)}`} className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">
@@ -44,7 +46,7 @@ export default async function SubmissionsPage({ searchParams }: { searchParams: 
         }
       />
 
-      <form className="mb-4 grid gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-[1fr_1.3fr_1fr_0.9fr_1fr_1fr_1.3fr_1.4fr_auto]">
+      <form className="mb-4 grid gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-5">
         <select name="type" defaultValue={filters.type ?? ""} className={inputClass} aria-label="Form">
           <option value="">All forms</option>
           {SUBMISSION_TYPES.map((t) => (
@@ -61,6 +63,17 @@ export default async function SubmissionsPage({ searchParams }: { searchParams: 
             </option>
           ))}
           {filters.comp && !competitions.some((c) => c.name === filters.comp) ? <option value={filters.comp}>{filters.comp} (0)</option> : null}
+        </select>
+        <select name="coupon" defaultValue={filters.coupon ?? ""} className={inputClass} aria-label="Coupon">
+          <option value="">Any coupon</option>
+          <option value="any">Used a coupon ({couponTotal})</option>
+          {coupons.map((c) => (
+            <option key={c.code} value={c.code}>
+              {c.code}
+              {c.name ? ` · ${c.name}` : ""} ({c.count})
+            </option>
+          ))}
+          {filters.coupon && filters.coupon !== "any" && !coupons.some((c) => c.code === filters.coupon) ? <option value={filters.coupon}>{filters.coupon} (0)</option> : null}
         </select>
         <select name="status" defaultValue={filters.status ?? ""} className={inputClass} aria-label="Status">
           <option value="">Any status</option>

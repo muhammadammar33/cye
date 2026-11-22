@@ -14,7 +14,7 @@ export type PaymentFilter = (typeof PAYMENT_FILTERS)[number];
 export const PRE_EVENT_FILTERS = [...PRE_EVENT_RESULTS, "pending", "has_absent"] as const;
 export type PreEventFilter = (typeof PRE_EVENT_FILTERS)[number];
 
-export type SubmissionFilters = { type?: SubmissionType; status?: SubmissionStatus; gender?: GenderFilter; payment?: PaymentFilter; pre?: PreEventFilter; q?: string; uni?: string[]; comp?: string };
+export type SubmissionFilters = { type?: SubmissionType; status?: SubmissionStatus; gender?: GenderFilter; payment?: PaymentFilter; pre?: PreEventFilter; q?: string; uni?: string[]; comp?: string; coupon?: string };
 
 /**
  * Institution names as typed by applicants, folded so "COMSATS", " comsats " and "Comsats." count as one.
@@ -32,6 +32,7 @@ export function parseFilters(params: Record<string, string | string[] | undefine
   const pre = one(params.pre);
   const q = one(params.q)?.trim();
   const comp = one(params.comp)?.trim();
+  const coupon = one(params.coupon)?.trim().toUpperCase().slice(0, 40);
   const uni = [...new Set(many(params.uni).map((u) => u.trim().toLowerCase()).filter(Boolean))].slice(0, 200);
   return {
     type: SUBMISSION_TYPES.includes(type as SubmissionType) ? (type as SubmissionType) : undefined,
@@ -42,6 +43,7 @@ export function parseFilters(params: Record<string, string | string[] | undefine
     q: q || undefined,
     uni: uni.length ? uni : undefined,
     comp: comp || undefined,
+    coupon: coupon ? (coupon === "ANY" ? "any" : coupon) : undefined,
   };
 }
 
@@ -76,6 +78,12 @@ export function whereFor(f: SubmissionFilters): SQL | undefined {
     // A competition registration stores the competition's name as its subject.
     parts.push(eq(s.submissions.type, "competition"));
     parts.push(eq(s.submissions.subject, f.comp));
+  }
+  if (f.coupon) {
+    // Coupons only apply to competition registrations; "any" means a coupon was used at all.
+    const code = sql<string>`${s.submissions.data}->>'coupon'`;
+    parts.push(eq(s.submissions.type, "competition"));
+    parts.push(f.coupon === "any" ? sql`${code} is not null` : sql`upper(${code}) = ${f.coupon}`);
   }
   if (f.uni?.length) parts.push(inArray(institutionKey, f.uni));
   if (f.q) {
@@ -122,4 +130,17 @@ export async function competitionOptions() {
     .where(and(eq(s.submissions.type, "competition"), sql`nullif(btrim(${s.submissions.subject}), '') is not null`))
     .groupBy(s.submissions.subject)
     .orderBy(asc(s.submissions.subject));
+}
+
+/** Coupon codes used on competition registrations, most used first, with the head ambassador they belong to. */
+export async function couponOptions() {
+  const code = sql<string>`upper(${s.submissions.data}->>'coupon')`;
+  const used = await requireDb()
+    .select({ code, count: sql<number>`count(*)::int` })
+    .from(s.submissions)
+    .where(and(eq(s.submissions.type, "competition"), sql`${s.submissions.data}->>'coupon' is not null`))
+    .groupBy(code);
+  const owners = await requireDb().select({ code: s.ambassadors.coupon, name: s.ambassadors.name }).from(s.ambassadors).where(sql`${s.ambassadors.coupon} is not null`);
+  const who = new Map(owners.map((o) => [String(o.code).toUpperCase(), o.name]));
+  return used.map((u) => ({ ...u, name: who.get(u.code) ?? null })).sort((a, b) => b.count - a.count || a.code.localeCompare(b.code));
 }
