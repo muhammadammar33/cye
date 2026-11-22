@@ -47,6 +47,11 @@ export default async function CouponsPage() {
       <PageHeader
         title="Coupons"
         description="Head ambassador coupons (10% off a competition registration fee), most used first. Click a code to see its registrations."
+        actions={
+          <Link href="/admin/submissions?coupon=any" className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+            View all coupon registrations
+          </Link>
+        }
       />
       <div className="mb-6 grid gap-3 sm:grid-cols-3">
         {[
@@ -79,7 +84,7 @@ export default async function CouponsPage() {
               <tr key={r.code} className={r.uses ? "hover:bg-slate-50" : "text-slate-400"}>
                 <td className="px-4 py-3 text-xs text-slate-400">{r.uses ? i + 1 : "–"}</td>
                 <td className="px-4 py-3">
-                  <Link href={`/admin/submissions?type=competition&q=${encodeURIComponent(r.code)}`} className="whitespace-nowrap font-mono font-semibold text-cye-blue hover:underline">
+                  <Link href={`/admin/submissions?coupon=${encodeURIComponent(r.code)}`} className="whitespace-nowrap font-mono font-semibold text-cye-blue hover:underline">
                     {r.code}
                   </Link>
                   {!r.active ? <span className="ml-2 rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-slate-500">hidden, not accepted</span> : null}
@@ -98,7 +103,7 @@ export default async function CouponsPage() {
               <tr key={code} className="bg-amber-50/50">
                 <td className="px-4 py-3 text-xs text-slate-400">–</td>
                 <td className="px-4 py-3">
-                  <Link href={`/admin/submissions?type=competition&q=${encodeURIComponent(code)}`} className="whitespace-nowrap font-mono font-semibold text-cye-blue hover:underline">
+                  <Link href={`/admin/submissions?coupon=${encodeURIComponent(code)}`} className="whitespace-nowrap font-mono font-semibold text-cye-blue hover:underline">
                     {code}
                   </Link>
                 </td>
