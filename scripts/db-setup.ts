@@ -559,6 +559,19 @@ async function applyPatches(db: Db) {
     console.log("[db-setup] applied patch 2026-11-ist-ali-moiz");
   }
 
+  if (!applied.has("2026-11-easypaisa-account")) {
+    // Easypaisa (Saad Ahmed) as another way to pay the competition fee, after the existing accounts.
+    const [row] = await db.select().from(s.settings).where(eq(s.settings.key, "payment"));
+    const payment = (row?.value ?? {}) as { accounts?: { method: string; title: string; number: string }[] };
+    const accounts = Array.isArray(payment.accounts) ? payment.accounts : [];
+    if (!accounts.some((a) => a.number.replace(/\s+/g, "").includes("03420042947"))) {
+      const value = { ...payment, accounts: [...accounts, { method: "Easypaisa", title: "SAAD AHMED", number: "03420042947" }].slice(0, 4) };
+      await db.insert(s.settings).values({ key: "payment", value }).onConflictDoUpdate({ target: s.settings.key, set: { value } });
+    }
+    applied.add("2026-11-easypaisa-account");
+    console.log("[db-setup] applied patch 2026-11-easypaisa-account");
+  }
+
   if (!applied.has("2026-10-remove-debate")) {
     await db.delete(s.competitions).where(byName("Debate"));
     applied.add("2026-10-remove-debate");
