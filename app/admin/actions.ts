@@ -21,6 +21,7 @@ import { parseFilters, whereFor } from "@/lib/admin/submissionQuery";
 import { GENDERS } from "@/data/event";
 import { logActivity } from "@/lib/admin/log";
 import { judgeEmail, sendEmail } from "@/lib/email";
+import { sendConfirmation } from "@/lib/confirmation";
 import { focalsOf } from "@/lib/focals";
 import { fillJudgeTemplate, splitEmails } from "@/lib/judgeEmail";
 import { emailPasses, holdersFor, issueForSubmissions, issueManualPass, passByToken, passOrigin, revokeForSubmissions } from "@/lib/passes";
@@ -105,8 +106,24 @@ export async function updateSubmission(id: number, _prev: ActionState, form: For
   ].filter(Boolean);
   if (changes.length) await logActivity(me, "Updated submission", `#${id} ${before.name} (${TYPE_NAMES[before.type]})`, changes.join("; "));
   const passNote = before.status !== status ? await syncPasses(me, [id], status) : "";
+  const restored = await confirmRestored(me, [before], status);
   revalidatePath("/admin", "layout");
-  return { ok: `Saved.${passNote}` };
+  return { ok: `Saved.${passNote}${restored ? " The confirmation email was sent to the applicant." : ""}` };
+}
+
+/**
+ * Archived submissions moved back to New get the applicant's confirmation email, unless they already had it
+ * (data.confirmationSentAt). Returns how many were emailed.
+ */
+async function confirmRestored(me: { id: number; name: string; email: string }, before: (typeof s.submissions.$inferSelect)[], status: SubmissionStatus) {
+  if (status !== "new") return 0;
+  const due = before.filter((b) => b.status === "archived" && !(b.data as Record<string, unknown>).confirmationSentAt);
+  if (!due.length) return 0;
+  const origin = await passOrigin();
+  let sent = 0;
+  for (const b of due) if (await sendConfirmation({ ...b, status }, origin)) sent++;
+  await logActivity(me, "Sent confirmation emails", `${sent} of ${due.length} restored from Archived`, due.map((b) => `#${b.id} ${b.email}`).join(", ").slice(0, 2000));
+  return sent;
 }
 
 /**
@@ -177,6 +194,7 @@ export async function bulkSetStatus(form: FormData) {
   const status = String(form.get("bulkStatus")) as SubmissionStatus;
   const ids = await bulkIds(form);
   if (!SUBMISSION_STATUSES.includes(status) || ids.length === 0) return;
+  const before = status === "new" ? await requireDb().select().from(s.submissions).where(inArray(s.submissions.id, ids)) : [];
   await requireDb().update(s.submissions).set({ status }).where(inArray(s.submissions.id, ids));
   await logActivity(
     me,
@@ -185,6 +203,7 @@ export async function bulkSetStatus(form: FormData) {
     `Marked as ${STATUS_LABELS[status]}`,
   );
   await syncPasses(me, ids, status);
+  await confirmRestored(me, before, status);
   revalidatePath("/admin", "layout");
 }
 

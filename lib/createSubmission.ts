@@ -1,12 +1,12 @@
 import "server-only";
 import { and, eq, gt } from "drizzle-orm";
 import { after } from "next/server";
-import { FOCAL_PERSONS } from "@/data/event";
 import { uploadImage } from "@/lib/blob";
 import { getCompetitions, getSettings } from "@/lib/content";
 import { db, schema as s } from "@/lib/db";
 import type { SubmissionType } from "@/lib/db/schema";
-import { confirmationEmail, sendEmail, teamEmail } from "@/lib/email";
+import { sendEmail, teamEmail } from "@/lib/email";
+import { sendConfirmation } from "@/lib/confirmation";
 import { COUPON_PERCENT, discountedFee } from "@/lib/coupons";
 import { findCoupon } from "@/lib/couponLookup";
 import { lawyersSeatsLeft } from "@/lib/lawyersConference";
@@ -30,7 +30,7 @@ export async function createSubmission(opts: {
   ip: string | null;
   origin: string;
   source?: string;
-  /** The hidden anti-spam field was filled: keep it archived with a note and send no emails. */
+  /** The hidden anti-spam field was filled: file it under Archived with a note (the usual emails still go out). */
   suspected?: boolean;
 }): Promise<CreateResult> {
   const { type, slip } = opts;
@@ -49,16 +49,6 @@ export async function createSubmission(opts: {
   const competitions = await getCompetitions();
   const result = normalize(type, opts.data, competitions);
   if ("error" in result) return { ok: false, error: result.error, status: 422 };
-  const chosen = type === "competition" ? competitions.find((c) => c.name === result.subject) : undefined;
-  const focal = chosen?.focalName
-    ? { name: chosen.focalName, phone: chosen.focalPhone, topic: chosen.name, also: chosen.focalName2 ? { name: chosen.focalName2, phone: chosen.focalPhone2 ?? null } : undefined }
-    : type === "talent"
-      ? { name: FOCAL_PERSONS.talentTribute.name, phone: FOCAL_PERSONS.talentTribute.phone, topic: "Talent Tribute" }
-      : type === "project"
-        ? { name: FOCAL_PERSONS.projectExhibition.name, phone: FOCAL_PERSONS.projectExhibition.phone, topic: "the Project Exhibition" }
-        : type === "lawyers"
-          ? { name: FOCAL_PERSONS.lawyersConference.name, phone: FOCAL_PERSONS.lawyersConference.phone, topic: "the Lawyers Conference" }
-          : undefined;
 
   // Basic flood guard: one submission per email and form per minute.
   const recent = await db
@@ -107,7 +97,7 @@ export async function createSubmission(opts: {
   }
   if (opts.source) result.data.source = opts.source;
   if (opts.suspected) {
-    result.data.spamCheck = "The hidden anti-spam field was filled (a bot, or browser autofill). No emails were sent. If this is a real person, set the status and email them.";
+    result.data.spamCheck = "The hidden anti-spam field was filled (a bot, or browser autofill), so this was filed under Archived. The usual emails were sent. If this is a real person, set the right status.";
   }
 
   const [row] = await db
@@ -116,8 +106,7 @@ export async function createSubmission(opts: {
       type, name: result.name, email: result.email, phone: result.phone, institution: result.institution, gender: result.gender,
       subject: result.subject, data: result.data, ip: opts.ip, ...(opts.suspected ? { status: "archived" as const } : {}),
     })
-    .returning({ id: s.submissions.id });
-  if (opts.suspected) return { ok: true, id: row.id, slipStored: Boolean(result.data.paymentSlip) };
+    .returning();
 
   const kind = TYPE_LABELS[type];
   const adminUrl = `${opts.origin}/admin/submissions/${row.id}`;
@@ -126,16 +115,11 @@ export async function createSubmission(opts: {
     await Promise.all([
       sendEmail({
         to: settings.inboxes[INBOX[type]],
-        subject: `New ${kind}${opts.source ? ` (${opts.source})` : ""}: ${result.subject ?? result.name}`,
+        subject: `${opts.suspected ? "[Archived, please check] " : ""}New ${kind}${opts.source ? ` (${opts.source})` : ""}: ${result.subject ?? result.name}`,
         html: teamEmail(ctx, kind, row.id, adminUrl, { name: result.name, email: result.email, ...result.data }),
         replyTo: result.email,
       }),
-      sendEmail({
-        to: result.email,
-        subject: `${kind} received | Capital Youth Expo 2026`,
-        html: confirmationEmail(ctx, type, result.name, kind, result.subject ?? "", type === "competition" ? { payment: settings.payment, fee: result.data.couponDiscount ? `${result.data.fee} (${result.data.couponDiscount} off with coupon ${result.data.coupon})` : String(result.data.fee ?? ""), slipReceived: Boolean(result.data.paymentSlip) } : undefined, focal),
-        replyTo: settings.inboxes[INBOX[type]],
-      }),
+      sendConfirmation(row, opts.origin),
     ]);
   });
 
