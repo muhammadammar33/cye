@@ -248,6 +248,7 @@ export const AMBASSADORS: AmbassadorSeed[] = [
   { institute: "Institute of Space Technology", name: "Mian Abdullah", role: "Co-Ambassador", phone: null, photo: "/ambassadors/mian-abdullah-institute-of-space-technology.webp" },
   { institute: "Institute of Space Technology", name: "Muhammad Abdullah", role: "Co-Ambassador", phone: null, photo: "/ambassadors/muhammad-abdullah-institute-of-space-technology.webp" },
   { institute: "Institute of Space Technology", name: "Shahzaib Khan Abbasi", role: "Co-Ambassador", phone: null, photo: "/ambassadors/shahzaib-khan-abbasi-institute-of-space-technology.webp" },
+  { institute: "Institute of Space Technology", name: "Muhammad Ali Moiz", role: "Co-Ambassador", phone: null, photo: "/ambassadors/muhammad-ali-moiz-institute-of-space-technology.webp" },
   // Ibadat International University
   { institute: "Ibadat International University", name: "Seham", role: "Head Ambassador", phone: "+92 343 8070077", photo: null, coupon: "CYE-IBADAT" },
   // FUUAST
