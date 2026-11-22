@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || null;
   const origin = process.env.SITE_URL?.replace(/\/$/, "") || req.nextUrl.origin;
   // Hidden anti-spam field filled: usually a bot, but browser autofill can fill it for real people too. Never drop
-  // the submission: it is checked like any other and kept (archived, no emails) so the team can recover it.
+  // the submission: it is checked like any other and kept (archived, with the usual emails) so the team can check it.
   const suspected = typeof body.hp === "string" && body.hp.trim() !== "";
   if (suspected) console.warn(`[submissions] anti-spam field filled on a ${type} submission; kept as archived`);
   const result = await createSubmission({ type, data: body.data, slip, ip, origin, suspected });
