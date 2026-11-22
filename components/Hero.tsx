@@ -65,11 +65,17 @@ function useDaysToDeadline(isoDate: string) {
   return Math.round((Date.parse(isoDate) - Date.parse(today)) / 86_400_000);
 }
 
-const DEADLINE_LABEL = new Date(`${EVENT.registrationDeadline}T12:00:00+05:00`).toLocaleDateString("en-GB", { day: "numeric", month: "long", timeZone: "Asia/Karachi" });
+const dayLabel = (iso: string) => new Date(`${iso}T12:00:00+05:00`).toLocaleDateString("en-GB", { day: "numeric", month: "long", timeZone: "Asia/Karachi" });
+const DEADLINE_LABEL = dayLabel(EVENT.registrationDeadline);
+const ORIGINAL_DEADLINE = EVENT.registrationDeadlineExtendedFrom;
+const ORIGINAL_LABEL = dayLabel(ORIGINAL_DEADLINE);
 
 export function Hero() {
   const countdown = useCountdown(EVENT.isoDate);
   const daysLeft = useDaysToDeadline(EVENT.registrationDeadline);
+  // Still on or before the original deadline: show that one. Afterwards the extension is announced as a last call.
+  const originalDaysLeft = useDaysToDeadline(ORIGINAL_DEADLINE);
+  const extended = originalDaysLeft !== null && originalDaysLeft < 0;
 
   return (
     <section id="top" className="relative overflow-hidden bg-white pt-28 pb-16 sm:pt-32 sm:pb-24">
@@ -132,13 +138,27 @@ export function Hero() {
               className="mx-auto mt-8 inline-flex max-w-full flex-wrap items-center justify-center gap-x-2 gap-y-1 rounded-2xl bg-grad-orange px-5 py-3 text-center text-white shadow-card transition hover:brightness-110 sm:rounded-full"
             >
               <Hourglass className="h-5 w-5 shrink-0" aria-hidden />
-              <span className="font-heading text-base font-extrabold uppercase tracking-wide sm:text-lg">
-                {daysLeft === null ? "Registration closing soon" : daysLeft === 0 ? "Last day to register" : `${daysLeft} day${daysLeft === 1 ? "" : "s"} left to register`}
-              </span>
-              <span className="text-sm font-semibold text-white/90">
-                <span className="hidden sm:inline">· </span>Deadline: {daysLeft === 0 ? "today, " : ""}
-                {DEADLINE_LABEL}
-              </span>
+              {extended ? (
+                <>
+                  <span className="font-heading text-base font-extrabold uppercase tracking-wide sm:text-lg">
+                    Last call! {daysLeft === 0 ? "Last day to register" : "Registration extended"}
+                  </span>
+                  <span className="text-sm font-semibold text-white/90">
+                    <span className="hidden sm:inline">· </span>
+                    {daysLeft === 0 ? `Deadline: today, ${DEADLINE_LABEL}` : `Now open till ${DEADLINE_LABEL} (${daysLeft} day${daysLeft === 1 ? "" : "s"} left)`}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <span className="font-heading text-base font-extrabold uppercase tracking-wide sm:text-lg">
+                    {originalDaysLeft === null ? "Registration closing soon" : originalDaysLeft === 0 ? "Last day to register" : `${originalDaysLeft} day${originalDaysLeft === 1 ? "" : "s"} left to register`}
+                  </span>
+                  <span className="text-sm font-semibold text-white/90">
+                    <span className="hidden sm:inline">· </span>Deadline: {originalDaysLeft === 0 ? "today, " : ""}
+                    {ORIGINAL_LABEL}
+                  </span>
+                </>
+              )}
             </Link>
           ) : null}
           <div className="mt-5 flex flex-col items-center justify-center gap-3 sm:flex-row">

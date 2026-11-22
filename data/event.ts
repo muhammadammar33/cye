@@ -5,7 +5,12 @@ export const EVENT = {
   date: "2 December 2026",
   isoDate: "2026-12-02",
   /** Last day to register (Pakistan time). The home page counts down to it and hides the notice afterwards. */
-  registrationDeadline: "2026-11-22",
+  registrationDeadline: "2026-11-28",
+  /**
+   * The deadline before the extension. Until it has passed the home page still shows it; from the next day (12 am
+   * Pakistan time) it announces the extension as a last call.
+   */
+  registrationDeadlineExtendedFrom: "2026-11-22",
   venue: "Pak-China Friendship Center",
   city: "Islamabad",
   organizers: ["SAFE", "Youth Insight (YI)"],
