@@ -1,5 +1,5 @@
 import "server-only";
-import { AUDIENCE, EVENT, VERTICALS } from "@/data/event";
+import { AUDIENCE, EVENT, LAWYERS_CONFERENCE, VERTICALS } from "@/data/event";
 import type { SubmissionType } from "@/lib/db/schema";
 import type { PaymentSettings } from "@/lib/defaults";
 import { whatsappLink } from "@/lib/phone";
@@ -143,7 +143,7 @@ const NEXT_STEPS: Record<SubmissionType, string> = {
   volunteer: "Our team will review your application. Selected volunteers receive their event pass by email and an invitation to a short briefing before expo day.",
   sponsor: "Our partnerships team will contact you shortly with the sponsorship deck and to discuss the package that suits you best.",
   contact: "Our team will get back to you as soon as possible, usually within two working days.",
-  lawyers: "Your seat request for the Lawyers Conference panel discussion is in. Once our team confirms your registration, you receive your Lawyers Conference pass by email. Seats are limited to the auditorium's capacity.",
+  lawyers: `Your seat request for the Lawyers Conference panel discussion (${EVENT.date}, ${LAWYERS_CONFERENCE.time}) is in. Once our team confirms your registration, you receive your Lawyers Conference pass by email. Seats are limited to the auditorium's capacity.`,
   medical: "Your seat request for the Medical Conference panel discussion is in. Once our team confirms your registration, you receive your Medical Conference pass by email. Seats are limited to the auditorium's capacity.",
   talent: "Our team will verify your result card. Students who qualify receive their Talent Tribute pass by email, with details of the ceremony at the expo.",
 };
