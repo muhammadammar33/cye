@@ -572,6 +572,19 @@ async function applyPatches(db: Db) {
     console.log("[db-setup] applied patch 2026-11-easypaisa-account");
   }
 
+  if (!applied.has("2026-11-alhamd-coupon")) {
+    // Al-Hamd Islamic University's coupon, ahead of its ambassadors' details. The "Coupon only" row keeps the code
+    // valid without listing anyone on the Ambassadors page; it becomes the head ambassador once details arrive.
+    const A = s.ambassadors;
+    const [taken] = await db.select({ id: A.id }).from(A).where(eq(A.coupon, "CYE-ALHAMD")).limit(1);
+    if (!taken) {
+      const [last] = await db.select({ order: sql<number>`max(${A.sortOrder})` }).from(A);
+      await db.insert(A).values({ name: "Al-Hamd Head Ambassador", institute: "Al-Hamd Islamic University", role: "Coupon only", coupon: "CYE-ALHAMD", sortOrder: Number(last?.order ?? 0) + 1 });
+    }
+    applied.add("2026-11-alhamd-coupon");
+    console.log("[db-setup] applied patch 2026-11-alhamd-coupon");
+  }
+
   if (!applied.has("2026-10-remove-debate")) {
     await db.delete(s.competitions).where(byName("Debate"));
     applied.add("2026-10-remove-debate");
