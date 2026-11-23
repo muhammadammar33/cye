@@ -24,8 +24,11 @@ export function InterestForm({
   type,
   to,
   submitLabel,
+  extra,
 }: {
   fields: InterestField[];
+  /** Fixed values sent with the form (e.g. which organization a membership form is for). */
+  extra?: Record<string, string>;
   type: SubmissionType;
   /** Inbox shown if something goes wrong. */
   to: string;
@@ -36,7 +39,7 @@ export function InterestForm({
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
-    const data: Record<string, string> = {};
+    const data: Record<string, string> = { ...extra };
     for (const field of fields) {
       const value = form.get(field.name);
       if (field.type === "checkbox") {

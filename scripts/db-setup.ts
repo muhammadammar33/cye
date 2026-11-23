@@ -595,6 +595,13 @@ async function applyPatches(db: Db) {
     console.log("[db-setup] applied patch 2026-11-huda-mirza");
   }
 
+  if (!applied.has("2026-11-speech-focal2")) {
+    // Abdullah Khan manages Speech with Uzair Khalil.
+    await db.update(s.competitions).set({ focalName2: "Abdullah Khan", focalPhone2: "+92 314 0501428" }).where(byName("Speech (English / Urdu)"));
+    applied.add("2026-11-speech-focal2");
+    console.log("[db-setup] applied patch 2026-11-speech-focal2");
+  }
+
   if (!applied.has("2026-10-remove-debate")) {
     await db.delete(s.competitions).where(byName("Debate"));
     applied.add("2026-10-remove-debate");

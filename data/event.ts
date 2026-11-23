@@ -195,6 +195,7 @@ export const EMAILS = {
   talent: "info@capitalyouthexpo.com",
   lawyers: "info@capitalyouthexpo.com",
   medical: "info@capitalyouthexpo.com",
+  membership: "info@capitalyouthexpo.com",
 };
 
 // Flip a flag to false to close that form and show a "registration closed" notice instead.
@@ -208,6 +209,7 @@ export const REGISTRATION_OPEN = {
   talent: true,
   lawyers: true,
   medical: true,
+  membership: true,
 };
 
 export type NavItem = {
@@ -225,6 +227,7 @@ export const REGISTER_LINKS: NavItem[] = [
   { href: "/lawyers-conference", label: "Lawyers Conference", desc: "Panel discussion on Pakistan's constitutional future" },
   { href: "/medical-conference", label: "Medical Conference", desc: "Panel discussion for medical students and doctors" },
   { href: "/visitors", label: "Visitor Pass", desc: "Register to attend the expo" },
+  { href: "/membership", label: "Membership", desc: "Join Bazm-e-Paigham, Youth Insight or Islami Jamiat Talaba" },
   { href: "/ambassadors", label: "Campus Ambassadors", desc: "Find the CYE ambassadors at your campus" },
   { href: "/volunteers", label: "Volunteer", desc: "Join the team behind the expo" },
 ];
@@ -269,7 +272,7 @@ export const COMPETITIONS = [
     desc: "Recite a naat in honour of the Prophet (PBUH) before a panel of judges." },
   { name: "Qirat", vertical: "Literary", audience: "Schools & University", fee: "PKR 500", teamMin: 1, teamMax: 1, rulebook: "/rulebooks/17-qirat.pdf", focalName: "Nafeel Javaid", focalPhone: "+92 320 7892269", prizes: ["PKR 15,000", "PKR 10,000", "PKR 5,000"] as [string, string, string],
     desc: "Recite the Holy Quran with tajweed, judged on precision and melody." },
-  { name: "Speech (English / Urdu)", vertical: "Literary", audience: "Schools & University", fee: "PKR 500", teamMin: 1, teamMax: 1, rulebook: "/rulebooks/18-speech-declamation.pdf", focalName: "Uzair Khalil", focalPhone: "+92 335 0526736", prizes: ["PKR 15,000", "PKR 10,000", "PKR 5,000"] as [string, string, string],
+  { name: "Speech (English / Urdu)", vertical: "Literary", audience: "Schools & University", fee: "PKR 500", teamMin: 1, teamMax: 1, rulebook: "/rulebooks/18-speech-declamation.pdf", focalName: "Uzair Khalil", focalPhone: "+92 335 0526736", focalName2: "Abdullah Khan", focalPhone2: "+92 314 0501428", prizes: ["PKR 15,000", "PKR 10,000", "PKR 5,000"] as [string, string, string],
     desc: "A declamation contest: deliver a persuasive, prepared speech of up to 5 minutes in English or Urdu, with each language judged separately." },
   { name: "Arts", vertical: "Literary", audience: "Schools & University", fee: "PKR 500", teamMin: 1, teamMax: 1, rulebook: "/rulebooks/19-arts.pdf" as string | null, focalName: "Kaleem Ul Haq", focalPhone: "+92 344 0442365", prizes: ["PKR 10,000", "PKR 8,000", "PKR 5,000"] as [string, string, string],
     desc: "Create an original artwork on the spot around the expo theme." },
@@ -480,3 +483,34 @@ export const MEDICAL_CONFERENCE = {
   guests: [] as { name: string; role: string }[],
   statuses: ["Medical student", "Doctor / healthcare professional", "Student / professional (other field)"] as const,
 };
+
+/**
+ * Membership forms of the organizations behind the expo. /membership shows one card per organization; each opens
+ * its own form at /membership/<slug>. The slugs are printed as QR codes, so keep them stable.
+ */
+export const MEMBERSHIP_ORGS = [
+  {
+    slug: "bazm-e-paigham",
+    name: "Bazm-e-Paigham",
+    audience: "For kids and school-going children",
+    about: "Join Bazm-e-Paigham, the platform for school-going children to learn, create and grow with activities, events and friends.",
+    /** Children apply with a parent or guardian's contact details. */
+    kids: true,
+  },
+  {
+    slug: "youth-insight",
+    name: "Youth Insight",
+    audience: "For young people, students and young professionals",
+    about: "Join Youth Insight, the youth platform behind Capital Youth Expo, and take part in leadership, skills and community programmes.",
+    kids: false,
+  },
+  {
+    slug: "islami-jamiat-talaba",
+    name: "Islami Jamiat Talaba",
+    audience: "For college and university students",
+    about: "Join Islami Jamiat Talaba and be part of a student movement for learning, character building and service on campus.",
+    kids: false,
+  },
+] as const;
+
+export type MembershipOrg = (typeof MEMBERSHIP_ORGS)[number];

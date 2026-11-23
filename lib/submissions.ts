@@ -3,7 +3,7 @@ import { z } from "zod";
 import type { SubmissionType } from "@/lib/db/schema";
 import type { RegistrationKey } from "@/lib/defaults";
 import type { Competition } from "@/lib/content";
-import { GENDERS, LAWYERS_CONFERENCE, MEDICAL_CONFERENCE, TALENT_LEVELS } from "@/data/event";
+import { GENDERS, LAWYERS_CONFERENCE, MEDICAL_CONFERENCE, MEMBERSHIP_ORGS, TALENT_LEVELS } from "@/data/event";
 import { checkResult, ELIGIBLE_PERCENT, RESULT_TYPES } from "@/lib/eligibility";
 import { CHOICE_FIELDS, choiceFor } from "@/lib/competitionOptions";
 
@@ -71,6 +71,17 @@ export const SCHEMAS = {
     institution: text(),
     ...consents,
   }),
+  membership: z.object({
+    organization: z.enum(MEMBERSHIP_ORGS.map((o) => o.name) as [string, ...string[]], { message: "Choose an organization" }),
+    name: text(), email, phone, gender,
+    institution: text(),
+    city: text(),
+    level: optional(60),
+    age: optional(10),
+    guardian: optional(120),
+    interests: optional(500),
+    ...consents,
+  }),
   medical: z.object({
     name: text(), email, phone, gender,
     status: z.enum(MEDICAL_CONFERENCE.statuses, { message: "Choose medical student, doctor or other field" }),
@@ -90,10 +101,11 @@ export const GATE: Partial<Record<SubmissionType, RegistrationKey>> = {
   talent: "talent",
   lawyers: "lawyers",
   medical: "medical",
+  membership: "membership",
 };
 
 /** Settings inbox that receives the team notification for each form. */
-export const INBOX: Record<SubmissionType, "competitions" | "projects" | "startups" | "visitors" | "ambassadors" | "volunteers" | "sponsors" | "info" | "talent" | "lawyers" | "medical"> = {
+export const INBOX: Record<SubmissionType, "competitions" | "projects" | "startups" | "visitors" | "ambassadors" | "volunteers" | "sponsors" | "info" | "talent" | "lawyers" | "medical" | "membership"> = {
   competition: "competitions",
   project: "projects",
   startup: "startups",
@@ -105,6 +117,7 @@ export const INBOX: Record<SubmissionType, "competitions" | "projects" | "startu
   talent: "talent",
   lawyers: "lawyers",
   medical: "medical",
+  membership: "membership",
 };
 
 export const TYPE_LABELS: Record<SubmissionType, string> = {
@@ -119,6 +132,7 @@ export const TYPE_LABELS: Record<SubmissionType, string> = {
   talent: "Talent Tribute application",
   lawyers: "Lawyers Conference registration",
   medical: "Medical Conference registration",
+  membership: "Membership form",
 };
 
 export type Normalized = {
@@ -186,6 +200,8 @@ export function normalize(type: SubmissionType, raw: Record<string, unknown>, co
     case "lawyers":
     case "medical":
       return { name: d.name as string, email: d.email as string, phone: d.phone as string, gender: d.gender as string, institution: d.institution as string, subject: d.status as string, data: d };
+    case "membership":
+      return { name: d.name as string, email: d.email as string, phone: d.phone as string, gender: d.gender as string, institution: d.institution as string, subject: d.organization as string, data: d };
     case "visitor":
       return { name: d.name as string, email: d.email as string, phone: d.phone as string, gender: d.gender as string, institution: d.institution as string, subject: d.level as string, data: d };
   }
