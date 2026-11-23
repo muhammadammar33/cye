@@ -1,9 +1,10 @@
-import { EVENT, GENDERS, VOLUNTEER_ROLES } from "@/data/event";
+import { EVENT, FOCAL_PERSONS, GENDERS, VOLUNTEER_ROLES } from "@/data/event";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Card } from "@/components/ui/Card";
 import { ClosedNotice } from "@/components/ui/ClosedNotice";
 import { Container } from "@/components/ui/Container";
 import { FadeIn } from "@/components/ui/FadeIn";
+import { FocalPerson } from "@/components/ui/FocalPerson";
 import { InterestForm } from "@/components/ui/InterestForm";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { getSettings } from "@/lib/content";
@@ -36,6 +37,7 @@ export async function VolunteerForm() {
           <p className="mt-2 text-sm text-cye-ink/65">
             Pre-event outreach starts weeks before {EVENT.date}. Expo-day roles are assigned after a short briefing.
           </p>
+          <FocalPerson className="mt-4" title="Focal person, Volunteers" name={FOCAL_PERSONS.volunteers.name} phone={FOCAL_PERSONS.volunteers.phone} />
           <div className="mt-6">
             {REGISTRATION_OPEN.volunteers ? (
               <InterestForm
