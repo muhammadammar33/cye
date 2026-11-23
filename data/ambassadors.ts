@@ -344,7 +344,7 @@ export const AMBASSADORS: AmbassadorSeed[] = [
   { institute: "Fazaia College", name: "Zainab Fatima", role: "Head Ambassador", phone: "+92 345 5310038", photo: "/ambassadors/zainab-fatima-fazaia-college.webp", coupon: "CYE-FAZAIA" },
   { institute: "Fazaia College", name: "Hania Fatima", role: "Co-Ambassador", phone: null, photo: "/ambassadors/hania-fatima-fazaia-college.webp" },
   { institute: "Fazaia College", name: "Hasnain Alam", role: "Co-Ambassador", phone: null, photo: "/ambassadors/hasnain-alam-fazaia-college.webp" },
-  { institute: "Fazaia College", name: "Huda Urooj", role: "Co-Ambassador", phone: null, photo: "/ambassadors/huda-urooj-fazaia-college.webp" },
+  { institute: "Fazaia College", name: "Huda Mirza", role: "Co-Ambassador", phone: null, photo: "/ambassadors/huda-urooj-fazaia-college.webp" },
   { institute: "Fazaia College", name: "M. Talha", role: "Co-Ambassador", phone: null, photo: "/ambassadors/m-talha-fazaia-college.webp" },
   { institute: "Fazaia College", name: "Rabi Urooj", role: "Co-Ambassador", phone: null, photo: "/ambassadors/rabi-urooj-fazaia-college.webp" },
   { institute: "Fazaia College", name: "Raja Talha", role: "Co-Ambassador", phone: null, photo: "/ambassadors/raja-talha-fazaia-college.webp" },
