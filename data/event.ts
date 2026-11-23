@@ -450,6 +450,8 @@ export const LAWYERS_CONFERENCE = {
   about:
     "A high-level panel of eminent jurists, senior advocates and legal minds debates whether Pakistan's constitutional framework is best served by amendment, adaptation or a fundamental rethink. The session explores constitutional continuity, institutional balance, democratic governance and the rule of law. Open to law students and young people from every field, it includes an interactive Q&A with the speakers.",
   format: "Panel Discussion",
+  /** Session time on the event day (Pakistan time). */
+  time: "2:00 pm to 3:00 pm",
   /** Auditorium seats; registration closes by itself once this many registrations are in (rejected ones don't count). */
   capacity: 150,
   guests: [

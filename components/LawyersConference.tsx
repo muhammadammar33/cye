@@ -1,4 +1,4 @@
-import { CalendarDays, Gavel, MapPin, Mic2, Users } from "lucide-react";
+import { CalendarDays, Clock, Gavel, MapPin, Mic2, Users } from "lucide-react";
 import { EVENT, FOCAL_PERSONS, GENDERS, LAWYERS_CONFERENCE } from "@/data/event";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { ClosedNotice } from "@/components/ui/ClosedNotice";
@@ -57,6 +57,10 @@ export async function LawyersConference() {
               <p className="flex items-center gap-2">
                 <CalendarDays className="h-4 w-4 text-cye-orange" aria-hidden />
                 {EVENT.date}
+              </p>
+              <p className="flex items-center gap-2">
+                <Clock className="h-4 w-4 text-cye-orange" aria-hidden />
+                {LAWYERS_CONFERENCE.time}
               </p>
               <p className="flex items-center gap-2">
                 <MapPin className="h-4 w-4 text-cye-orange" aria-hidden />

@@ -1,4 +1,4 @@
-import { CalendarDays, Gavel, MapPin, Ticket } from "lucide-react";
+import { CalendarDays, Clock, Gavel, MapPin, Ticket } from "lucide-react";
 import { EVENT, LAWYERS_CONFERENCE } from "@/data/event";
 import { ArcDecoration } from "@/components/ui/ArcDecoration";
 import { Button } from "@/components/ui/Button";
@@ -41,6 +41,10 @@ export function LawyersSpotlight() {
               <p className="flex items-center gap-2">
                 <CalendarDays className="h-4 w-4 text-cye-orange" aria-hidden />
                 {EVENT.date}
+              </p>
+              <p className="flex items-center gap-2">
+                <Clock className="h-4 w-4 text-cye-orange" aria-hidden />
+                {LAWYERS_CONFERENCE.time}
               </p>
               <p className="flex items-center gap-2">
                 <MapPin className="h-4 w-4 text-cye-orange" aria-hidden />
