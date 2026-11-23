@@ -454,8 +454,8 @@ export const LAWYERS_CONFERENCE = {
   capacity: 150,
   guests: [
     { name: "Dr. Aziz ur Rehman", role: "Chairman, Intellectual Property Organisation of Pakistan (IPO)" },
-    { name: "Mr. Ahmer Bilal Soofi", role: "Former Federal Minister for Law & Justice" },
-    { name: "Justice (R) Shaukat Aziz Siddiqui", role: "Former Judge, Islamabad High Court" },
+    { name: "Justice (R) Mushir Alam", role: "Former Judge, Supreme Court of Pakistan" },
+    { name: "Barrister Gohar", role: "MNA, Advocate Supreme Court" },
   ],
   statuses: ["Law student", "Lawyer", "Student / professional (other field)"] as const,
 };

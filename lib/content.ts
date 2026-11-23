@@ -1,11 +1,14 @@
 import "server-only";
-import { and, asc, eq, notInArray, sql } from "drizzle-orm";
+import { and, asc, eq, ne, notInArray, sql } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
 import { AMBASSADORS } from "@/data/ambassadors";
 import * as E from "@/data/event";
 import { db, schema as s } from "@/lib/db";
 import { DEFAULT_SETTINGS, type SiteSettings } from "@/lib/defaults";
 import { MIN_NOTICE_HIDE_AT, minRegistrations } from "@/lib/minRegistrations";
+
+/** Ambassador role for a row that only holds an institute's coupon until its ambassadors are announced. */
+export const COUPON_ONLY_ROLE = "Coupon only";
 
 /** Cache tag for every piece of site content; admin edits expire it. */
 export const CONTENT_TAG = "content";
@@ -112,7 +115,8 @@ export const getAmbassadors = cached(
   "ambassadors",
   async () =>
     groupAmbassadors(
-      (await need().select().from(s.ambassadors).where(eq(s.ambassadors.active, true)).orderBy(asc(s.ambassadors.sortOrder), asc(s.ambassadors.id))).map((a) => ({
+      // "Coupon only" rows hold a coupon for an institute whose ambassadors aren't announced yet: not listed publicly.
+      (await need().select().from(s.ambassadors).where(and(eq(s.ambassadors.active, true), ne(s.ambassadors.role, COUPON_ONLY_ROLE))).orderBy(asc(s.ambassadors.sortOrder), asc(s.ambassadors.id))).map((a) => ({
         institute: a.institute, name: a.name, role: a.role, phone: a.phone, photo: a.photo,
       })),
     ),
