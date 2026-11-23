@@ -585,6 +585,16 @@ async function applyPatches(db: Db) {
     console.log("[db-setup] applied patch 2026-11-alhamd-coupon");
   }
 
+  if (!applied.has("2026-11-huda-mirza")) {
+    // Name correction at her request: Huda Urooj is Huda Mirza (Fazaia College).
+    await db
+      .update(s.ambassadors)
+      .set({ name: "Huda Mirza" })
+      .where(and(eq(s.ambassadors.institute, "Fazaia College"), eq(s.ambassadors.name, "Huda Urooj")));
+    applied.add("2026-11-huda-mirza");
+    console.log("[db-setup] applied patch 2026-11-huda-mirza");
+  }
+
   if (!applied.has("2026-10-remove-debate")) {
     await db.delete(s.competitions).where(byName("Debate"));
     applied.add("2026-10-remove-debate");
