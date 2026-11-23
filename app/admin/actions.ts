@@ -648,6 +648,34 @@ export async function editTeamMember(id: number, index: number, originalEmail: s
   return { ok: `Saved ${next.name}.${note}` };
 }
 
+/**
+ * Makes a member the team lead: they move to the top of the team and their details become the registration's
+ * contact details; the old lead stays on as a member. Passes and their links are unchanged and nothing is emailed.
+ */
+export async function makeTeamLead(id: number, index: number, email: string) {
+  const me = await requireAdmin();
+  const database = requireDb();
+  const [sub] = await database.select().from(s.submissions).where(eq(s.submissions.id, id)).limit(1);
+  if (!sub || sub.type !== "competition" || index < 1) return;
+  const members = Array.isArray(sub.data.members) ? (sub.data.members as Member[]) : [];
+  const lead = members[index];
+  if (!lead || (lead.email ?? "").toLowerCase() !== email.toLowerCase()) return; // list changed meanwhile
+  const list = [lead, ...members.filter((_, i) => i !== index)];
+  await database
+    .update(s.submissions)
+    .set({
+      data: { ...sub.data, members: list },
+      name: lead.name,
+      email: lead.email,
+      phone: lead.phone ?? sub.phone,
+      institution: lead.institution ?? sub.institution,
+      gender: lead.gender ?? sub.gender,
+    })
+    .where(eq(s.submissions.id, id));
+  await logActivity(me, "Changed team lead", `#${id} ${sub.subject}, team ${String(sub.data.team || sub.name)}`, `${members[0]?.name ?? sub.name} → ${lead.name} (${lead.email})`);
+  revalidatePath("/admin", "layout");
+}
+
 /** Removes a member (not the team lead) and cancels their pass. */
 export async function removeTeamMember(id: number, index: number, email: string) {
   const me = await requireAdmin();

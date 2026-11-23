@@ -2,7 +2,7 @@ import { asc, eq } from "drizzle-orm";
 import { ArrowLeft, Mail, MessageCircle, Phone, Ticket, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { deleteSubmission, removeTeamMember, resendPass, updateSubmission } from "@/app/admin/actions";
+import { deleteSubmission, makeTeamLead, removeTeamMember, resendPass, updateSubmission } from "@/app/admin/actions";
 import { AddMemberForm } from "@/components/admin/AddMemberForm";
 import { ChangeCompetitionForm } from "@/components/admin/ChangeCompetitionForm";
 import { TeamNameForm } from "@/components/admin/TeamNameForm";
@@ -208,6 +208,16 @@ export default async function SubmissionPage({ params }: { params: Promise<{ id:
                         <div className="flex items-center justify-end gap-1.5">
                         {row.type === "competition" ? (
                           <EditMemberForm id={row.id} index={i} lead={i === 0} member={{ name: m.name, email: m.email, phone: m.phone, institution: m.institution, gender: m.gender }} />
+                        ) : null}
+                        {row.type === "competition" && i > 0 ? (
+                          <ConfirmForm
+                            action={makeTeamLead.bind(null, row.id, i, m.email)}
+                            message={`Make ${m.name} the team lead? Their details become the registration's contact details; ${members[0]?.name ?? "the current lead"} stays on as a member. Passes don't change and nobody is emailed.`}
+                          >
+                            <button type="submit" className="whitespace-nowrap rounded-lg border border-slate-200 px-2.5 py-1 text-xs font-semibold text-slate-600 hover:bg-slate-50">
+                              Make lead
+                            </button>
+                          </ConfirmForm>
                         ) : null}
                         {i > 0 && competition && members.length > competition.teamMin ? (
                           <ConfirmForm
