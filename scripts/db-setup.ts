@@ -614,6 +614,16 @@ async function applyPatches(db: Db) {
     console.log("[db-setup] applied patch 2026-11-bahria-h11-coupon");
   }
 
+  if (!applied.has("2026-11-ijt-islamabad")) {
+    // Membership forms already sent for "Islami Jamiat Talaba" now read "IJT Islamabad".
+    await db
+      .update(s.submissions)
+      .set({ subject: "IJT Islamabad", data: sql`jsonb_set(${s.submissions.data}, '{organization}', '"IJT Islamabad"')` })
+      .where(and(eq(s.submissions.type, "membership"), eq(s.submissions.subject, "Islami Jamiat Talaba")));
+    applied.add("2026-11-ijt-islamabad");
+    console.log("[db-setup] applied patch 2026-11-ijt-islamabad");
+  }
+
   if (!applied.has("2026-10-remove-debate")) {
     await db.delete(s.competitions).where(byName("Debate"));
     applied.add("2026-10-remove-debate");

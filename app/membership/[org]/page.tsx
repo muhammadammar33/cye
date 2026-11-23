@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ArrowLeft } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SiteChrome } from "@/components/SiteChrome";
@@ -64,6 +65,7 @@ export default async function MembershipFormPage({ params }: { params: Promise<{
           <Container>
             <FadeIn className="mx-auto max-w-2xl text-center">
               <Breadcrumbs current={`${org.name} membership`} />
+              {org.logo ? <Image src={org.logo} alt={`${org.name} logo`} width={240} height={100} sizes="200px" className="mx-auto mb-5 h-20 w-auto object-contain" priority /> : null}
               <p className="font-heading text-xs font-bold uppercase tracking-[0.28em] text-cye-orange">Membership form</p>
               <h1 className="mt-3 font-heading text-4xl font-black text-cye-blue sm:text-5xl">{org.name}</h1>
               <p className="mt-2 text-base font-semibold text-cye-ink/70">{org.audience}</p>
