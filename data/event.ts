@@ -272,7 +272,7 @@ export const COMPETITIONS = [
     desc: "Recite a naat in honour of the Prophet (PBUH) before a panel of judges." },
   { name: "Qirat", vertical: "Literary", audience: "Schools & University", fee: "PKR 500", teamMin: 1, teamMax: 1, rulebook: "/rulebooks/17-qirat.pdf", focalName: "Nafeel Javaid", focalPhone: "+92 320 7892269", prizes: ["PKR 15,000", "PKR 10,000", "PKR 5,000"] as [string, string, string],
     desc: "Recite the Holy Quran with tajweed, judged on precision and melody." },
-  { name: "Speech (English / Urdu)", vertical: "Literary", audience: "Schools & University", fee: "PKR 500", teamMin: 1, teamMax: 1, rulebook: "/rulebooks/18-speech-declamation.pdf", focalName: "Uzair Khalil", focalPhone: "+92 335 0526736", prizes: ["PKR 15,000", "PKR 10,000", "PKR 5,000"] as [string, string, string],
+  { name: "Speech (English / Urdu)", vertical: "Literary", audience: "Schools & University", fee: "PKR 500", teamMin: 1, teamMax: 1, rulebook: "/rulebooks/18-speech-declamation.pdf", focalName: "Uzair Khalil", focalPhone: "+92 335 0526736", focalName2: "Abdullah Khan", focalPhone2: "+92 314 0501428", prizes: ["PKR 15,000", "PKR 10,000", "PKR 5,000"] as [string, string, string],
     desc: "A declamation contest: deliver a persuasive, prepared speech of up to 5 minutes in English or Urdu, with each language judged separately." },
   { name: "Arts", vertical: "Literary", audience: "Schools & University", fee: "PKR 500", teamMin: 1, teamMax: 1, rulebook: "/rulebooks/19-arts.pdf" as string | null, focalName: "Kaleem Ul Haq", focalPhone: "+92 344 0442365", prizes: ["PKR 10,000", "PKR 8,000", "PKR 5,000"] as [string, string, string],
     desc: "Create an original artwork on the spot around the expo theme." },
