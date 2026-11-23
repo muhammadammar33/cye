@@ -15,6 +15,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: "https://capitalyouthexpo.com/talent-tribute", lastModified, changeFrequency: "weekly", priority: 0.8 },
     { url: "https://capitalyouthexpo.com/lawyers-conference", lastModified, changeFrequency: "weekly", priority: 0.8 },
     { url: "https://capitalyouthexpo.com/medical-conference", lastModified, changeFrequency: "weekly", priority: 0.8 },
+    { url: "https://capitalyouthexpo.com/membership", lastModified, changeFrequency: "weekly", priority: 0.7 },
     { url: "https://capitalyouthexpo.com/visitors", lastModified, changeFrequency: "weekly", priority: 0.8 },
     { url: "https://capitalyouthexpo.com/contact", lastModified, changeFrequency: "monthly", priority: 0.6 },
   ];

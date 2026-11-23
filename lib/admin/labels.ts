@@ -30,6 +30,7 @@ export const TYPE_NAMES: Record<SubmissionType, string> = {
   talent: "Talent Tribute",
   lawyers: "Lawyers Conference",
   medical: "Medical Conference",
+  membership: "Memberships",
 };
 
 /** Payment verification for competition registrations (empty = not checked yet). */
