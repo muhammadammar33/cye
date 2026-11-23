@@ -227,7 +227,7 @@ export const REGISTER_LINKS: NavItem[] = [
   { href: "/lawyers-conference", label: "Lawyers Conference", desc: "Panel discussion on Pakistan's constitutional future" },
   { href: "/medical-conference", label: "Medical Conference", desc: "Panel discussion for medical students and doctors" },
   { href: "/visitors", label: "Visitor Pass", desc: "Register to attend the expo" },
-  { href: "/membership", label: "Membership", desc: "Join Bazm-e-Paigham, Youth Insight or Islami Jamiat Talaba" },
+  { href: "/membership", label: "Membership", desc: "Join Bazm-e-Paigham, Youth Insight or IJT Islamabad" },
   { href: "/ambassadors", label: "Campus Ambassadors", desc: "Find the CYE ambassadors at your campus" },
   { href: "/volunteers", label: "Volunteer", desc: "Join the team behind the expo" },
 ];
@@ -494,6 +494,8 @@ export const MEMBERSHIP_ORGS = [
     name: "Bazm-e-Paigham",
     audience: "For kids and school-going children",
     about: "Join Bazm-e-Paigham, the platform for school-going children to learn, create and grow with activities, events and friends.",
+    /** Logo on the card and the form page; null until we have it (the card then shows just the name). */
+    logo: null as string | null,
     /** Children apply with a parent or guardian's contact details. */
     kids: true,
   },
@@ -502,13 +504,15 @@ export const MEMBERSHIP_ORGS = [
     name: "Youth Insight",
     audience: "For young people, students and young professionals",
     about: "Join Youth Insight, the youth platform behind Capital Youth Expo, and take part in leadership, skills and community programmes.",
+    logo: "/brand/youth-insight.png" as string | null,
     kids: false,
   },
   {
     slug: "islami-jamiat-talaba",
-    name: "Islami Jamiat Talaba",
+    name: "IJT Islamabad",
     audience: "For college and university students",
-    about: "Join Islami Jamiat Talaba and be part of a student movement for learning, character building and service on campus.",
+    about: "Join IJT Islamabad and be part of a student movement for learning, character building and service on campus.",
+    logo: null as string | null,
     kids: false,
   },
 ] as const;
