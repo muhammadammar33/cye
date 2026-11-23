@@ -17,6 +17,7 @@ export function focalFor(type: SubmissionType, subject: string | null, competiti
   }
   if (type === "talent") return { name: FOCAL_PERSONS.talentTribute.name, phone: FOCAL_PERSONS.talentTribute.phone, topic: "Talent Tribute" };
   if (type === "project") return { name: FOCAL_PERSONS.projectExhibition.name, phone: FOCAL_PERSONS.projectExhibition.phone, topic: "the Project Exhibition" };
+  if (type === "volunteer") return { name: FOCAL_PERSONS.volunteers.name, phone: FOCAL_PERSONS.volunteers.phone, topic: "volunteering at the expo" };
   if (type === "lawyers") return { name: FOCAL_PERSONS.lawyersConference.name, phone: FOCAL_PERSONS.lawyersConference.phone, topic: "the Lawyers Conference" };
   return undefined;
 }
