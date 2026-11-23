@@ -71,9 +71,7 @@ export async function LawyersConference() {
           </FadeIn>
           <FadeIn delay={0.08} className="rounded-3xl border border-white/80 bg-white p-6 shadow-card sm:p-8">
             <h3 className="font-heading text-xl font-extrabold text-cye-blue">Register for your seat</h3>
-            <p className={`mt-2 text-sm font-semibold ${full ? "text-red-600" : "text-cye-orange"}`}>
-              {full ? "All seats are taken." : `${seatsLeft} of ${LAWYERS_CONFERENCE.capacity} seats left`}
-            </p>
+            {full ? <p className="mt-2 text-sm font-semibold text-red-600">All seats are taken.</p> : null}
             <p className="mt-1 text-sm text-cye-ink/65">Once your registration is confirmed, you receive your Lawyers Conference pass by email. Bring it with your student card or bar card.</p>
             <div className="mt-6">
               {open.lawyers && !full ? (
