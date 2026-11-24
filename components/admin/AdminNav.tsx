@@ -1,6 +1,6 @@
 "use client";
 
-import { ExternalLink, FileText, Gauge, Gavel, History, Inbox, ListChecks, LogOut, Monitor, ScanLine, Settings, Ticket, TicketPercent, Users } from "lucide-react";
+import { ExternalLink, FileText, Gauge, Gavel, History, Inbox, ListChecks, LogOut, Monitor, PiggyBank, ScanLine, Settings, Ticket, TicketPercent, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { logout } from "@/app/admin/actions";
@@ -12,6 +12,7 @@ const MAIN = [
   { href: "/admin/pre-events", label: "Pre-events", icon: ListChecks },
   { href: "/admin/judges", label: "Judge emails", icon: Gavel },
   { href: "/admin/coupons", label: "Coupons", icon: TicketPercent },
+  { href: "/admin/prizes", label: "Prize recovery", icon: PiggyBank },
   { href: "/admin/passes", label: "Passes", icon: Ticket },
   { href: "/admin/gate", label: "Gate scanner", icon: ScanLine },
   { href: "/admin/attendance", label: "Live attendance", icon: Monitor },
