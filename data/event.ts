@@ -496,7 +496,7 @@ export const MEMBERSHIP_ORGS = [
     audience: "For kids and school-going children",
     about: "Join Bazm-e-Paigham, the platform for school-going children to learn, create and grow with activities, events and friends.",
     /** Logo on the card and the form page; null until we have it (the card then shows just the name). */
-    logo: null as string | null,
+    logo: "/brand/bazm-e-paigham.png" as string | null,
     /** Children apply with a parent or guardian's contact details. */
     kids: true,
   },
@@ -513,7 +513,7 @@ export const MEMBERSHIP_ORGS = [
     name: "IJT Islamabad",
     audience: "For college and university students",
     about: "Join IJT Islamabad and be part of a student movement for learning, character building and service on campus.",
-    logo: null as string | null,
+    logo: "/brand/ijt-islamabad.png" as string | null,
     kids: false,
   },
 ] as const;
