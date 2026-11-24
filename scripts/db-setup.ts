@@ -624,6 +624,28 @@ async function applyPatches(db: Db) {
     console.log("[db-setup] applied patch 2026-11-ijt-islamabad");
   }
 
+  if (!applied.has("2026-11-air-coambassadors")) {
+    // New Air University co-ambassadors from its Drive folder, after the existing ones.
+    const A = s.ambassadors;
+    const institute = "Air University";
+    const people: [name: string, photo: string][] = [
+      ["Fiza Hafeez", "/ambassadors/fiza-hafeez-air-university.webp"],
+      ["Hamza", "/ambassadors/hamza-air-university.webp"],
+      ["Haya Ali", "/ambassadors/haya-ali-air-university.webp"],
+      ["Qasim Faraz", "/ambassadors/qasim-faraz-air-university.webp"],
+      ["Umer Khan", "/ambassadors/umer-khan-air-university.webp"],
+      ["Uswa Sadozai", "/ambassadors/uswa-sadozai-air-university.webp"],
+    ];
+    for (const [name, photo] of people) {
+      const [exists] = await db.select({ id: A.id }).from(A).where(and(eq(A.institute, institute), eq(A.name, name))).limit(1);
+      if (exists) continue;
+      const [last] = await db.select({ order: sql<number>`max(${A.sortOrder})` }).from(A).where(eq(A.institute, institute));
+      await db.insert(A).values({ name, institute, role: "Co-Ambassador", photo, sortOrder: Number(last?.order ?? 0) + 1 });
+    }
+    applied.add("2026-11-air-coambassadors");
+    console.log("[db-setup] applied patch 2026-11-air-coambassadors");
+  }
+
   if (!applied.has("2026-10-remove-debate")) {
     await db.delete(s.competitions).where(byName("Debate"));
     applied.add("2026-10-remove-debate");

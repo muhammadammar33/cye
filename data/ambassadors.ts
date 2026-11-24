@@ -155,6 +155,12 @@ export const AMBASSADORS: AmbassadorSeed[] = [
   { institute: "Air University", name: "Nabeel Khan", role: "Co-Ambassador", phone: null, photo: "/ambassadors/nabeel-khan-air-university.webp" },
   { institute: "Air University", name: "Syed Shabi", role: "Co-Ambassador", phone: null, photo: "/ambassadors/syed-shabi-air-university.webp" },
   { institute: "Air University", name: "Tayyiba", role: "Co-Ambassador", phone: null, photo: "/ambassadors/tayyiba-air-university.webp" },
+  { institute: "Air University", name: "Fiza Hafeez", role: "Co-Ambassador", phone: null, photo: "/ambassadors/fiza-hafeez-air-university.webp" },
+  { institute: "Air University", name: "Hamza", role: "Co-Ambassador", phone: null, photo: "/ambassadors/hamza-air-university.webp" },
+  { institute: "Air University", name: "Haya Ali", role: "Co-Ambassador", phone: null, photo: "/ambassadors/haya-ali-air-university.webp" },
+  { institute: "Air University", name: "Qasim Faraz", role: "Co-Ambassador", phone: null, photo: "/ambassadors/qasim-faraz-air-university.webp" },
+  { institute: "Air University", name: "Umer Khan", role: "Co-Ambassador", phone: null, photo: "/ambassadors/umer-khan-air-university.webp" },
+  { institute: "Air University", name: "Uswa Sadozai", role: "Co-Ambassador", phone: null, photo: "/ambassadors/uswa-sadozai-air-university.webp" },
   // PIEAS
   { institute: "PIEAS", name: "Ahmad Siddique", role: "Head Ambassador", phone: "+92 326 8210196", photo: "/ambassadors/ahmad-siddique-pieas.webp", coupon: "CYE-PIEAS" },
   { institute: "PIEAS", name: "Abdul Hadi Jadoon", role: "Co-Ambassador", phone: null, photo: "/ambassadors/abdul-hadi-jadoon-pieas.webp" },
