@@ -396,6 +396,7 @@ export const FOCAL_PERSONS = {
   lawyersConference: { title: "Lawyers Conference", name: "Haris Abdul Rehman", phone: "+92 313 5237249" },
   projectExhibition: { title: "Project Exhibition", name: "Abdullah Asad", phone: "+92 321 5111080" },
   volunteers: { title: "Volunteers", name: "Jamil Akram", phone: "+92 344 8843560" },
+  sponsorship: { title: "Sponsorship & stalls", name: "Syed Anas Hussaini", phone: "+92 307 9233656" },
   govtColleges: { title: "Government colleges", name: "Raja Yahya", phone: "+92 332 3791577" },
   medicalColleges: { title: "Medical colleges", name: "Gohar Ayub", phone: "+92 306 9152593" },
 };

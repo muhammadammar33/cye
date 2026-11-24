@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { SiteChrome } from "@/components/SiteChrome";
 import { TalentTribute } from "@/components/TalentTribute";
 
+// Re-checked every minute: applications close by themselves at the limit.
+export const revalidate = 60;
+
 export const metadata: Metadata = {
   title: "Talent Tribute | Capital Youth Expo 2026",
   description:

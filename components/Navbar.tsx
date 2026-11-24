@@ -127,9 +127,9 @@ export function Navbar() {
                       animate={{ opacity: 1, x: "-50%", y: 0 }}
                       exit={{ opacity: 0, x: "-50%", y: 8 }}
                       transition={{ duration: 0.18 }}
-                      className="absolute left-1/2 top-full w-80 pt-3"
+                      className="absolute left-1/2 top-full w-[min(50rem,calc(100vw-2rem))] pt-3"
                     >
-                      <ul className="rounded-3xl border border-cye-blue/10 bg-white p-2 shadow-card">
+                      <ul className="grid grid-cols-3 gap-1 rounded-3xl border border-cye-blue/10 bg-white p-2 shadow-card">
                         {link.children.map((child) => (
                           <li key={child.href}>
                             <Link

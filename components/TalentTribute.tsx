@@ -8,6 +8,7 @@ import { FadeIn } from "@/components/ui/FadeIn";
 import { FocalPerson } from "@/components/ui/FocalPerson";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { getSettings } from "@/lib/content";
+import { talentFull } from "@/lib/talentTribute";
 import { ELIGIBLE_PERCENT, minGpa } from "@/lib/eligibility";
 
 const RULES = [
@@ -19,7 +20,7 @@ const RULES = [
 ];
 
 export async function TalentTribute() {
-  const { registration_open: open, inboxes } = await getSettings();
+  const [{ registration_open: open, inboxes }, full] = await Promise.all([getSettings(), talentFull().catch(() => false)]);
   return (
     <section className="bg-wash-mist pt-32 pb-20 sm:pt-36 sm:pb-24">
       <Container>
@@ -62,7 +63,15 @@ export async function TalentTribute() {
           <FadeIn delay={0.08} className="rounded-3xl border border-white/80 bg-white p-6 shadow-card sm:p-8">
             <h3 className="font-heading text-xl font-extrabold text-cye-blue">Apply for Talent Tribute</h3>
             <div className="mt-6">
-              {open.talent ? <TalentForm inbox={inboxes.talent} /> : <ClosedNotice what="Talent Tribute applications" email={inboxes.talent} />}
+              {open.talent && !full ? (
+                <TalentForm inbox={inboxes.talent} />
+              ) : full ? (
+                <p className="rounded-2xl bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
+                  Talent Tribute has reached its limit of applications, so applications are now closed. Thank you for your interest.
+                </p>
+              ) : (
+                <ClosedNotice what="Talent Tribute applications" email={inboxes.talent} />
+              )}
             </div>
           </FadeIn>
         </div>
