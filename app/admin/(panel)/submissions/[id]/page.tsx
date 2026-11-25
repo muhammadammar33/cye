@@ -55,7 +55,11 @@ export default async function SubmissionPage({ params }: { params: Promise<{ id:
       : [];
 
   // Gender is edited in the sidebar form (the column is the source of truth), so it is not repeated here.
-  const { members, paymentSlip, resultCard, gender: _gender, ...data } = row.data as Record<string, unknown> & { members?: Record<string, string>[]; paymentSlip?: string; resultCard?: string };
+  const { members: rawMembers, paymentSlip, resultCard, gender: _gender, ...rest } = row.data as Record<string, unknown> & { paymentSlip?: string; resultCard?: string };
+  // Competition teams store members as a list of people; the project form stores them as typed text, which is
+  // shown with the other details instead.
+  const members = Array.isArray(rawMembers) ? (rawMembers as Record<string, string>[]) : undefined;
+  const data: Record<string, unknown> = members || rawMembers === undefined || rawMembers === "" ? rest : { ...rest, members: rawMembers };
   void _gender;
   const phone = row.phone?.replace(/[^\d+]/g, "");
   const whatsapp = phone ? phone.replace(/^0/, "92").replace(/^\+/, "") : null;

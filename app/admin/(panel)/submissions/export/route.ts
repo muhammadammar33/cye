@@ -17,12 +17,15 @@ export async function GET(req: NextRequest) {
   const rows = await requireDb().select().from(s.submissions).where(whereFor(filters)).orderBy(desc(s.submissions.createdAt));
 
   const dataKeys = [...new Set(rows.flatMap((row) => Object.keys(row.data)))].filter((k) => k !== "members" && k !== "gender");
-  const hasMembers = rows.some((row) => Array.isArray(row.data.members));
+  // Competition teams store members as a list; the project form stores them as typed text. Both go in "members".
+  const hasMembers = rows.some((row) => Array.isArray(row.data.members) || (typeof row.data.members === "string" && row.data.members.trim() !== ""));
   const header = ["id", "received", "form", "status", "name", "email", "phone", "gender", "institution", "about", "payment verification", ...dataKeys, ...(hasMembers ? ["members"] : []), "notes"];
   const lines = rows.map((row) => {
     const members = Array.isArray(row.data.members)
       ? (row.data.members as Record<string, string>[]).map((m) => `${m.name} <${m.email}> ${m.phone} (${m.institution}${m.gender ? `, ${m.gender}` : ""})`).join("; ")
-      : "";
+      : typeof row.data.members === "string"
+        ? row.data.members
+        : "";
     return [
       row.id, row.createdAt.toISOString(), row.type, row.status, row.name, row.email, row.phone, row.gender, row.institution, row.subject, row.type === "competition" ? (row.paymentStatus ?? "Not checked") : "",
       ...dataKeys.map((k) => row.data[k]),
