@@ -6,4 +6,7 @@ export function phoneDigits(phone: string) {
 }
 
 export const whatsappLink = (phone: string) => `https://wa.me/${phoneDigits(phone)}`;
+
+/** A phone field may hold more than one number, separated by "/" or ",": each becomes its own link. */
+export const phoneList = (phone: string) => phone.split(/\s*[/,]\s*/).map((p) => p.trim()).filter(Boolean);
 export const telLink = (phone: string) => `tel:+${phoneDigits(phone)}`;
