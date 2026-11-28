@@ -646,6 +646,13 @@ async function applyPatches(db: Db) {
     console.log("[db-setup] applied patch 2026-11-air-coambassadors");
   }
 
+  if (!applied.has("2026-11-ai-focal")) {
+    // AI Challenge's focal person: name spelled Zoraiz Rayyan, with his second number.
+    await db.update(s.competitions).set({ focalName: "Zoraiz Rayyan", focalPhone: "+92 312 7632448 / +92 312 7197511" }).where(byName("AI Challenge"));
+    applied.add("2026-11-ai-focal");
+    console.log("[db-setup] applied patch 2026-11-ai-focal");
+  }
+
   if (!applied.has("2026-10-remove-debate")) {
     await db.delete(s.competitions).where(byName("Debate"));
     applied.add("2026-10-remove-debate");

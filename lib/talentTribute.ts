@@ -3,7 +3,7 @@ import { and, count, eq, notInArray } from "drizzle-orm";
 import { db, schema as s } from "@/lib/db";
 
 /** Talent Tribute closes by itself once this many applications are in (rejected and archived ones don't count). */
-export const TALENT_TRIBUTE_CAPACITY = 300;
+export const TALENT_TRIBUTE_CAPACITY = 400;
 
 /** Talent Tribute applications holding a place: all except rejected and archived ones. */
 export async function talentTaken() {

@@ -2,7 +2,7 @@ import "server-only";
 import { AUDIENCE, EVENT, LAWYERS_CONFERENCE, VERTICALS } from "@/data/event";
 import type { SubmissionType } from "@/lib/db/schema";
 import type { PaymentSettings } from "@/lib/defaults";
-import { whatsappLink } from "@/lib/phone";
+import { phoneList, whatsappLink } from "@/lib/phone";
 import { boldParts } from "@/lib/judgeEmail";
 import { entryIdFor, PASS_CATEGORIES, type PassCategory } from "@/lib/passCategories";
 
@@ -186,7 +186,7 @@ type FocalInfo = { name: string; phone: string | null; topic: string; also?: { n
 
 function focalBlock(f: FocalInfo) {
   const one = (p: { name: string; phone: string | null }) =>
-    `<strong>${esc(p.name)}</strong>${p.phone ? ` on <a href="${esc(whatsappLink(p.phone))}" style="color:${ORANGE};font-weight:bold;text-decoration:none;white-space:nowrap">${esc(p.phone)}</a>` : ""}`;
+    `<strong>${esc(p.name)}</strong>${p.phone ? ` on ${phoneList(p.phone).map((n) => `<a href="${esc(whatsappLink(n))}" style="color:${ORANGE};font-weight:bold;text-decoration:none;white-space:nowrap">${esc(n)}</a>`).join(" or ")}` : ""}`;
   const who = f.also ? `the focal persons ${one(f)} or ${one(f.also)}` : `the focal person ${one(f)}`;
   return `<p style="margin:0 0 12px">For questions about ${esc(f.topic)}, contact ${who}.</p>`;
 }

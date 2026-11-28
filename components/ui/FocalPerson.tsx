@@ -1,5 +1,5 @@
 import { Phone } from "lucide-react";
-import { whatsappLink } from "@/lib/phone";
+import { phoneList, whatsappLink } from "@/lib/phone";
 import { cn } from "@/lib/cn";
 
 /** A CYE focal person: title, name and a WhatsApp link to their number. */
@@ -14,10 +14,14 @@ export function FocalPerson({ title, name, phone, className }: { title: string; 
         <span className="font-semibold text-cye-blue">{name}</span>
         {phone ? (
           <>
-            {" · "}
-            <a href={whatsappLink(phone)} target="_blank" rel="noopener noreferrer" className="whitespace-nowrap font-semibold text-cye-orange hover:text-cye-orange-lt">
-              {phone}
-            </a>
+            {phoneList(phone).map((n, i) => (
+              <span key={n}>
+                {i === 0 ? " · " : " / "}
+                <a href={whatsappLink(n)} target="_blank" rel="noopener noreferrer" className="whitespace-nowrap font-semibold text-cye-orange hover:text-cye-orange-lt">
+                  {n}
+                </a>
+              </span>
+            ))}
           </>
         ) : null}
       </p>

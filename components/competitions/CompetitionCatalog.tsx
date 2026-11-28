@@ -10,7 +10,7 @@ import { FadeIn } from "@/components/ui/FadeIn";
 import { cn } from "@/lib/cn";
 import { focalsOf } from "@/lib/focals";
 import { minRegistrations } from "@/lib/minRegistrations";
-import { whatsappLink } from "@/lib/phone";
+import { phoneList, whatsappLink } from "@/lib/phone";
 
 const PLACES = ["1st", "2nd", "3rd"];
 
@@ -140,17 +140,20 @@ export function CompetitionCatalog({ competitions, onSelect, nearMinimum = [] }:
                     {focalsOf(item).map((f) => (
                       <dd key={f.name} className="mt-0.5 font-heading font-bold leading-snug text-cye-blue">
                         {f.name}
-                        {f.phone ? (
-                          <a
-                            href={whatsappLink(f.phone)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            aria-label={`WhatsApp ${f.name} on ${f.phone}`}
-                            className="block whitespace-nowrap font-sans font-semibold text-cye-orange hover:text-cye-orange-lt"
-                          >
-                            {f.phone}
-                          </a>
-                        ) : null}
+                        {f.phone
+                          ? phoneList(f.phone).map((n) => (
+                              <a
+                                key={n}
+                                href={whatsappLink(n)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label={`WhatsApp ${f.name} on ${n}`}
+                                className="block whitespace-nowrap font-sans font-semibold text-cye-orange hover:text-cye-orange-lt"
+                              >
+                                {n}
+                              </a>
+                            ))
+                          : null}
                       </dd>
                     ))}
                   </div>
